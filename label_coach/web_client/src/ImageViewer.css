@@ -1,0 +1,114 @@
+.App {
+    text-align: center;
+}
+
+.App-logo {
+    animation: App-logo-spin infinite 20s linear;
+    height: 80px;
+}
+
+.App-header {
+    background-color: #222;
+    height: 150px;
+    padding: 20px;
+    color: white;
+}
+
+.App-title {
+    font-size: 1.5em;
+}
+
+.App-intro {
+    font-size: large;
+}
+
+@keyframes App-logo-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+html, body, #container, .app {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.ocd-div, .ocd, .openseadragon {
+    width: 100%;
+    height: 100%
+}
+
+.ocd-div {
+    position: relative;
+}
+
+.navigator-wrapper {
+    position: fixed;
+    right: 5px;
+    top: 5px;
+    background: #000;
+    overflow: hidden;
+    width: 166px;
+    height: 178px;
+    border: solid 0px #ffffff;
+    z-index: 3100
+}
+
+#navigator {
+    width: 166px;
+    height: 178px;
+    position: absolute;
+    top: 0;
+}
+
+#navigator-displayregion {
+    border: 1px #d53015 !important;
+    z-index: 4500 !important;
+    background: rgba(0, 0, 0, .2) !important;
+}
+
+.ocd-toolbar {
+    width: 30px;
+    display: block;
+    position: fixed;
+    top: 50%;
+    right: 1px;
+    list-style: none;
+    z-index: 110;
+    padding: 0;
+}
+
+.ocd-toolbar > li {
+    list-style: none
+}
+
+.ocd-toolbar a {
+    width: 30px;
+    height: 30px;
+    font-size: 30px;
+    display: block !important;
+    background: rgba(0, 0, 0, .6);
+    color: #fff;
+    margin-bottom: 1px;
+    cursor: pointer;
+    text-align: center
+}
+
+.ocd-toolbar a:hover {
+    background: rgba(158, 46, 0, 0.6);
+    text-decoration: none
+}
+
+.ocd-toolbar a > i {
+    display: block;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 15px;
+    padding-top: 2px
+}

@@ -1,0 +1,17 @@
+{
+    "name": "Label Coach Plugin",
+    "description": "Web interface to label images",
+    "url": "http://girder.readthedocs.io/en/latest/plugin/mycat.html",
+    "version": "0.1.0",
+    "webpack": {
+        "main": "web_client/src/main.js",
+        "configHelper": "webpack.helper.js",
+        "defaultLoaders": false
+    },
+
+    "npm": {
+        "file": "package.json",
+        "fields": ["devDependencies", "dependencies"],
+        "localNodeModules": true
+    }
+}
