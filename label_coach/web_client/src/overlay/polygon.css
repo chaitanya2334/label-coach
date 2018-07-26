@@ -1,13 +1,14 @@
-polygon.transparent{
+.transparent{
     fill: white;
     opacity: 0.4;
     stroke: #0A7EbE;
 }
 
-polygon.accept:hover{
-    opacity: 0;
+.accept:hover{
+    opacity: 0.7;
+    fill: transparent;
 }
 
 .accept{
-    fill: green !important;
+    stroke: green;
 }

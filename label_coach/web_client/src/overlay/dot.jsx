@@ -24,7 +24,8 @@ export default class Dot extends Shape {
     }
 
     onZoom(event){
-        this.r = this.R*(1/event.zoom);
+        this.zoom = event.zoom;
+        this.r = this.R*(1/this.zoom);
         this.updateR();
     }
 
