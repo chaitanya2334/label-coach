@@ -112,3 +112,17 @@ html, body, #container, .app {
     font-size: 15px;
     padding-top: 2px
 }
+
+.highlight{
+    opacity: 0.4;
+    outline: 12px auto #0A7EbE;
+    background-color: white;
+}
+
+.highlight:hover{
+    opacity: 0.7;
+    background-color: transparent;
+}
+
+
+

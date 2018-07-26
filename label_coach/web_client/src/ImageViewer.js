@@ -1,15 +1,23 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import './ImageViewer.css';
+import './overlay/polygon.css'
 import OpenSeadragon from 'openseadragon'
+import './overlay/osdSvgOverlay'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faPlus, faCircle, faMinus, faCog} from '@fortawesome/free-solid-svg-icons'
+import * as d3 from 'd3'
+import Polygon from './overlay/polygon'
 
 // helper function to load image using promises
-function loadImage(src){
-    return new Promise(function(resolve, reject) {
+function loadImage(src) {
+    return new Promise(function (resolve, reject) {
         let img = document.createElement('img');
-        img.addEventListener('load', function(){  resolve(img) });
-        img.addEventListener('error', function(err){ reject(404) });
+        img.addEventListener('load', function () {
+            resolve(img)
+        });
+        img.addEventListener('error', function (err) {
+            reject(404)
+        });
         img.src = src;
     });
 }
@@ -17,15 +25,20 @@ function loadImage(src){
 export default class ImageViewer extends React.Component {
 
     constructor(props) {
-        super(props)
+        super(props);
         this.viewer = null;
+        this.activePolygon = null;
+        this.polygons = [];
+        this.zoom = 1;
     }
 
     render() {
         let self = this;
-        let { id } = this.props;
+        let {id} = this.props;
         return (
-            <div className="ocd-div" ref={node => {this.el = node;}}>
+            <div className="ocd-div" ref={node => {
+                this.el = node;
+            }}>
                 <div className="navigator-wrapper c-shadow">
                     <div id="navigator"/>
                 </div>
@@ -61,14 +74,50 @@ export default class ImageViewer extends React.Component {
                                                 previousButton: 'previous',
                                                 showNavigator: true,
                                                 navigatorId: 'navigator',
-
                                             });
-                this.open_slide("/api/v1/image/slide", 0.2505);
-                let onClick = this.onClick.bind(this);
-                this.viewer.addHandler('canvas-click', onClick);
+                this.onViewerReady();
             });
+    }
 
+    onViewerReady() {
+        this.open_slide("/api/v1/image/slide", 0.2505);
+        this.overlay = this.viewer.svgOverlay();
+        let onClick = this.onClick.bind(this);
+        let onZoom = this.onZoom.bind(this);
+        this.viewer.addHandler('canvas-double-click', onClick);
+        this.viewer.addHandler('zoom', onZoom);
+        this.moveTracker = new OpenSeadragon.MouseTracker({
+                                                              element: this.viewer.container,
+                                                              moveHandler: (event) => {
+                                                                  this.onMove(event);
+                                                              }
+                                                          });
+        this.moveTracker.setTracking(true);
+        let onEsc = this.onEsc.bind(this);
+        document.addEventListener("keydown", onEsc, false);
 
+    }
+
+    onEsc(){
+        if(this.activePolygon) {
+            this.activePolygon.onEsc();
+        }
+        if (this.activePolygon.isComplete()) {
+            this.polygons.push(this.activePolygon);
+            this.activePolygon = new Polygon(this.overlay, this.polygons.length, this.zoom);
+        }
+    }
+
+    onMove(event) {
+        let webPoint = event.position;
+        let viewportPoint = this.viewer.viewport.pointFromPixel(webPoint);
+        let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
+        let zoom = this.viewer.viewport.getZoom(true);
+        let imageZoom = this.viewer.viewport.viewportToImageZoom(zoom);
+
+        if (this.activePolygon) {
+            this.activePolygon.onMove(viewportPoint);
+        }
     }
 
     open_slide(url, mpp) {
@@ -89,19 +138,41 @@ export default class ImageViewer extends React.Component {
         // Convert from viewport coordinates to image coordinates.
         let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
 
+        if(!this.activePolygon){
+            this.activePolygon = new Polygon(this.overlay, this.polygons.length, this.zoom);
+        }
+
+        this.activePolygon.onClick(viewportPoint);
+
         // Show the results.
         console.log(webPoint.toString(), viewportPoint.toString(), imagePoint.toString());
     }
 
+    onZoom(event){
+        this.zoom = event.zoom;
+        for(let polygon of this.polygons){
+            console.log(event.zoom);
+            polygon.onZoom(event);
+        }
+        if(this.activePolygon) {
+            this.activePolygon.onZoom(event);
+        }
+    }
 
-    componentDidMount(){
+
+    componentDidMount() {
         this.initSeaDragon()
     }
-     shouldComponentUpdate(nextProps, nextState){
+
+    shouldComponentUpdate(nextProps, nextState) {
         return false
     }
 }
 
-ImageViewer.defaultProps = { id: 'ocd-viewer',  type:'legacy-image-pyramid', image:"http://www.planwallpaper.com/static/images/HD-Wallpapers1_FOSmVKg.jpeg"};
+ImageViewer.defaultProps = {
+    id: 'ocd-viewer',
+    type: 'legacy-image-pyramid',
+    image: "http://www.planwallpaper.com/static/images/HD-Wallpapers1_FOSmVKg.jpeg"
+};
 
 

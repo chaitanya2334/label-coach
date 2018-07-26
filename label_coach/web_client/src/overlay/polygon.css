@@ -1,0 +1,13 @@
+polygon.transparent{
+    fill: white;
+    opacity: 0.4;
+    stroke: #0A7EbE;
+}
+
+polygon.accept:hover{
+    opacity: 0;
+}
+
+.accept{
+    fill: green !important;
+}
