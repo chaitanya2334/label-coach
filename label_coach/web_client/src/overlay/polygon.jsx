@@ -2,6 +2,8 @@ import Shape from "./shape"
 import Dot from "./dot"
 import * as d3 from "d3";
 import "./polygon.css"
+
+
 export default class Polygon extends Shape{
     constructor(overlay, id, zoom){
         super(overlay);
