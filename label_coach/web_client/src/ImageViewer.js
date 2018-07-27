@@ -30,6 +30,8 @@ export default class ImageViewer extends React.Component {
         this.activePolygon = null;
         this.polygons = [];
         this.zoom = 1;
+        this.State = Object.freeze({"Edit": 1, "AddingPoly": 2, "Empty": 3});
+        this.drawState = this.State.Empty;
     }
 
     render() {
@@ -100,11 +102,13 @@ export default class ImageViewer extends React.Component {
 
     onEsc(){
         if(this.activePolygon) {
-            this.activePolygon.onEsc();
+            this.activePolygon.end();
+
         }
         if (this.activePolygon.isComplete()) {
             this.polygons.push(this.activePolygon);
-            this.activePolygon = new Polygon(this.overlay, this.polygons.length, this.zoom);
+            this.activePolygon = null;
+            this.drawState = this.State.Empty;
         }
     }
 
@@ -138,14 +142,45 @@ export default class ImageViewer extends React.Component {
         // Convert from viewport coordinates to image coordinates.
         let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
 
-        if(!this.activePolygon){
-            this.activePolygon = new Polygon(this.overlay, this.polygons.length, this.zoom);
-        }
+        switch (this.drawState) {
+            case this.State.Empty:
+                if (this.getEditPoly(viewportPoint)) {
+                    //starting the edit of a polygon
+                    this.activePolygon = this.getEditPoly(viewportPoint);
+                    this.drawState = this.State.Edit;
+                } else {
+                    //else its a new polygon
+                    this.activePolygon = new Polygon(this.overlay, this.polygons.length, this.zoom);
+                    this.activePolygon.addDot(viewportPoint);
+                    this.drawState = this.State.AddingPoly;
+                }
+                break;
 
-        this.activePolygon.onClick(viewportPoint);
+            case this.State.AddingPoly:
+                this.activePolygon.addDot(viewportPoint);
+                break;
+
+            case this.State.Edit:
+                if(this.activePolygon.selectedDot) {
+                    this.activePolygon.updateDot(viewportPoint);
+                }
+                this.activePolygon.end();
+                this.activePolygon = null;
+                this.drawState = this.State.Empty;
+                break;
+
+        }
 
         // Show the results.
         console.log(webPoint.toString(), viewportPoint.toString(), imagePoint.toString());
+    }
+
+    getEditPoly(vpPoint) {
+        for (let poly of this.polygons) {
+            if(poly.isBeingEdited(vpPoint)){
+                return poly;
+            }
+        }
     }
 
     onZoom(event){

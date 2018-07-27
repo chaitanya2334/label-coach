@@ -10,20 +10,60 @@ export default class Polygon extends Shape{
         this.zoom = zoom;
         this.dots = [];
         this.id = id;
+        this.selected = null;
         this.strokeWidth = 0.002;
         this.d3obj = d3.select(this.overlay.node())
                        .append("polygon")
                        .attr('class', 'transparent')
                        .attr('id', "poly_" + id)
                        .attr('stroke-width', this.strokeWidth);
+
+        this.d3obj.on('mouseover', (event)=>{this.inside=true;});
+        this.d3obj.on('mouseout', (event)=>{this.inside=false;});
         this.complete = false;
     }
-    onClick(vpPoint){
-        this.dots.push(new Dot(this.overlay, this.dots.length, vpPoint, this.zoom));
+    addDot(vpPoint){
+        this.dots.push(new Dot(this.overlay, this, this.dots.length, vpPoint, this.zoom));
         this.updatePolygon();
     }
 
-    onEsc(){
+    isBeingEdited(vpPoint){
+        for(let dot of this.dots){
+            if(dot.isDblClicked()){
+                this.selectedDot = dot;
+                return true;
+            }
+        }
+
+        if(this.inside){
+            this.selected = vpPoint;
+            this.setDotsCenter(); //save the original points to calculate the translation from these points on moving
+            return true;
+        }
+    }
+
+    setDotsCenter(){
+        for(let dot of this.dots){
+            dot.saveOrigPos();
+        }
+    }
+
+    movePolygon(center, vpPoint){
+        this.d3obj.classed('accept', false);
+        let x = vpPoint.x - center.x;
+        let y =  vpPoint.y - center.y;
+        for(let dot of this.dots){
+            dot.translateDot(x, y);
+        }
+        this.updatePolygon();
+    }
+
+    updateDot(vpPoint){
+        this.selectedDot.update(vpPoint);
+        this.updatePolygon();
+    }
+
+    end(){
         this.acceptPolygon();
     }
 
@@ -36,7 +76,13 @@ export default class Polygon extends Shape{
     }
 
     onMove(vpPoint){
-        this.updatePolygon(vpPoint);
+        if(this.selectedDot){
+            this.updateDot(vpPoint);
+        }else if(this.selected){
+            this.movePolygon(this.selected, vpPoint);
+        } else{
+            this.updatePolygon(vpPoint);
+        }
     }
 
     updatePolygon(vpPoint){
@@ -55,6 +101,8 @@ export default class Polygon extends Shape{
         this.color = 'green';
         this.d3obj.classed('accept', true);
         this.complete = true;
+        this.selected = false;
+        this.selectedDot = false;
         this.updatePolygon();
     }
 

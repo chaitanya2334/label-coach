@@ -3,10 +3,13 @@ import Shape from "./shape";
 import "./osdSvgOverlay";
 import "./dot.css";
 import * as d3 from "d3";
+import clone from "../utils"
 
 export default class Dot extends Shape {
-    constructor(overlay, id, vpPoint, zoom) {
+    constructor(overlay, parent, id, vpPoint, zoom) {
         super(overlay);
+        this.selected = false;
+        this.parent = parent;
         this.zoom = zoom;
         if (vpPoint) {
             this.p = vpPoint;
@@ -15,18 +18,29 @@ export default class Dot extends Shape {
         }
         this.R = 0.002;
         this.onHoverR = 0.004;
-        this.r = this.R*(1/this.zoom);
+        this.r = this.R;
         this.draw(this.p, id);
     }
 
     updateR(){
-        this.d3obj.attr('r', this.r)
+        let r = this.r * (1/this.zoom);
+        this.d3obj.attr('r', r);
+    }
+
+    translateDot(tx, ty){
+        this.p.x = this.center.x + tx;
+        this.p.y = this.center.y + ty;
+        console.log(this.center);
+        this.update(this.p);
     }
 
     onZoom(event){
         this.zoom = event.zoom;
-        this.r = this.R*(1/this.zoom);
         this.updateR();
+    }
+
+    saveOrigPos(){
+        this.center = clone(this.p);
     }
 
     draw(vpPoint, id) {
@@ -38,15 +52,14 @@ export default class Dot extends Shape {
                        .attr("cy", vpPoint.y)
                        .attr("r", this.r);
 
-        this.d3obj.on('dblclick', (event) => {
-            this.dblClicked = true
-        });
         this.d3obj.on('mouseover', (event) => {
-            this.r = this.onHoverR * (1 / this.zoom);
+            this.selected = true;
+            this.r = this.onHoverR;
             this.updateR();
         });
         this.d3obj.on('mouseout', (event) => {
-            this.r = this.R * (1 / this.zoom);
+            this.selected = false;
+            this.r = this.R;
             this.updateR();
         });
     }
@@ -66,7 +79,7 @@ export default class Dot extends Shape {
     }
 
     isDblClicked(){
-        return this.dblClicked;
+        return this.selected;
     }
 
 }
