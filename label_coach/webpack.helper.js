@@ -15,7 +15,8 @@ module.exports = function (config, info) {
             },
             {test: /\.js$/, use: "babel-loader"},
             {test: /\.jsx?$/, use: "babel-loader"},
-            {test: /\.svg$/, loader: 'svg-inline-loader'}
+            {test: /\.svg$/, loader: 'svg-inline-loader'},
+            {test: /\.json$/, use: "json-loader"}
         ]
     };
     config.plugins = [new webpack.DefinePlugin({

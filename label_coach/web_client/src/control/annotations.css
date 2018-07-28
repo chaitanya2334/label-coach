@@ -1,0 +1,22 @@
+.annotations {
+    padding-left: 16px;
+    transition: all 0.3s linear;
+    max-height: 0;
+    visibility: hidden;
+    overflow: hidden;
+}
+
+.annotations.active {
+    max-height: 13rem;
+
+    visibility: visible;
+    transition: all 0.3s linear;
+}
+
+.bg-color0 {
+    background-color: rgba(10, 126, 190, 0.3);
+}
+
+.bg-color1 {
+    background-color: rgba(0, 0, 0, 0.3);
+}

@@ -1,7 +1,8 @@
 import * as React from "react";
 import ImageViewer from "./Imager/ImageViewer";
 import SideBar from "./control/sidebar";
-
+import "./label_tasker.css";
+import labels from "./dummy_data.json";
 
 export default class LabelTasker extends React.Component {
     constructor(props) {
@@ -13,11 +14,11 @@ export default class LabelTasker extends React.Component {
         return (
             <div className={"container-fluid"}>
                 <div className={"row"}>
-                    <div className={"col-lg-10"}>
+                    <div className={"col-lg-10 align-self-center"}>
                         <ImageViewer/>
                     </div>
-                    <div className={"col-lg-2"}>
-                        <SideBar key={'sidebar'} labels={[{text: "labelA", anns: []}, {text: "labelB", anns: []}]}/>
+                    <div className={"col-lg-2 remove-right-padding"}>
+                        <SideBar labels={labels}/>
                     </div>
                 </div>
             </div>

@@ -1,4 +1,5 @@
 import * as React from "react";
+import "./search_bar.css";
 
 export default class SearchBar extends React.Component{
     constructor(props) {
@@ -10,7 +11,7 @@ export default class SearchBar extends React.Component{
 
     render() {
         return (
-            <input className="form-control form-control-lg" type="text" placeholder="Search"/>
+            <input className="form-control form-control-lg search-bar" type="text" placeholder="Search"/>
         );
     }
 

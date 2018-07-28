@@ -1,0 +1,9 @@
+.search-bar{
+    border-top: 1px solid rgba(153,153,153,.3) !important;
+    border-bottom: 1px solid rgba(153,153,153,.3) !important;
+    border-radius: 0 !important;
+}
+
+input[type=text]{
+    font-weight: 300;
+}
