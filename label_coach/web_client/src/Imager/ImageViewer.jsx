@@ -32,6 +32,7 @@ export default class ImageViewer extends React.Component {
         this.zoom = 1;
         this.State = Object.freeze({"Edit": 1, "AddingPoly": 2, "Empty": 3});
         this.drawState = this.State.Empty;
+
     }
 
     render() {

@@ -1,9 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import ImageViewer from './ImageViewer';
+import LabelTasker from "./label_tasker";
+import 'bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function main() {
-    ReactDOM.render(<ImageViewer/>, document.getElementById('root'));
+    ReactDOM.render(<LabelTasker/>, document.getElementById('root'));
 
 }
