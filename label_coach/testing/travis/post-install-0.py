@@ -8,17 +8,16 @@ def find_user(username):
     result = None
     offset = 0
     while True:
-        try:
-            users = client.get(
-                'user',
-                parameters=dict(
-                    text=username,
-                    limit=50,
-                    offset=offset,
-                    sort='login'
-                )
+
+        users = client.get(
+            'user',
+            parameters=dict(
+                text=username,
+                limit=50,
+                offset=offset,
+                sort='login'
             )
-        except
+        )
 
         if not users:
             break
