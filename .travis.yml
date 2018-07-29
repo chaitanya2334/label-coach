@@ -12,8 +12,8 @@ cache:
   pip: true
   directories:
     - $HOME/.cache
-    - $HOME/build/label-coach/label_coach/_build/store
-    - $HOME/build/label-coach/label_coach/_build/data
+    - $HOME/build/chaitanya2334/label-coach/label_coach/_build/store
+    - $HOME/build/chaitanya2334/label-coach/label_coach/_build/data
     - $HOME/build/env/conda2
     - $HOME/build/env/conda3
 
@@ -62,7 +62,7 @@ script:
   - ls
   - rm -r $CONDA_DIR/lib/python3.6/site-packages/girder/plugins/label_coach
   - ls
-  - ln -s $HOME/label-coach/label_coach $CONDA_DIR/lib/python3.6/site-packages/girder/plugins/
+  - ln -s $HOME/build/chaitanya2334/label-coach/label_coach $CONDA_DIR/lib/python3.6/site-packages/girder/plugins/
   - cd $CONDA_DIR/lib/python3.6/site-packages/girder/plugins/label_coach
   - ls
   - cd _build
