@@ -60,4 +60,6 @@ script:
   - source activate label-coach
   - rm -r $CONDA_DIR/lib/python3.6/site-packages/girder/plugins/label_coach
   - ln -s $HOME/build/label-coach/label_coach $CONDA_DIR/lib/python3.6/site-packages/girder/plugins/
+  - cd $CONDA_DIR/lib/python3.6/site-packages/girder/plugins/label_coach
+  - ls
   - girder-install web --plugins label_coach
