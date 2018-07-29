@@ -61,4 +61,4 @@ script:
   - source activate label-coach
   - python -m ./testing/travis/post-install-0
   - girder-install web
-  - girder serve
+  - timeout 20s girder serve
