@@ -59,6 +59,7 @@ script:
   - CONDA_DIR="$HOME/build/env/conda${PY}"
   - export PATH="$CONDA_DIR/bin:$PATH"
   - source activate label-coach
+  - pwd
   - python -m ./testing/travis/post-install-0
   - girder-install web
   - timeout 20s girder serve
