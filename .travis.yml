@@ -1,5 +1,8 @@
 language: python
 
+notifications:
+  email: false
+
 python:
   - "2.7"
   - "3.5"
@@ -34,7 +37,7 @@ before_install:
   - pip install -r requirements-dev.txt
   - pwd
   - girder-install web --watch-plugin label_coach
-  - ln -s $HOME/build/label-coach/label_coach/ $CONDA_DIR/lib/python3.6/site-packages/girder/plugins/
+  - ln -s $HOME/build/label-coach/label_coach/ $CONDA_DIR/envs/label-coach/lib/python3.6/site-packages/girder/plugins/
   - npm config set python `which python`
   - cd ./label_coach/
   - npm install -g npm
