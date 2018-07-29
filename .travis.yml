@@ -1,0 +1,54 @@
+language: python
+
+python:
+  - "2.7"
+  - "3.5"
+
+cache:
+  packages: true
+  pip: true
+  directories:
+    - $HOME/.cache
+    - $HOME/build/label-coach/label_coach/_build/store
+    - $HOME/build/label-coach/label_coach/_build/data
+    - $HOME/build/env/conda2
+    - $HOME/build/env/conda3
+sudo: false
+
+before_install:
+  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]] ; then PY=2 ; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3* ]] ; then PY=3 ; fi
+  - CONDA_DIR="$HOME/build/env/conda${PY}"
+  - wget -O conda.bash "https://repo.continuum.io/miniconda/Miniconda${PY}-latest-Linux-x86_64.sh"
+  - bash conda.bash -b -f -p "$CONDA_DIR"
+  - export PATH="$CONDA_DIR/bin:$PATH"
+  - conda env update -f environment.yml
+  - source activate label-coach
+  - rm -rf ~/.nvm
+  - git clone https://github.com/creationix/nvm.git ~/.nvm
+  - source ~/.nvm/nvm.sh
+  - nvm install v8
+  - nvm use v8
+  - git submodule update --init --recursive
+  - pip install -r ./girder/requirements-dev.txt
+  - ln -s $HOME/build/label-coach/label_coach/ $CONDA_DIR/lib/python3.6/site-packages/girder/plugins/
+  - npm config set python `which python`
+  - cd ./label_coach/
+  - npm install -g npm
+
+install:
+  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]] ; then PY=2 ; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3* ]] ; then PY=3 ; fi
+  - CONDA_DIR="$HOME/build/env/conda${PY}"
+  - export PATH="$CONDA_DIR/bin:$PATH"
+  - source activate label-coach
+  - girder-install web
+  - npm install
+
+script:
+  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]] ; then PY=2 ; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3* ]] ; then PY=3 ; fi
+  - CONDA_DIR="$HOME/build/env/conda${PY}"
+  - export PATH="$CONDA_DIR/bin:$PATH"
+  - source activate label-coach
+  - girder serve
