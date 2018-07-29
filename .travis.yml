@@ -38,6 +38,7 @@ before_install:
   - cd ./girder
   - pip install -r requirements-dev.txt
   - pip install girder-client
+  - pip install girder
   - cd ..
   - girder-install plugin -s $HOME/build/label-coach/label_coach
   - npm config set python `which python`
@@ -62,6 +63,7 @@ script:
   - source activate label-coach
   - pwd
   - pip install girder-client
+  - pip install girder
   - cat $CONDA_DIR/envs/label-coach/lib/python3.6/site-packages/girder_client/__init__.py
   - python ./testing/travis/post-install-0.py
   - girder-install web
