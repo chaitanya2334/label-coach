@@ -37,6 +37,7 @@ before_install:
   - git submodule update --init --recursive
   - cd ./girder
   - pip install -r requirements-dev.txt
+  - pip install girder-client
   - cd ..
   - girder-install plugin -s $HOME/build/label-coach/label_coach
   - npm config set python `which python`

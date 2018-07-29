@@ -1,7 +1,7 @@
 import json
 import os.path
 
-from clients.python.girder_client import GirderClient
+from girder_client import GirderClient
 from girder.constants import AssetstoreType
 
 
