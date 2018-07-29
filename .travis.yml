@@ -61,6 +61,8 @@ script:
   - export PATH="$CONDA_DIR/bin:$PATH"
   - source activate label-coach
   - pwd
+  - pip install girder-client
+  - cat $CONDA_DIR/envs/label-coach/lib/python3.6/site-packages/girder_client/__init__.py
   - python ./testing/travis/post-install-0.py
   - girder-install web
   - timeout 20s girder serve
