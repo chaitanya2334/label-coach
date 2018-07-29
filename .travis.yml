@@ -49,7 +49,6 @@ install:
   - CONDA_DIR="$HOME/build/env/conda${PY}"
   - export PATH="$CONDA_DIR/bin:$PATH"
   - source activate label-coach
-  - sudo service mongod start
   - girder-install web
   - npm install
 
