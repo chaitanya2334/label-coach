@@ -47,9 +47,9 @@ install:
   - CONDA_DIR="$HOME/build/env/conda${PY}"
   - export PATH="$CONDA_DIR/bin:$PATH"
   - source activate label-coach
-  - cd ./label_coach
   - girder-install web
   - npm install
+
 
 script:
   - if [[ $TRAVIS_PYTHON_VERSION == 2* ]] ; then PY=2 ; fi
@@ -57,4 +57,6 @@ script:
   - CONDA_DIR="$HOME/build/env/conda${PY}"
   - export PATH="$CONDA_DIR/bin:$PATH"
   - source activate label-coach
+  - python -m ./testing/travis/post-install-0.py
+  - girder-install web
   - girder serve
