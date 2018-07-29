@@ -60,6 +60,6 @@ script:
   - export PATH="$CONDA_DIR/bin:$PATH"
   - source activate label-coach
   - pwd
-  - python -m ./testing/travis/post-install-0
+  - python ./testing/travis/post-install-0.py
   - girder-install web
   - timeout 20s girder serve
