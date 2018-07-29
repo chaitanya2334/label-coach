@@ -38,7 +38,7 @@ before_install:
   - pip install -r requirements-dev.txt
   - pip install girder-client
   - cd ..
-  - ln -s $HOME/build/label-coach/label_coach $CONDA_DIR/lib/python3.6/site-packages/girder/plugins/
+
   - npm config set python `which python`
   - cd ./label_coach/
   - npm install -g npm
@@ -58,4 +58,5 @@ script:
   - CONDA_DIR="$HOME/build/env/conda${PY}"
   - export PATH="$CONDA_DIR/bin:$PATH"
   - source activate label-coach
+  - ln -s $HOME/build/label-coach/label_coach $CONDA_DIR/lib/python3.6/site-packages/girder/plugins/
   - girder-install web --plugins label_coach
