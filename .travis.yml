@@ -5,7 +5,7 @@ notifications:
 
 python:
   - "2.7"
-  - "3.5"
+  - "3.6"
 
 cache:
   packages: true
@@ -35,9 +35,8 @@ before_install:
   - git submodule update --init --recursive
   - cd ./girder
   - pip install -r requirements-dev.txt
-  - pwd
-  - girder-install web --watch-plugin label_coach
-  - ln -s $HOME/build/label-coach/label_coach/ $CONDA_DIR/envs/label-coach/lib/python3.6/site-packages/girder/plugins/
+  - cd ..
+  - girder-install plugin -s $HOME/build/label-coach/label_coach
   - npm config set python `which python`
   - cd ./label_coach/
   - npm install -g npm
@@ -48,6 +47,7 @@ install:
   - CONDA_DIR="$HOME/build/env/conda${PY}"
   - export PATH="$CONDA_DIR/bin:$PATH"
   - source activate label-coach
+  - cd ./label_coach
   - girder-install web
   - npm install
 
