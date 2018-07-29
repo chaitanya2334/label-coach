@@ -40,7 +40,7 @@ before_install:
   - pip install girder-client
   - pip install girder
   - cd ..
-  - girder-install plugin -s $HOME/build/label-coach/label_coach
+  - ln -s $HOME/build/label-coach/label_coach $HOME/lib/python3.6/site-packages/girder/plugins/
   - npm config set python `which python`
   - cd ./label_coach/
   - npm install -g npm
