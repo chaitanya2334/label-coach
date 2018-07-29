@@ -64,4 +64,12 @@ script:
   - pwd
   - pip install girder-client
   - pip install girder
+  - girder serve &
+  - SERVER_PID=$!
+  - python ./testing/travis/post-install-0.py
+  - kill -9 $SERVER_PID
   - girder-install web
+  - girder serve &
+  - SERVER_PID=$!
+  - sleep 10s
+  - kill -9 $SERVER_PID

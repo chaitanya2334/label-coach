@@ -4,7 +4,6 @@ import os.path
 from girder_client import GirderClient
 from girder.constants import AssetstoreType
 
-
 def find_user(username):
     result = None
     offset = 0
