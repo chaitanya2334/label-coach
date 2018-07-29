@@ -51,7 +51,6 @@ install:
   - CONDA_DIR="$HOME/build/env/conda${PY}"
   - export PATH="$CONDA_DIR/bin:$PATH"
   - source activate label-coach
-  - girder-install web
   - npm install
 
 
@@ -61,15 +60,4 @@ script:
   - CONDA_DIR="$HOME/build/env/conda${PY}"
   - export PATH="$CONDA_DIR/bin:$PATH"
   - source activate label-coach
-  - pwd
-  - pip install girder-client
-  - pip install girder
-  - girder serve &
-  - SERVER_PID=$!
-  - python ./testing/travis/post-install-0.py
-  - kill -9 $SERVER_PID
-  - girder-install web
-  - girder serve &
-  - SERVER_PID=$!
-  - sleep 10s
-  - kill -9 $SERVER_PID
+  - girder-install web --all-plugins
