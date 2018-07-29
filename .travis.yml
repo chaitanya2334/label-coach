@@ -30,7 +30,10 @@ before_install:
   - nvm install v8
   - nvm use v8
   - git submodule update --init --recursive
-  - pip install -r ./girder/requirements-dev.txt
+  - cd ./girder
+  - pip install -r requirements-dev.txt
+  - pwd
+  - girder-install web --watch-plugin label_coach
   - ln -s $HOME/build/label-coach/label_coach/ $CONDA_DIR/lib/python3.6/site-packages/girder/plugins/
   - npm config set python `which python`
   - cd ./label_coach/
