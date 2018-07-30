@@ -5,8 +5,9 @@
 }
 
 .accept:hover{
-    opacity: 0.7;
+    opacity: 1;
     fill: transparent;
+    cursor: pointer;
 }
 
 .accept{
