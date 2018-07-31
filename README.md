@@ -10,54 +10,55 @@ Requirements
 
 Step 1: install girder
 
-Step 1.1: pull girder submodule
+Pull girder submodule
 ```bash
 cd label-coach
 git submodule update --init --recursive
 ```
-Step 1.2: install all girder python dependencies
+Install all girder python dependencies
 ```bash
 cd label-coach/girder
 pip install -r requirements-dev.txt
 ```
 
+Step 2: Install `label_coach` plugin
 
-
-Step 2: install all the npm dependencies inside `label_coach` dir
-
+install all the npm dependencies inside `label_coach` dir
 ```bash
 cd label-coach/label_coach
 npm install
 ```
 
-Step 3: install plugin into girder. Make sure to provide absolute path to `label_coach` dir.
+install plugin into girder. Make sure to provide absolute path to `label_coach` dir.
 ```bash
 girder-install plugin -s /absolute/path/to/label_coach
 ```
 
-Step 4: install girder web client
+Step 3: start up girder to activate plugin on girder
+
+install girder web client
 ```bash
 girder-install web
 ```
 
-Step 5: start girder server. Start mongodb if you havent already. Below command will start the server on localhost:8080. check girder documentation 
+start girder server. Start mongodb if you havent already. Below command will start the server on localhost:8080. check girder documentation 
 for more options
 ```bash
 sudo service mongod start
 girder serve
 ```
 
-Step 6: register admin account 
+register admin account 
 
 [Image here]
 
-Step 7: enable plugin and restart
+enable plugin and restart
 
 [Image here]
 
-Step 8: change `core_girder` route from `/` to `/girder`. This setting is found in your `Admin console > Server configuration`.
+change `core_girder` route from `/` to `/girder`. This setting is found in your `Admin console > Server configuration`.
 
-Step 9: restart the server. You are now all set!
+restart the server. You are now all set!
 
 ## Development Instructions
 
