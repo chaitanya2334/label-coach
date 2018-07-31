@@ -34,7 +34,7 @@ install plugin into girder. Make sure to provide absolute path to `label_coach` 
 girder-install plugin -s /absolute/path/to/label_coach
 ```
 
-### Step 3: start up girder to activate plugin on girder
+### Step 3: start up girder and activate plugin
 
 install girder web client
 ```bash
