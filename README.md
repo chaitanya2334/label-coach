@@ -9,6 +9,7 @@ Requirements
 2. mongodb
 
 Step1: install girder
+
 Step1.1: pull girder submodule
 ```bash
 cd label-coach
