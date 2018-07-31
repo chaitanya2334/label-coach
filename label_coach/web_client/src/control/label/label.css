@@ -12,6 +12,10 @@
     border-color: #0A7EbE;
 }
 
+.color1{
+    border-color: black;
+}
+
 .label .text{
     position: relative;
     padding-top:10px;

@@ -5,8 +5,8 @@ import "./polygon.css"
 
 
 export default class Polygon extends Shape{
-    constructor(overlay, id, zoom){
-        super(overlay);
+    constructor(overlay, viewer, id, zoom){
+        super(overlay, viewer);
         this.zoom = zoom;
         this.dots = [];
         this.id = id;
@@ -22,8 +22,28 @@ export default class Polygon extends Shape{
         this.d3obj.on('mouseout', (event)=>{this.inside=false;});
         this.complete = false;
     }
+
+
+
+    onClick(event){
+        // The canvas-click event gives us a position in web coordinates.
+        let webPoint = event.position;
+
+        // Convert that to viewport coordinates, the lingua franca of OpenSeadragon coordinates.
+        let viewportPoint = this.viewer.viewport.pointFromPixel(webPoint);
+
+        // Convert from viewport coordinates to image coordinates.
+        let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
+
+        if(this.selected){
+            this.acceptPolygon();
+        }else{
+            this.selected = viewportPoint;
+            this.setDotsCenter();
+        }
+    }
     addDot(vpPoint){
-        this.dots.push(new Dot(this.overlay, this, this.dots.length, vpPoint, this.zoom));
+        this.dots.push(new Dot(this.overlay, this.viewer, this, this.dots.length, vpPoint, this.zoom));
         this.updatePolygon();
     }
 

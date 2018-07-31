@@ -1,0 +1,7 @@
+.create_button{
+    display: none;
+}
+
+.create_button.active{
+    display: block;
+}

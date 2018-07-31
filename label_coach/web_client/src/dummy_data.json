@@ -1,64 +1,75 @@
-[
-  {
-    "text": "labelA",
-    "anns": [
-      {
-        "text": "polygon1",
-        "points": [
-          {
-            "x": 0,
-            "y": 0
-          },
-          {
-            "x": 0,
-            "y": 0
-          }
-        ]
-      },
-      {
-        "text": "polygon2",
-        "points": [
-          {
-            "x": 0,
-            "y": 0
-          },
-          {
-            "x": 0,
-            "y": 0
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "text": "labelB",
-    "anns": [
-      {
-        "text": "polygon3",
-        "points": [
-          {
-            "x": 0,
-            "y": 0
-          },
-          {
-            "x": 0,
-            "y": 0
-          }
-        ]
-      },
-      {
-        "text": "polygon4",
-        "points": [
-          {
-            "x": 0,
-            "y": 0
-          },
-          {
-            "x": 0,
-            "y": 0
-          }
-        ]
-      }
-    ]
-  }
-]
+{
+  "search": "",
+  "labels": [
+    {
+      "id": 0,
+      "active": false,
+      "text": "A",
+      "button": "Create",
+      "color": "color0",
+      "polygon_list": [
+        {
+          "text": "polygon0",
+          "points": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 0,
+              "y": 0
+            }
+          ]
+        },
+        {
+          "text": "polygon1",
+          "points": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 0,
+              "y": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "active": false,
+      "text": "B",
+      "button": "Create",
+      "color": "color1",
+      "polygon_list": [
+        {
+          "text": "polygon2",
+          "points": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 0,
+              "y": 0
+            }
+          ]
+        },
+        {
+          "text": "polygon3",
+          "points": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 0,
+              "y": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

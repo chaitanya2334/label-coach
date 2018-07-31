@@ -6,8 +6,8 @@ import * as d3 from "d3";
 import clone from "../../utils"
 
 export default class Dot extends Shape {
-    constructor(overlay, parent, id, vpPoint, zoom) {
-        super(overlay);
+    constructor(overlay, viewer, parent, id, vpPoint, zoom) {
+        super(overlay, viewer);
         this.selected = false;
         this.parent = parent;
         this.zoom = zoom;

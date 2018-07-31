@@ -3,7 +3,7 @@
     transition: all 0.3s linear;
     max-height: 0;
     visibility: hidden;
-    overflow: hidden;
+    overflow-y: auto;
 }
 
 .annotations.active {

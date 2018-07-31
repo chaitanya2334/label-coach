@@ -85,7 +85,7 @@ export default class ImageViewer extends React.Component {
     onViewerReady() {
         this.open_slide("/api/v1/image/slide", 0.2505);
         this.overlay = this.viewer.svgOverlay();
-        let onClick = this.onClick.bind(this);
+        let onClick = this.onDblClick.bind(this);
         let onZoom = this.onZoom.bind(this);
         this.viewer.addHandler('canvas-double-click', onClick);
         this.viewer.addHandler('zoom', onZoom);
@@ -133,7 +133,12 @@ export default class ImageViewer extends React.Component {
         this.viewer.open(tile_source);
     }
 
-    onClick(event) {
+    onCreatePolygon() {
+        this.activePolygon = new Polygon(this.overlay, this.viewer, this.polygons.length, this.zoom);
+        this.drawState = this.State.AddingPoly;
+    }
+
+    onDblClick(event) {
         // The canvas-click event gives us a position in web coordinates.
         let webPoint = event.position;
 
@@ -151,9 +156,7 @@ export default class ImageViewer extends React.Component {
                     this.drawState = this.State.Edit;
                 } else {
                     //else its a new polygon
-                    this.activePolygon = new Polygon(this.overlay, this.polygons.length, this.zoom);
-                    this.activePolygon.addDot(viewportPoint);
-                    this.drawState = this.State.AddingPoly;
+
                 }
                 break;
 
