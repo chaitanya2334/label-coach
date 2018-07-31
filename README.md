@@ -8,7 +8,7 @@ Requirements
 1. Node 8+
 2. mongodb
 
-Step 1: install girder
+###Step 1: install girder
 
 Pull girder submodule
 ```bash
@@ -21,7 +21,7 @@ cd label-coach/girder
 pip install -r requirements-dev.txt
 ```
 
-Step 2: Install `label_coach` plugin
+###Step 2: Install `label_coach` plugin
 
 install all the npm dependencies inside `label_coach` dir
 ```bash
@@ -34,7 +34,7 @@ install plugin into girder. Make sure to provide absolute path to `label_coach` 
 girder-install plugin -s /absolute/path/to/label_coach
 ```
 
-Step 3: start up girder to activate plugin on girder
+###Step 3: start up girder to activate plugin on girder
 
 install girder web client
 ```bash
