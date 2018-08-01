@@ -1,7 +1,9 @@
 import labelReducer from "../label/reducers";
+import produce from "immer";
 
 export function labels(labels=[], action) {
-    return Object.assign([], labels, {
-                [action.label_id]: labelReducer(labels[action.label_id], action)
-            });
+    let newLabels = produce(labels, (draftState) => {
+        draftState[action.label_id] = labelReducer(draftState[action.label_id], action)
+    });
+    return newLabels;
 }

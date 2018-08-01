@@ -25,14 +25,14 @@ pip install -r requirements-dev.txt
 ### Step 2: Install `label_coach` plugin
 Install all python dependencies. 
 
-Use environment.yml in the root directory `label-coach` for conda environments
+For conda environments use environment.yml in the root directory `label-coach` 
 ```bash
 conda env create -f environment.yml
 # then activate the conda virtual environment
 source activate label-coach
 ```
 
-or use requirement.txt for pip.
+Or use requirement.txt for pip.
 ```bash
 pip install -r requirements.txt
 ```

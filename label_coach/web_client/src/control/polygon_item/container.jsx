@@ -5,7 +5,7 @@ function mapStateToProps(state){
 }
 
 function mapDispatchToProps(dispatch){
-
+    return {};
 }
 
 const PolygonItem = connect(

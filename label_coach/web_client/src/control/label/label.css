@@ -1,11 +1,11 @@
 .side-vert-bar{
     border-left: 3px solid;
-    transition: all 0.15s 0.15s linear;
+    transition: border-left 0.15s 0.15s linear;
 }
 
 .side-vert-bar.active{
     border-left: 0 solid;
-    transition: all 0.15s linear;
+    transition: border-left 0.15s linear;
 }
 
 .color0{
