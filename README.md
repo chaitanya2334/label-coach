@@ -7,6 +7,7 @@
 Requirements
 1. Node 8+
 2. mongodb
+3. python 3.6
 
 ### Step 1: Install girder
 
