@@ -23,19 +23,33 @@ pip install -r requirements-dev.txt
 ```
 
 ### Step 2: Install `label_coach` plugin
-Install all python dependencies. 
 
+####Install all python dependencies. 
+
+##### Linux Distributions
 For conda environments use environment.yml in the root directory `label-coach` 
 ```bash
-conda env create -f environment.yml
+conda env create -n label-coach -f environment.yml
 # then activate the conda virtual environment
 source activate label-coach
 ```
 
-Or use requirement.txt for pip.
+##### OSX
+For conda environments use environment.yml in the root directory `label-coach` 
 ```bash
-pip install -r requirements.txt
+conda env create -n label-coach -f environment.osx.yml
+# then activate the conda virtual environment
+source activate label-coach
 ```
+
+We make use of openslide to support .svs images. To install openslide on OSX you will have to make use of Homebrew
+
+```bash
+brew install openslide
+```
+
+
+
 Install all the npm dependencies inside `label_coach` dir
 ```bash
 cd label-coach/label_coach
@@ -47,17 +61,17 @@ Install plugin into girder. Make sure to provide absolute path to `label_coach` 
 girder-install plugin -s /absolute/path/to/label_coach
 ```
 
-### Step 3: Start up girder and activate plugin
+### Step 3: Start up girder and activate plugin.  Start mongodb if you havent already.
 
 Install girder web client
 ```bash
+sudo service mongod start
 girder-install web
 ```
 
-Start girder server. Start mongodb if you havent already. Below command will start the server on localhost:8080. check girder documentation 
+Start girder server. Below command will start the server on localhost:8080. check girder documentation 
 for more options
 ```bash
-sudo service mongod start
 girder serve
 ```
 
