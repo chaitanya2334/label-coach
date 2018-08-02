@@ -16,7 +16,7 @@ export default class Polygon extends Shape {
                        .append("polygon")
                        .attr('class', 'transparent')
                        .attr('id', poly_id)
-                       .attr('stroke-width', this.strokeWidth);
+                       .attr('stroke-width', this.strokeWidth * (1 / this.zoom));
 
         this.d3obj.on('mouseover', (event) => {
             this.inside = true;
@@ -29,6 +29,7 @@ export default class Polygon extends Shape {
         this.label_id = label_id;
         this.poly_id = poly_id;
         this.potentialDot = new Dot(this.overlay, this.viewer, this, this.dots.length, null, this.zoom);
+        this.CLOSE_THRESH = 0.001;
     }
 
     setDrawState(state) {
@@ -118,6 +119,12 @@ export default class Polygon extends Shape {
         for (let dot of this.dots) {
             dot.onZoom(event);
         }
+        if(this.potentialDot) {
+            this.potentialDot.onZoom(event);
+        }
+        if(this.selectedDot) {
+            this.selectedDot.onZoom(event);
+        }
         this.d3obj.attr('stroke-width', this.strokeWidth * (1 / event.zoom));
         this.zoom = event.zoom;
     }
@@ -161,8 +168,16 @@ export default class Polygon extends Shape {
         return {point: minProj, leftId: minLeftId};
     }
 
-    insertDot(dot, leftDotId){
-        this.dots.splice(leftDotId+1, 0, dot);
+    insertDot(newDot, leftDotId) {
+        for (let dot of this.dots) {
+            if (Math.abs(newDot.p.x - dot.p.x) < this.CLOSE_THRESH &&
+                Math.abs(newDot.p.y - dot.p.y) < this.CLOSE_THRESH) {
+                newDot.delete();
+                return dot;
+            }
+        }
+        this.dots.splice(leftDotId + 1, 0, newDot);
+        return newDot;
     }
 
 

@@ -22,6 +22,10 @@ export default class Dot extends Shape {
         this.draw(this.p, id);
     }
 
+    delete(){
+        this.d3obj.remove();
+    }
+
     getImgPoint(){
         return this.viewer.viewport.viewportToImageCoordinates(this.p);
     }
@@ -54,7 +58,7 @@ export default class Dot extends Shape {
                        .attr('id', 'c' + id)
                        .attr("cx", vpPoint.x)
                        .attr("cy", vpPoint.y)
-                       .attr("r", this.r);
+                       .attr("r", this.r * (1/this.zoom));
 
         this.d3obj.on('mouseover', (event) => {
             this.selected = true;

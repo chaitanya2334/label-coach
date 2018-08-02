@@ -159,9 +159,8 @@ export default class ImageViewerP extends React.Component {
                         this.props.updatePolygon(this.activePolygon.label_id, this.activePolygon.poly_id,
                                                  this.activePolygon.getImgPoints());
                     } else {
-                        this.activePolygon.insertDot(this.activePolygon.potentialDot,
+                        this.activePolygon.selectedDot = this.activePolygon.insertDot(this.activePolygon.potentialDot,
                                                      this.activePolygon.potentialDotLeftId);
-                        this.activePolygon.selectedDot = this.activePolygon.potentialDot;
                     }
 
 
