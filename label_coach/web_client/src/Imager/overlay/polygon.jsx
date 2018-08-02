@@ -5,8 +5,8 @@ import "./polygon.css";
 import OpenSeadragon from "openseadragon";
 
 
-export default class Polygon extends Shape{
-    constructor(overlay, viewer, label_id, poly_id, zoom){
+export default class Polygon extends Shape {
+    constructor(overlay, viewer, label_id, poly_id, zoom) {
         super(overlay, viewer);
         this.zoom = zoom;
         this.dots = [];
@@ -18,35 +18,40 @@ export default class Polygon extends Shape{
                        .attr('id', poly_id)
                        .attr('stroke-width', this.strokeWidth);
 
-        this.d3obj.on('mouseover', (event)=>{this.inside=true;});
-        this.d3obj.on('mouseout', (event)=>{this.inside=false;});
+        this.d3obj.on('mouseover', (event) => {
+            this.inside = true;
+        });
+        this.d3obj.on('mouseout', (event) => {
+            this.inside = false;
+        });
         this.complete = false;
         this.drawState = "read-only";
         this.label_id = label_id;
         this.poly_id = poly_id;
+        this.potentialDot = new Dot(this.overlay, this.viewer, this, this.dots.length, null, this.zoom);
     }
 
-    setDrawState(state){
+    setDrawState(state) {
         this.drawState = state;
     }
 
-    addImagePoints(points){
-        for(let point of points){
+    addImagePoints(points) {
+        for (let point of points) {
             let imgPoint = new OpenSeadragon.Point(parseInt(point.x), parseInt(point.y));
             let vpPoint = this.viewer.viewport.imageToViewportCoordinates(imgPoint);
-            this.addDot(vpPoint);
+            this.appendDot(vpPoint);
         }
     }
 
-    delete(){
+    delete() {
         this.d3obj.remove();
-        for(let dot of this.dots){
+        for (let dot of this.dots) {
             dot.d3obj.remove();
         }
         this.dots = [];
     }
 
-    onClick(event){
+    onClick(event) {
         // The canvas-click event gives us a position in web coordinates.
         let webPoint = event.position;
 
@@ -56,97 +61,148 @@ export default class Polygon extends Shape{
         // Convert from viewport coordinates to image coordinates.
         let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
 
-        if(this.selected){
+        if (this.selected) {
             this.acceptPolygon();
-        }else{
+        } else {
             this.selected = viewportPoint;
             this.setDotsCenter();
         }
     }
-    addDot(vpPoint){
+
+    appendDot(vpPoint) {
         this.dots.push(new Dot(this.overlay, this.viewer, this, this.dots.length, vpPoint, this.zoom));
         this.updatePolygon();
     }
 
-    isBeingEdited(vpPoint){
-        for(let dot of this.dots){
-            if(dot.isDblClicked()){
+    isBeingEdited(vpPoint) {
+        for (let dot of this.dots) {
+            if (dot.isDblClicked()) {
                 this.selectedDot = dot;
                 return true;
             }
         }
 
-        if(this.inside){
+        if (this.inside) {
             this.selected = vpPoint;
             this.setDotsCenter(); //save the original points to calculate the translation from these points on moving
             return true;
         }
     }
 
-    setDotsCenter(){
-        for(let dot of this.dots){
+    setDotsCenter() {
+        for (let dot of this.dots) {
             dot.saveOrigPos();
         }
     }
 
-    movePolygon(center, vpPoint){
+    movePolygon(center, vpPoint) {
         this.d3obj.classed('accept', false);
         let x = vpPoint.x - center.x;
-        let y =  vpPoint.y - center.y;
-        for(let dot of this.dots){
+        let y = vpPoint.y - center.y;
+        for (let dot of this.dots) {
             dot.translateDot(x, y);
         }
         this.updatePolygon();
     }
 
-    updateDot(vpPoint){
+    updateDot(vpPoint) {
         this.selectedDot.update(vpPoint);
         this.updatePolygon();
     }
 
-    end(){
+    end() {
         this.acceptPolygon();
     }
 
-    onZoom(event){
-        for(let dot of this.dots){
+    onZoom(event) {
+        for (let dot of this.dots) {
             dot.onZoom(event);
         }
-        this.d3obj.attr('stroke-width', this.strokeWidth*(1/event.zoom));
+        this.d3obj.attr('stroke-width', this.strokeWidth * (1 / event.zoom));
         this.zoom = event.zoom;
     }
 
-    onMove(vpPoint){
-        if(this.selectedDot){
+    closestPoint(polyNode, point) {
+        function sqr(x) {
+            return x * x
+        }
+
+        function dist2(v, w) {
+            return sqr(v.x - w.x) + sqr(v.y - w.y)
+        }
+
+        function distToSegmentSquared(p, v, w) {
+            let l2 = dist2(v, w);
+            if (l2 === 0) return dist2(p, v);
+            let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+            t = Math.max(0, Math.min(1, t));
+            let proj = {
+                x: v.x + t * (w.x - v.x),
+                y: v.y + t * (w.y - v.y)
+            };
+            return {
+                dist: dist2(p, proj),
+                point: proj,
+            };
+        }
+
+        let pairs = [];
+        let minProj, minLeftId, minDist = Infinity;
+        for (let i = 0; i < this.dots.length; i++) {
+            let j = (i + 1) % this.dots.length;
+            let res = distToSegmentSquared(point, this.dots[i].p, this.dots[j].p);
+            if (res.dist < minDist) {
+                minProj = res.point;
+                minLeftId = i;
+                minDist = res.dist;
+            }
+
+        }
+        return {point: minProj, leftId: minLeftId};
+    }
+
+    insertDot(dot, leftDotId){
+        this.dots.splice(leftDotId+1, 0, dot);
+    }
+
+
+    dotOnPerimeter(vpPoint) {
+        let pointDesc = this.closestPoint(this.d3obj, vpPoint);
+        this.potentialDot.update(pointDesc.point);
+        this.potentialDotLeftId = pointDesc.leftId;
+    }
+
+    movePotentialPoint(vpPoint) {
+        if (this.selectedDot) {
             this.updateDot(vpPoint);
-        }else if(this.selected){
+        } else if (this.selected) {
             this.movePolygon(this.selected, vpPoint);
-        } else{
+        } else {
             this.updatePolygon(vpPoint);
         }
     }
 
-    getImgPoints(){
+    getImgPoints() {
         let points = [];
-        for(let dot of this.dots){
+        for (let dot of this.dots) {
             points.push(dot.getImgPoint());
         }
         return points;
     }
 
-    updatePolygon(vpPoint){
+    updatePolygon(vpPoint) {
         let points = "";
-        for(let i = 0; i < this.dots.length; i++){
+        for (let i = 0; i < this.dots.length; i++) {
             let p = this.dots[i].p;
             points += p.x + ',' + p.y + ' ';
         }
-        if(vpPoint){
+        if (vpPoint) {
             points += vpPoint.x + ',' + vpPoint.y;
         }
         this.d3obj.attr('points', points);
     }
 
-    acceptPolygon(){
+    acceptPolygon() {
         this.color = 'green';
         this.d3obj.classed('accept', true);
         this.complete = true;
@@ -155,7 +211,7 @@ export default class Polygon extends Shape{
         this.updatePolygon();
     }
 
-    isComplete(){
+    isComplete() {
         return this.complete;
     }
 }

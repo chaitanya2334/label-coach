@@ -110,8 +110,19 @@ export default class ImageViewerP extends React.Component {
         let zoom = this.viewer.viewport.getZoom(true);
         let imageZoom = this.viewer.viewport.viewportToImageZoom(zoom);
 
-        if (this.activePolygon && this.activePolygon.drawState !== "read-only") {
-            this.activePolygon.onMove(viewportPoint);
+        if (this.activePolygon) {
+            switch (this.activePolygon.drawState) {
+                case "edit":
+                    if(this.activePolygon.selectedDot) {
+                        this.activePolygon.movePotentialPoint(viewportPoint);
+                    }else {
+                        this.activePolygon.dotOnPerimeter(viewportPoint);
+                    }
+                    break;
+                case "create":
+                    this.activePolygon.movePotentialPoint(viewportPoint);
+                    break;
+            }
         }
     }
 
@@ -136,17 +147,24 @@ export default class ImageViewerP extends React.Component {
         if (this.activePolygon && this.activePolygon.drawState) {
             switch (this.activePolygon.drawState) {
                 case "create":
-                    this.activePolygon.addDot(viewportPoint);
-                    this.props.updatePolygon(this.activePolygon.label_id, this.activePolygon.poly_id, this.activePolygon.getImgPoints());
+                    this.activePolygon.appendDot(viewportPoint);
+                    this.props.updatePolygon(this.activePolygon.label_id, this.activePolygon.poly_id,
+                                             this.activePolygon.getImgPoints());
                     break;
 
                 case "edit":
                     if (this.activePolygon.selectedDot) {
                         this.activePolygon.updateDot(viewportPoint);
+                        this.activePolygon.end();
+                        this.props.updatePolygon(this.activePolygon.label_id, this.activePolygon.poly_id,
+                                                 this.activePolygon.getImgPoints());
+                    } else {
+                        this.activePolygon.insertDot(this.activePolygon.potentialDot,
+                                                     this.activePolygon.potentialDotLeftId);
+                        this.activePolygon.selectedDot = this.activePolygon.potentialDot;
                     }
-                    this.activePolygon.end();
-                    this.activePolygon = null;
-                    this.drawState = this.State.Empty;
+
+
                     break;
 
             }
@@ -202,9 +220,11 @@ export default class ImageViewerP extends React.Component {
             let polyObj = new Polygon(this.overlay, this.viewer, polygon.label_id, polygon.poly_id, this.zoom);
             polyObj.addImagePoints(polygon.points);
             this.polygons.push(polyObj);
-            if (polygon.drawState === "create" || polygon.drawState === "edit") {
+            if (polygon.drawState !== "read-only") {
                 this.activePolygon = polyObj;
                 this.activePolygon.setDrawState(polygon.drawState);
+            } else {
+                polyObj.end();
             }
         }
     }
