@@ -1,6 +1,6 @@
-export function toggleLabelButton(label){
+export function toggleLabelButton(label_id){
     return {
         type: 'TOGGLE_TEXT',
-        id: label.id,
+        label_id: label_id,
     };
 }

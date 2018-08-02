@@ -4,13 +4,11 @@ export default function labelReducer(label, action) {
     let newLabel = Object.assign({}, label);
     switch (action.type) {
         case 'ADD_POLY':
-            newLabel.polygon_list.push({
-                                           id: label.polygon_list.length,
-                                           text: "polygon" + label.polygon_list.length,
-                                           points: [],
-                active: true
-                                       });
+            newLabel.polygon_list.push(polygonReducer({id: label.polygon_list.length}, action));
             return newLabel;
+
+        case 'LOCK_POLY':
+        case 'UNLOCK_POLY':
         case 'UPDATE_POLY':
             newLabel.polygon_list[action.poly_id] = polygonReducer(newLabel.polygon_list[action.poly_id], action);
             return newLabel;
@@ -20,9 +18,9 @@ export default function labelReducer(label, action) {
             return newLabel;
 
         case 'TOGGLE_TEXT':
-            if(newLabel.button === "Create") {
+            if (newLabel.button === "Create") {
                 newLabel.button = "Cancel";
-            }else{
+            } else {
                 newLabel.button = "Create";
             }
             return newLabel;

@@ -22,6 +22,10 @@ export default class Dot extends Shape {
         this.draw(this.p, id);
     }
 
+    getImgPoint(){
+        return this.viewer.viewport.viewportToImageCoordinates(this.p);
+    }
+
     updateR(){
         let r = this.r * (1/this.zoom);
         this.d3obj.attr('r', r);

@@ -1,7 +1,7 @@
 import * as React from "react";
-import ImageViewer from "./Imager/ImageViewer";
+import ImageViewer from "./Imager/image_viewer/container";
 import "./label_tasker.css";
-import SideBar from "./control/sidebar/sidebar.c"
+import SideBar from "./control/sidebar/container"
 import labels from "./dummy_data.json";
 import {Provider} from "react-redux";
 import {createStore} from "redux";

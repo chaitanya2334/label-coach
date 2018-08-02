@@ -6,6 +6,28 @@
 .ann-subtext{
     font-weight: 200;
     font-size: 12px;
-    border-bottom: 1px solid grey;
     padding-bottom: 8px;
+}
+
+.poly_item{
+    padding-left: 16px;
+    border-bottom: 1px solid grey;
+}
+
+.poly_button{
+    display: none;
+}
+
+.poly_item:hover .poly_button{
+    display: block;
+}
+
+.row.no-gutters {
+  margin-right: 0;
+  margin-left: 0;
+}
+.row.no-gutters > [class^="col-"],
+.row.no-gutters > [class*=" col-"] {
+  padding-right: 0;
+  padding-left: 0;
 }

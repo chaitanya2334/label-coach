@@ -9,19 +9,27 @@
       "color": "color0",
       "polygon_list": [
         {
+          "id": 0,
+          "drawState": "read-only",
           "text": "polygon0",
           "points": [
             {
-              "x": 0,
-              "y": 0
+              "x": 1233,
+              "y": 1233
             },
             {
-              "x": 0,
-              "y": 0
+              "x": 12000,
+              "y": 12000
+            },
+            {
+              "x": 8000,
+              "y": 1233
             }
           ]
         },
         {
+          "id": 1,
+          "drawState": "read-only",
           "text": "polygon1",
           "points": [
             {
@@ -44,6 +52,8 @@
       "color": "color1",
       "polygon_list": [
         {
+          "id": 0,
+          "drawState": "read-only",
           "text": "polygon2",
           "points": [
             {
@@ -57,6 +67,8 @@
           ]
         },
         {
+          "id": 1,
+          "drawState": "read-only",
           "text": "polygon3",
           "points": [
             {

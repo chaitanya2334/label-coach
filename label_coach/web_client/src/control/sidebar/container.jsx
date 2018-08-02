@@ -1,4 +1,4 @@
-import SideBarP from "./sidebar.p.jsx";
+import SideBarP from "./presenter";
 import {connect} from "react-redux";
 
 function getSearchLabels(labels, searchTerm){

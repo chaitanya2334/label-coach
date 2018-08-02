@@ -13,7 +13,7 @@ export default class PolygonList extends React.Component {
         let rows = [];
         if (this.props.polygonList.length > 0) {
             this.props.polygonList.forEach((polygon, i) => {
-                rows.push(<PolygonItem key={this.props.index + "_" + i} id={"Annotation_" + i} text={polygon.text} points={polygon.points}/>);
+                rows.push(<PolygonItem key={this.props.index + "_" + i} label_id={this.props.label_id} poly_id={polygon.id} text={polygon.text} points={polygon.points} drawState={polygon.drawState}/>);
             });
         }
 

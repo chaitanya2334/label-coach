@@ -1,29 +1,50 @@
 import Shape from "./shape"
 import Dot from "./dot"
 import * as d3 from "d3";
-import "./polygon.css"
+import "./polygon.css";
+import OpenSeadragon from "openseadragon";
 
 
 export default class Polygon extends Shape{
-    constructor(overlay, viewer, id, zoom){
+    constructor(overlay, viewer, label_id, poly_id, zoom){
         super(overlay, viewer);
         this.zoom = zoom;
         this.dots = [];
-        this.id = id;
         this.selected = null;
         this.strokeWidth = 0.002;
         this.d3obj = d3.select(this.overlay.node())
                        .append("polygon")
                        .attr('class', 'transparent')
-                       .attr('id', "poly_" + id)
+                       .attr('id', poly_id)
                        .attr('stroke-width', this.strokeWidth);
 
         this.d3obj.on('mouseover', (event)=>{this.inside=true;});
         this.d3obj.on('mouseout', (event)=>{this.inside=false;});
         this.complete = false;
+        this.drawState = "read-only";
+        this.label_id = label_id;
+        this.poly_id = poly_id;
     }
 
+    setDrawState(state){
+        this.drawState = state;
+    }
 
+    addImagePoints(points){
+        for(let point of points){
+            let imgPoint = new OpenSeadragon.Point(parseInt(point.x), parseInt(point.y));
+            let vpPoint = this.viewer.viewport.imageToViewportCoordinates(imgPoint);
+            this.addDot(vpPoint);
+        }
+    }
+
+    delete(){
+        this.d3obj.remove();
+        for(let dot of this.dots){
+            dot.d3obj.remove();
+        }
+        this.dots = [];
+    }
 
     onClick(event){
         // The canvas-click event gives us a position in web coordinates.
@@ -103,6 +124,14 @@ export default class Polygon extends Shape{
         } else{
             this.updatePolygon(vpPoint);
         }
+    }
+
+    getImgPoints(){
+        let points = [];
+        for(let dot of this.dots){
+            points.push(dot.getImgPoint());
+        }
+        return points;
     }
 
     updatePolygon(vpPoint){

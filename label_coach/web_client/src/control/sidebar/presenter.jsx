@@ -6,7 +6,7 @@ import "./sidebar.css";
 import Logo from "../../logo";
 import Label from "../label/container";
 
-export default class SidebarP extends React.Component {
+export default class SideBarP extends React.Component {
     constructor(props) {
         super(props);
 
