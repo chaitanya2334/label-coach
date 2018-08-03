@@ -32,6 +32,7 @@ export default class ImageViewerP extends React.Component {
         this.State = Object.freeze({"Edit": 1, "AddingPoly": 2, "Empty": 3});
         this.drawState = this.State.Empty;
         this.id = 'ocd-viewer';
+        this.inDrag = false;
 
     }
 
@@ -82,6 +83,12 @@ export default class ImageViewerP extends React.Component {
         let onClick = this.onClick.bind(this);
         let onZoom = this.onZoom.bind(this);
         this.viewer.addHandler('canvas-click', onClick);
+        this.viewer.addHandler('canvas-drag', () => {
+            this.inDrag = true;
+        });
+        this.viewer.addHandler('canvas-drag-end', () => {
+            this.inDrag = false;
+        });
         this.viewer.addHandler('zoom', onZoom);
         this.moveTracker = new OpenSeadragon.MouseTracker({
                                                               element: this.viewer.container,
@@ -104,24 +111,27 @@ export default class ImageViewerP extends React.Component {
     }
 
     onMove(event) {
-        let webPoint = event.position;
-        let viewportPoint = this.viewer.viewport.pointFromPixel(webPoint);
-        let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
-        let zoom = this.viewer.viewport.getZoom(true);
-        let imageZoom = this.viewer.viewport.viewportToImageZoom(zoom);
+        // we dont want to process move if the viewer is currently being dragged.
+        if (!this.inDrag) {
+            let webPoint = event.position;
+            let viewportPoint = this.viewer.viewport.pointFromPixel(webPoint);
+            let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
+            let zoom = this.viewer.viewport.getZoom(true);
+            let imageZoom = this.viewer.viewport.viewportToImageZoom(zoom);
 
-        if (this.activePolygon) {
-            switch (this.activePolygon.drawState) {
-                case "edit":
-                    if(this.activePolygon.selectedDot) {
+            if (this.activePolygon) {
+                switch (this.activePolygon.drawState) {
+                    case "edit":
+                        if (this.activePolygon.selectedDot) {
+                            this.activePolygon.movePotentialPoint(viewportPoint);
+                        } else {
+                            this.activePolygon.dotOnPerimeter(viewportPoint);
+                        }
+                        break;
+                    case "create":
                         this.activePolygon.movePotentialPoint(viewportPoint);
-                    }else {
-                        this.activePolygon.dotOnPerimeter(viewportPoint);
-                    }
-                    break;
-                case "create":
-                    this.activePolygon.movePotentialPoint(viewportPoint);
-                    break;
+                        break;
+                }
             }
         }
     }
@@ -135,58 +145,45 @@ export default class ImageViewerP extends React.Component {
     }
 
     onClick(event) {
-        // The canvas-click event gives us a position in web coordinates.
-        let webPoint = event.position;
+        //we dont want to process a click if the viewer is currently being dragged.
+        console.log("quick: " + event.quick);
+        if (!this.inDrag && event.quick) {
+            // The canvas-click event gives us a position in web coordinates.
+            let webPoint = event.position;
 
-        // Convert that to viewport coordinates, the lingua franca of OpenSeadragon coordinates.
-        let viewportPoint = this.viewer.viewport.pointFromPixel(webPoint);
+            // Convert that to viewport coordinates, the lingua franca of OpenSeadragon coordinates.
+            let viewportPoint = this.viewer.viewport.pointFromPixel(webPoint);
 
-        // Convert from viewport coordinates to image coordinates.
-        let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
+            // Convert from viewport coordinates to image coordinates.
+            let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
 
-        if (this.activePolygon && this.activePolygon.drawState) {
-            switch (this.activePolygon.drawState) {
-                case "create":
-                    this.activePolygon.appendDot(viewportPoint);
-                    this.props.updatePolygon(this.activePolygon.label_id, this.activePolygon.poly_id,
-                                             this.activePolygon.getImgPoints());
-                    break;
-
-                case "edit":
-                    if (this.activePolygon.selectedDot) {
-                        this.activePolygon.updateDot(viewportPoint);
-                        this.activePolygon.end();
+            if (this.activePolygon && this.activePolygon.drawState) {
+                switch (this.activePolygon.drawState) {
+                    case "create":
+                        this.activePolygon.appendDot(viewportPoint);
                         this.props.updatePolygon(this.activePolygon.label_id, this.activePolygon.poly_id,
                                                  this.activePolygon.getImgPoints());
-                    } else {
-                        this.activePolygon.selectedDot = this.activePolygon.insertDot(this.activePolygon.potentialDot,
-                                                     this.activePolygon.potentialDotLeftId);
-                    }
+                        break;
+
+                    case "edit":
+                        if (this.activePolygon.selectedDot) {
+                            this.activePolygon.updateDot(viewportPoint);
+                            this.activePolygon.end();
+                            this.props.updatePolygon(this.activePolygon.label_id, this.activePolygon.poly_id,
+                                                     this.activePolygon.getImgPoints());
+                        } else {
+                            this.activePolygon.selectedDot =
+                                this.activePolygon.insertDot(this.activePolygon.potentialDot,
+                                                             this.activePolygon.potentialDotLeftId);
+                        }
 
 
-                    break;
+                        break;
 
+                }
             }
-        } else {
-            if (this.getEditPoly(viewportPoint)) {
-                //starting the edit of a polygon
-                this.activePolygon = this.getEditPoly(viewportPoint);
-                this.drawState = this.State.Edit;
-            } else {
-                //else its a new polygon
-
-            }
-        }
-
-        // Show the results.
-        console.log(webPoint.toString(), viewportPoint.toString(), imagePoint.toString());
-    }
-
-    getEditPoly(vpPoint) {
-        for (let poly of this.polygons) {
-            if (poly.isBeingEdited(vpPoint)) {
-                return poly;
-            }
+            // Show the results.
+            console.log(webPoint.toString(), viewportPoint.toString(), imagePoint.toString());
         }
     }
 

@@ -52,7 +52,7 @@ export default class Polygon extends Shape {
         this.dots = [];
     }
 
-    onClick(event) {
+    onDblClick(event) {
         // The canvas-click event gives us a position in web coordinates.
         let webPoint = event.position;
 
