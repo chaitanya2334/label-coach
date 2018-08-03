@@ -1,4 +1,5 @@
 import re
+import os
 from unicodedata import normalize
 
 import openslide
@@ -11,10 +12,14 @@ def slugify(text):
     return re.sub('[^a-z0-9]+', '-', text)
 
 
+
+
 def load_slide(slidefile):
     if slidefile is None:
+        print("Hello")
         raise ValueError('No slide file specified')
 
+    print("there is an image")
     slide = open_slide(slidefile)
     slides = {
         "slide": DeepZoomGenerator(slide, tile_size=254, overlap=1, limit_bounds=True)
@@ -36,4 +41,4 @@ def load_slide(slidefile):
 
 
 if __name__ == '__main__':
-    print(load_slide("../web_client/static/images/TCGA-GM-A2DO-01A-01-TSA.7DC927D1-16BB-4AE0-91A6-B73CD8F64C53.svs"))
+    print(load_slide("../web_client/static/images/TCGA-CH-5765-11A-01-TS1.2a1faf76-526b-4581-b947-e8d733674df7.svs"))

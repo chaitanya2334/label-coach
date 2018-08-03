@@ -32,8 +32,7 @@ class ImageResource(Resource):
         self.route('GET', (':tile_id', ':level', ':tfile'), self.tile)
         rel_path = os.path.dirname(os.path.realpath(__file__))
         self.slides, self.associated_images, self.slide_properties, self.slide_mpp = \
-            load_slide(os.path.join(rel_path, "../../web_client/static/images/TCGA-GM-A2DO-01A-01-TSA.7DC927D1-16BB"
-                                              "-4AE0-91A6-B73CD8F64C53.svs"))
+            load_slide(os.path.join(rel_path, "../../web_client/static/images/TCGA-CH-5765-11A-01-TS1.2a1faf76-526b-4581-b947-e8d733674df7.svs"))
 
     @access.public
     @autoDescribeRoute(

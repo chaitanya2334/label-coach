@@ -171,6 +171,7 @@ typings/
 .idea/**/tasks.xml
 .idea/**/dictionaries
 .idea/**/shelf
+package-lock.json
 
 # Sensitive or high-churn files
 .idea/**/dataSources/

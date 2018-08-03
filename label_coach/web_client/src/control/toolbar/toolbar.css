@@ -1,0 +1,15 @@
+.toolbar{
+  /*position: absolute !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;*/
+  }
+
+.toolbar button{
+font-size: 1.75rem;
+}
+
+.toolbar button:hover{
+color: white;
+background-color: gray;
+}
+
