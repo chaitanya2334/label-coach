@@ -18,25 +18,15 @@ export default class LabelP extends React.Component {
         let count = this.props.polygonList.length;
 
         return (
-            <div >
-                <div className={"container-fluid label side-vert-bar " + this.props.color + " " + activeClass}>
-                    <div className={"row align-items-center"} >
-                        <div className={"col-sm-6 text"} onClick={this.props.onClick}>
-                            {this.props.text}
-                            <Counter key={"c_" + this.props.id} count={count}/>
-                        </div>
-                        <div className={"col-sm-4"}>
-                            <CreateButton active={this.props.active} label={this.props} text={this.props.button}/>
-                        </div>
 
-                        <div className={"col-sm-1"} onClick={this.props.onClick}>
-                            <FontAwesomeIcon icon={faType}/>
-                        </div>
-                    </div>
-                </div>
-                <PolygonList key={"ann_" + this.props.id} label_id={this.props.id} polygonList={this.props.polygonList}
+            <li className={"list-group-item d-flex justify-content-between align-items-center " + this.props.color + " " + activeClass}>
+           {this.props.text}
+            <span class="badge badge-primary badge-pill"> <Counter key={"c_" + this.props.id} count={count}/></span>
+            <PolygonList key={"ann_" + this.props.id} label_id={this.props.id} polygonList={this.props.polygonList}
                           color={this.props.id} active={this.props.active}/>
-            </div>
+                          <CreateButton active={this.props.active} label={this.props} text={this.props.button}/>
+             </li>
+
         )
     }
 }

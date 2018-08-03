@@ -17,8 +17,9 @@ export default class LabelTasker extends React.Component {
         super(props);
         this.store = createStore(rootReducer, labels);
         const unsubscribe = this.store.subscribe(() =>
-                                                     console.log(this.store.getState())
+                         console.log(this.store.getState())
         );
+
     }
 
 
@@ -43,13 +44,14 @@ export default class LabelTasker extends React.Component {
                  </ul>
             </nav>
 
-                <div classNameName={"row"}>
-                <div classNameName="col-lg-1">
+                <div className={"row"}>
+                <div className="col-lg-1">
                         <ToolBar/>
                  </div>
-                 <div classNameName="col-lg-8">
+                 <div className="col-lg-9">
+                        <ImageViewer/>
                  </div>
-                    <div classNameName={"col-lg-3"}>
+                    <div className={"col-lg-2"}>
                         <SideBar/>
                     </div>
                 </div>

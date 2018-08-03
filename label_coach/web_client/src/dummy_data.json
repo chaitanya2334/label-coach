@@ -4,7 +4,7 @@
     {
       "id": 0,
       "active": false,
-      "text": "A",
+      "text": "1st degree Burn",
       "button": "Create",
       "color": "color0",
       "polygon_list": [
@@ -47,7 +47,7 @@
     {
       "id": 1,
       "active": false,
-      "text": "B",
+      "text": "2nd degree Burn",
       "button": "Create",
       "color": "color1",
       "polygon_list": [
