@@ -12,7 +12,7 @@ export default class PolygonList extends React.Component {
         let activeClass = this.props.active ? "active": "";
         let rows = [];
         if (this.props.polygonList.length > 0) {
-            this.props.polygonList.forEach((polygon, i) => {
+            this.props.polygonList.slice().reverse().forEach((polygon, i) => {
                 rows.push(<PolygonItem key={this.props.index + "_" + i} label_id={this.props.label_id} poly_id={polygon.id} text={polygon.text} points={polygon.points} drawState={polygon.drawState}/>);
             });
         }
