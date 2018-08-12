@@ -17,12 +17,9 @@ export default function labelReducer(label, action) {
             newLabel.polygon_list.pop();
             return newLabel;
 
-        case 'TOGGLE_TEXT':
-            if (newLabel.button === "Create") {
-                newLabel.button = "Cancel";
-            } else {
-                newLabel.button = "Create";
-            }
+        case 'TOGGLE_BUTTON':
+            newLabel[action.button_type] = !newLabel[action.button_type];
+
             return newLabel;
 
         case 'TOGGLE_LABEL':
