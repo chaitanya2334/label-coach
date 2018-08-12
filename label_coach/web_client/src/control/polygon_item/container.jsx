@@ -1,7 +1,7 @@
 import PolygonItemP from "./presenter";
 import {connect} from "react-redux";
 import {lockPolygon, unlockPolygon} from "./actions";
-import {toggleLabelButton} from "../create_button/actions";
+import {toggleLabelButton} from "../create_poly_button/actions";
 
 function mapStateToProps(state) {
     return state;
