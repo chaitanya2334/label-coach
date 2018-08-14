@@ -87,11 +87,7 @@ export default class ImageViewerP extends React.Component {
         this.viewer.addHandler('canvas-click', onClick);
         this.viewer.addHandler('canvas-drag', (event) => {
 
-            if(this.activePolygon || this.activeLine) {
-                event.preventDefaultAction = true;
-            }else{
-                event.preventDefaultAction = false;
-            }
+            event.preventDefaultAction = (this.activePolygon || this.activeLine);
             this.onDrag(event);
         });
         this.viewer.addHandler('zoom', onZoom);
@@ -197,7 +193,7 @@ export default class ImageViewerP extends React.Component {
                     case "edit":
                         if (this.activePolygon.selectedDot) {
                             this.activePolygon.updateDot(viewportPoint);
-                            this.activePolygon.end();
+                            this.activePolygon.save();
                             this.props.updatePolygon(this.activePolygon.label_id, this.activePolygon.poly_id,
                                                      this.activePolygon.getImgPoints());
                         } else {
