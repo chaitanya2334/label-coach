@@ -4,7 +4,12 @@ import '../overlay/polygon.css'
 import OpenSeadragon from 'openseadragon'
 import '../overlay/osdSvgOverlay'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faCircle, faCog, faMinus, faPlus} from '@fortawesome/free-solid-svg-icons'
+import {
+    faExpand,
+    faHome,
+    faSearchMinus,
+    faSearchPlus
+} from '@fortawesome/free-solid-svg-icons'
 import Polygon from '../overlay/polygon'
 import Line from "../overlay/line";
 
@@ -49,10 +54,24 @@ export default class ImageViewerP extends React.Component {
                 </div>
                 <div className="openseadragon" id={this.id}/>
                 <ul className="ocd-toolbar">
-                    <li><a id="zoom-in"><FontAwesomeIcon icon={faPlus}/></a></li>
-                    <li><a id="reset"><FontAwesomeIcon icon={faCircle}/></a></li>
-                    <li><a id="zoom-out"><FontAwesomeIcon icon={faMinus}/></a></li>
-                    <li><a id="full-page"><FontAwesomeIcon icon={faCog}/></a></li>
+                    <li>
+                        <a id="zoom-in"><FontAwesomeIcon icon={faSearchPlus}/></a>
+                        <div className="vert-divider"/>
+                    </li>
+
+                    <li>
+                        <a id="reset"><FontAwesomeIcon icon={faHome}/></a>
+                        <div className="vert-divider"/>
+                    </li>
+
+                    <li>
+                        <a id="zoom-out"><FontAwesomeIcon icon={faSearchMinus}/></a>
+                        <div className="vert-divider"/>
+                    </li>
+
+                    <li>
+                        <a id="full-page"><FontAwesomeIcon icon={faExpand}/></a>
+                    </li>
                 </ul>
             </div>
         )
@@ -144,7 +163,7 @@ export default class ImageViewerP extends React.Component {
         this.viewer.open(tile_source);
     }
 
-    setPan(value){
+    setPan(value) {
         this.pan = value;
     }
 
@@ -158,11 +177,12 @@ export default class ImageViewerP extends React.Component {
         // Convert from viewport coordinates to image coordinates.
         let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
 
-        if(this.activeLine && this.activeLine.drawState){
+        if (this.activeLine && this.activeLine.drawState) {
             switch (this.activeLine.drawState) {
                 case "create":
                     this.activeLine.appendDot(viewportPoint);
-                    this.props.updateLine(this.activeLine.labelId, this.activeLine.lineId, this.activeLine.getImagePoints());
+                    this.props.updateLine(this.activeLine.labelId, this.activeLine.lineId,
+                                          this.activeLine.getImagePoints());
                     break;
             }
         }
@@ -231,7 +251,7 @@ export default class ImageViewerP extends React.Component {
             polygon.delete();
         }
 
-        for (let line of this.lines){
+        for (let line of this.lines) {
             line.delete();
         }
         this.lines = [];
