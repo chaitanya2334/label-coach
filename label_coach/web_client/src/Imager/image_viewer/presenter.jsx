@@ -35,7 +35,7 @@ export default class ImageViewerP extends React.Component {
         this.drawState = this.State.Empty;
         this.id = 'ocd-viewer';
         this.inDrag = false;
-
+        this.setPan(true);
     }
 
     render() {
@@ -86,12 +86,13 @@ export default class ImageViewerP extends React.Component {
         let onZoom = this.onZoom.bind(this);
         this.viewer.addHandler('canvas-click', onClick);
         this.viewer.addHandler('canvas-drag', (event) => {
+
+            if(this.activePolygon || this.activeLine) {
+                event.preventDefaultAction = true;
+            }else{
+                event.preventDefaultAction = false;
+            }
             this.onDrag(event);
-            this.inDrag = true;
-        });
-        this.viewer.addHandler('canvas-drag-end', () => {
-            this.onDragEnd();
-            this.inDrag = false;
         });
         this.viewer.addHandler('zoom', onZoom);
         this.moveTracker = new OpenSeadragon.MouseTracker({
@@ -116,28 +117,27 @@ export default class ImageViewerP extends React.Component {
 
     onMove(event) {
         // we dont want to process move if the viewer is currently being dragged.
-        if (!this.inDrag) {
-            let webPoint = event.position;
-            let viewportPoint = this.viewer.viewport.pointFromPixel(webPoint);
-            let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
-            let zoom = this.viewer.viewport.getZoom(true);
-            let imageZoom = this.viewer.viewport.viewportToImageZoom(zoom);
+        let webPoint = event.position;
+        let viewportPoint = this.viewer.viewport.pointFromPixel(webPoint);
+        let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
+        let zoom = this.viewer.viewport.getZoom(true);
+        let imageZoom = this.viewer.viewport.viewportToImageZoom(zoom);
 
-            if (this.activePolygon) {
-                switch (this.activePolygon.drawState) {
-                    case "edit":
-                        if (this.activePolygon.selectedDot) {
-                            this.activePolygon.movePotentialPoint(viewportPoint);
-                        } else {
-                            this.activePolygon.dotOnPerimeter(viewportPoint);
-                        }
-                        break;
-                    case "create":
+        if (this.activePolygon) {
+            switch (this.activePolygon.drawState) {
+                case "edit":
+                    if (this.activePolygon.selectedDot) {
                         this.activePolygon.movePotentialPoint(viewportPoint);
-                        break;
-                }
+                    } else {
+                        this.activePolygon.dotOnPerimeter(viewportPoint);
+                    }
+                    break;
+                case "create":
+                    this.activePolygon.movePotentialPoint(viewportPoint);
+                    break;
             }
         }
+
     }
 
     open_slide(url, mpp) {
@@ -148,8 +148,8 @@ export default class ImageViewerP extends React.Component {
         this.viewer.open(tile_source);
     }
 
-    onDragEnd(){
-
+    setPan(value){
+        this.pan = value;
     }
 
     onDrag(event) {
@@ -163,22 +163,20 @@ export default class ImageViewerP extends React.Component {
         let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
 
         if(this.activeLine && this.activeLine.drawState){
-            event.preventDefaultAction = true;
             switch (this.activeLine.drawState) {
                 case "create":
                     this.activeLine.appendDot(viewportPoint);
                     this.props.updateLine(this.activeLine.labelId, this.activeLine.lineId, this.activeLine.getImagePoints());
                     break;
             }
-        }else{
-            event.preventDefaultAction = false;
         }
+
     }
 
     onClick(event) {
         //we dont want to process a click if the viewer is currently being dragged.
         console.log("quick: " + event.quick);
-        if (!this.inDrag && event.quick) {
+        if (event.quick) {
             // The canvas-click event gives us a position in web coordinates.
             let webPoint = event.position;
 
