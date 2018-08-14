@@ -1,7 +1,8 @@
-import {addPolygon, cancelPolygon, unlockPolygon} from "../../polygon_item/actions";
+
 import CreatePolyButtonP from "./presenter";
 import {connect} from "react-redux";
 import {toggleLabelButton} from "../actions";
+import {addAnnotation, cancelAnnotation} from "../../annotation/actions";
 
 function mapStateToProps(state){
     return state;
@@ -9,8 +10,8 @@ function mapStateToProps(state){
 
 function mapDispatchToProps(dispatch, ownProps){
     return{
-        addPoly: ()=>{dispatch(addPolygon(ownProps.label.id))},
-        cancelPoly: ()=>{dispatch(cancelPolygon(ownProps.label.id))},
+        addPoly: ()=>{dispatch(addAnnotation("polygon", ownProps.label.id))},
+        cancelPoly: ()=>{dispatch(cancelAnnotation("polygon", ownProps.label.id))},
         toggleText: ()=>{dispatch(toggleLabelButton(ownProps.label.id, "poly_button"))}
     }
 }

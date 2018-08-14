@@ -6,6 +6,7 @@ import '../overlay/osdSvgOverlay'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faCircle, faCog, faMinus, faPlus} from '@fortawesome/free-solid-svg-icons'
 import Polygon from '../overlay/polygon'
+import Line from "../overlay/line";
 
 // helper function to load image using promises
 function loadImage(src) {
@@ -28,6 +29,7 @@ export default class ImageViewerP extends React.Component {
         this.viewer = null;
         this.activePolygon = null;
         this.polygons = [];
+        this.lines = [];
         this.zoom = 1;
         this.State = Object.freeze({"Edit": 1, "AddingPoly": 2, "Empty": 3});
         this.drawState = this.State.Empty;
@@ -83,10 +85,12 @@ export default class ImageViewerP extends React.Component {
         let onClick = this.onClick.bind(this);
         let onZoom = this.onZoom.bind(this);
         this.viewer.addHandler('canvas-click', onClick);
-        this.viewer.addHandler('canvas-drag', () => {
+        this.viewer.addHandler('canvas-drag', (event) => {
+            this.onDrag(event);
             this.inDrag = true;
         });
         this.viewer.addHandler('canvas-drag-end', () => {
+            this.onDragEnd();
             this.inDrag = false;
         });
         this.viewer.addHandler('zoom', onZoom);
@@ -144,6 +148,33 @@ export default class ImageViewerP extends React.Component {
         this.viewer.open(tile_source);
     }
 
+    onDragEnd(){
+
+    }
+
+    onDrag(event) {
+        // The canvas-click event gives us a position in web coordinates.
+        let webPoint = event.position;
+
+        // Convert that to viewport coordinates, the lingua franca of OpenSeadragon coordinates.
+        let viewportPoint = this.viewer.viewport.pointFromPixel(webPoint);
+
+        // Convert from viewport coordinates to image coordinates.
+        let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
+
+        if(this.activeLine && this.activeLine.drawState){
+            event.preventDefaultAction = true;
+            switch (this.activeLine.drawState) {
+                case "create":
+                    this.activeLine.appendDot(viewportPoint);
+                    this.props.updateLine(this.activeLine.labelId, this.activeLine.lineId, this.activeLine.getImagePoints());
+                    break;
+            }
+        }else{
+            event.preventDefaultAction = false;
+        }
+    }
+
     onClick(event) {
         //we dont want to process a click if the viewer is currently being dragged.
         console.log("quick: " + event.quick);
@@ -176,10 +207,7 @@ export default class ImageViewerP extends React.Component {
                                 this.activePolygon.insertDot(this.activePolygon.potentialDot,
                                                              this.activePolygon.potentialDotLeftId);
                         }
-
-
                         break;
-
                 }
             }
             // Show the results.
@@ -208,6 +236,11 @@ export default class ImageViewerP extends React.Component {
         for (let polygon of this.polygons) {
             polygon.delete();
         }
+
+        for (let line of this.lines){
+            line.delete();
+        }
+        this.lines = [];
         this.polygons = [];
         //create polygons from props
 
@@ -220,9 +253,22 @@ export default class ImageViewerP extends React.Component {
                 this.activePolygon = polyObj;
                 this.activePolygon.setDrawState(polygon.drawState);
             } else {
-                polyObj.end();
+                polyObj.save();
             }
         }
+        this.activeLine = null;
+        for (let line of this.props.lines) {
+            let lineObj = new Line(this.overlay, this.viewer, line.label_id, line.line_id, this.zoom);
+            lineObj.addImagePoints(line.points);
+            this.lines.push(lineObj);
+            if (line.drawState !== "read-only") {
+                this.activeLine = lineObj;
+                this.activeLine.setDrawState(line.drawState);
+            } else {
+                lineObj.save();
+            }
+        }
+
     }
 
 }
