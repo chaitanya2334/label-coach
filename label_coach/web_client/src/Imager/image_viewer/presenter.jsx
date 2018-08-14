@@ -4,7 +4,12 @@ import '../overlay/polygon.css'
 import OpenSeadragon from 'openseadragon'
 import '../overlay/osdSvgOverlay'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faCircle, faCog, faMinus, faPlus} from '@fortawesome/free-solid-svg-icons'
+import {
+    faExpand,
+    faHome,
+    faSearchMinus,
+    faSearchPlus
+} from '@fortawesome/free-solid-svg-icons'
 import Polygon from '../overlay/polygon'
 import Line from "../overlay/line";
 
@@ -35,7 +40,7 @@ export default class ImageViewerP extends React.Component {
         this.drawState = this.State.Empty;
         this.id = 'ocd-viewer';
         this.inDrag = false;
-
+        this.setPan(true);
     }
 
     render() {
@@ -49,10 +54,24 @@ export default class ImageViewerP extends React.Component {
                 </div>
                 <div className="openseadragon" id={this.id}/>
                 <ul className="ocd-toolbar">
-                    <li><a id="zoom-in"><FontAwesomeIcon icon={faPlus}/></a></li>
-                    <li><a id="reset"><FontAwesomeIcon icon={faCircle}/></a></li>
-                    <li><a id="zoom-out"><FontAwesomeIcon icon={faMinus}/></a></li>
-                    <li><a id="full-page"><FontAwesomeIcon icon={faCog}/></a></li>
+                    <li>
+                        <a id="zoom-in"><FontAwesomeIcon icon={faSearchPlus}/></a>
+                        <div className="vert-divider"/>
+                    </li>
+
+                    <li>
+                        <a id="reset"><FontAwesomeIcon icon={faHome}/></a>
+                        <div className="vert-divider"/>
+                    </li>
+
+                    <li>
+                        <a id="zoom-out"><FontAwesomeIcon icon={faSearchMinus}/></a>
+                        <div className="vert-divider"/>
+                    </li>
+
+                    <li>
+                        <a id="full-page"><FontAwesomeIcon icon={faExpand}/></a>
+                    </li>
                 </ul>
             </div>
         )
@@ -86,12 +105,9 @@ export default class ImageViewerP extends React.Component {
         let onZoom = this.onZoom.bind(this);
         this.viewer.addHandler('canvas-click', onClick);
         this.viewer.addHandler('canvas-drag', (event) => {
+
+            event.preventDefaultAction = (this.activePolygon || this.activeLine);
             this.onDrag(event);
-            this.inDrag = true;
-        });
-        this.viewer.addHandler('canvas-drag-end', () => {
-            this.onDragEnd();
-            this.inDrag = false;
         });
         this.viewer.addHandler('zoom', onZoom);
         this.moveTracker = new OpenSeadragon.MouseTracker({
@@ -116,28 +132,27 @@ export default class ImageViewerP extends React.Component {
 
     onMove(event) {
         // we dont want to process move if the viewer is currently being dragged.
-        if (!this.inDrag) {
-            let webPoint = event.position;
-            let viewportPoint = this.viewer.viewport.pointFromPixel(webPoint);
-            let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
-            let zoom = this.viewer.viewport.getZoom(true);
-            let imageZoom = this.viewer.viewport.viewportToImageZoom(zoom);
+        let webPoint = event.position;
+        let viewportPoint = this.viewer.viewport.pointFromPixel(webPoint);
+        let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
+        let zoom = this.viewer.viewport.getZoom(true);
+        let imageZoom = this.viewer.viewport.viewportToImageZoom(zoom);
 
-            if (this.activePolygon) {
-                switch (this.activePolygon.drawState) {
-                    case "edit":
-                        if (this.activePolygon.selectedDot) {
-                            this.activePolygon.movePotentialPoint(viewportPoint);
-                        } else {
-                            this.activePolygon.dotOnPerimeter(viewportPoint);
-                        }
-                        break;
-                    case "create":
+        if (this.activePolygon) {
+            switch (this.activePolygon.drawState) {
+                case "edit":
+                    if (this.activePolygon.selectedDot) {
                         this.activePolygon.movePotentialPoint(viewportPoint);
-                        break;
-                }
+                    } else {
+                        this.activePolygon.dotOnPerimeter(viewportPoint);
+                    }
+                    break;
+                case "create":
+                    this.activePolygon.movePotentialPoint(viewportPoint);
+                    break;
             }
         }
+
     }
 
     open_slide(url, mpp) {
@@ -148,8 +163,8 @@ export default class ImageViewerP extends React.Component {
         this.viewer.open(tile_source);
     }
 
-    onDragEnd(){
-
+    setPan(value) {
+        this.pan = value;
     }
 
     onDrag(event) {
@@ -162,23 +177,22 @@ export default class ImageViewerP extends React.Component {
         // Convert from viewport coordinates to image coordinates.
         let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
 
-        if(this.activeLine && this.activeLine.drawState){
-            event.preventDefaultAction = true;
+        if (this.activeLine && this.activeLine.drawState) {
             switch (this.activeLine.drawState) {
                 case "create":
                     this.activeLine.appendDot(viewportPoint);
-                    this.props.updateLine(this.activeLine.labelId, this.activeLine.lineId, this.activeLine.getImagePoints());
+                    this.props.updateLine(this.activeLine.labelId, this.activeLine.lineId,
+                                          this.activeLine.getImagePoints());
                     break;
             }
-        }else{
-            event.preventDefaultAction = false;
         }
+
     }
 
     onClick(event) {
         //we dont want to process a click if the viewer is currently being dragged.
         console.log("quick: " + event.quick);
-        if (!this.inDrag && event.quick) {
+        if (event.quick) {
             // The canvas-click event gives us a position in web coordinates.
             let webPoint = event.position;
 
@@ -199,7 +213,7 @@ export default class ImageViewerP extends React.Component {
                     case "edit":
                         if (this.activePolygon.selectedDot) {
                             this.activePolygon.updateDot(viewportPoint);
-                            this.activePolygon.end();
+                            this.activePolygon.save();
                             this.props.updatePolygon(this.activePolygon.label_id, this.activePolygon.poly_id,
                                                      this.activePolygon.getImgPoints());
                         } else {
@@ -237,7 +251,7 @@ export default class ImageViewerP extends React.Component {
             polygon.delete();
         }
 
-        for (let line of this.lines){
+        for (let line of this.lines) {
             line.delete();
         }
         this.lines = [];

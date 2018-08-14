@@ -61,12 +61,13 @@ export default class Polygon extends Shape {
 
         // Convert from viewport coordinates to image coordinates.
         let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
-
-        if (this.selected) {
-            this.acceptPolygon();
-        } else {
-            this.selected = viewportPoint;
-            this.setDotsCenter();
+        if(this.drawState === "edit") {
+            if (this.selected) {
+                this.save();
+            } else {
+                this.selected = viewportPoint;
+                this.setDotsCenter();
+            }
         }
     }
 
