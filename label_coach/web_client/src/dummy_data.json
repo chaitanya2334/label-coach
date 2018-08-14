@@ -5,9 +5,10 @@
       "id": 0,
       "active": false,
       "text": "A",
-      "button": "Create",
+      "poly_button": true,
+      "line_button": true,
       "color": "color0",
-      "polygon_list": [
+      "polygons": [
         {
           "id": 0,
           "drawState": "read-only",
@@ -42,15 +43,52 @@
             }
           ]
         }
+      ],
+      "lines": [
+        {
+          "id": 0,
+          "drawState": "read-only",
+          "text": "line0",
+          "points": [
+            {
+              "x": 12233,
+              "y": 1233
+            },
+            {
+              "x": 23000,
+              "y": 12000
+            },
+            {
+              "x": 18500,
+              "y": 1233
+            }
+          ]
+        },
+        {
+          "id": 1,
+          "drawState": "read-only",
+          "text": "line1",
+          "points": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 0,
+              "y": 0
+            }
+          ]
+        }
       ]
     },
     {
       "id": 1,
       "active": false,
       "text": "B",
-      "button": "Create",
+      "poly_button": true,
+      "line_button": true,
       "color": "color1",
-      "polygon_list": [
+      "polygons": [
         {
           "id": 0,
           "drawState": "read-only",
@@ -70,6 +108,42 @@
           "id": 1,
           "drawState": "read-only",
           "text": "polygon3",
+          "points": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 0,
+              "y": 0
+            }
+          ]
+        }
+      ],
+      "lines": [
+        {
+          "id": 0,
+          "drawState": "read-only",
+          "text": "line0",
+          "points": [
+            {
+              "x": 1233,
+              "y": 1233
+            },
+            {
+              "x": 12000,
+              "y": 12000
+            },
+            {
+              "x": 8000,
+              "y": 1233
+            }
+          ]
+        },
+        {
+          "id": 1,
+          "drawState": "read-only",
+          "text": "line1",
           "points": [
             {
               "x": 0,

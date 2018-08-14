@@ -6,8 +6,9 @@ import * as d3 from "d3";
 import clone from "../../utils"
 
 export default class Dot extends Shape {
-    constructor(overlay, viewer, parent, id, vpPoint, zoom) {
+    constructor(overlay, viewer, parent, id, vpPoint, zoom, visible) {
         super(overlay, viewer);
+        this.visible = visible;
         this.selected = false;
         this.parent = parent;
         this.zoom = zoom;
@@ -23,7 +24,9 @@ export default class Dot extends Shape {
     }
 
     delete(){
-        this.d3obj.remove();
+        if(this.d3obj) {
+            this.d3obj.remove();
+        }
     }
 
     getImgPoint(){
@@ -52,24 +55,26 @@ export default class Dot extends Shape {
     }
 
     draw(vpPoint, id) {
-        this.d3obj = d3.select(this.overlay.node())
-                       .append("circle")
-                       .attr('class', 'dot')
-                       .attr('id', 'c' + id)
-                       .attr("cx", vpPoint.x)
-                       .attr("cy", vpPoint.y)
-                       .attr("r", this.r * (1/this.zoom));
+        if(this.visible) {
+            this.d3obj = d3.select(this.overlay.node())
+                           .append("circle")
+                           .attr('class', 'dot')
+                           .attr('id', 'c' + id)
+                           .attr("cx", vpPoint.x)
+                           .attr("cy", vpPoint.y)
+                           .attr("r", this.r * (1 / this.zoom));
 
-        this.d3obj.on('mouseover', (event) => {
-            this.selected = true;
-            this.r = this.onHoverR;
-            this.updateR();
-        });
-        this.d3obj.on('mouseout', (event) => {
-            this.selected = false;
-            this.r = this.R;
-            this.updateR();
-        });
+            this.d3obj.on('mouseover', (event) => {
+                this.selected = true;
+                this.r = this.onHoverR;
+                this.updateR();
+            });
+            this.d3obj.on('mouseout', (event) => {
+                this.selected = false;
+                this.r = this.R;
+                this.updateR();
+            });
+        }
     }
 
     update(viewportPoint) {

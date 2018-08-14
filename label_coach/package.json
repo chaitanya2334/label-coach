@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.2.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.0-14",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
@@ -16,7 +15,9 @@
     "eject": "react-scripts eject"
   },
   "devDependencies": {
-    "@fortawesome/free-solid-svg-icons": "^5.1.0-11",
+    "@fortawesome/fontawesome": "^1.1.8",
+    "@fortawesome/fontawesome-free": "^5.2.0",
+    "@fortawesome/free-solid-svg-icons": "^5.2.0",
     "@fortawesome/react-fontawesome": "0.1.0-11",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",

@@ -1,0 +1,12 @@
+.line_item{
+    padding-left: 16px;
+    border-bottom: 1px solid grey;
+}
+
+.line_button{
+    display: none;
+}
+
+.line_item:hover .line_button{
+    display: block;
+}

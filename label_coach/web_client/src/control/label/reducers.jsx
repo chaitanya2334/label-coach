@@ -1,28 +1,37 @@
-import polygonReducer from "../polygon_item/reducers";
+
+import annotationReducer from "../annotation/reducers";
 
 export default function labelReducer(label, action) {
     let newLabel = Object.assign({}, label);
     switch (action.type) {
-        case 'ADD_POLY':
-            newLabel.polygon_list.push(polygonReducer({id: label.polygon_list.length}, action));
-            return newLabel;
-
-        case 'LOCK_POLY':
-        case 'UNLOCK_POLY':
-        case 'UPDATE_POLY':
-            newLabel.polygon_list[action.poly_id] = polygonReducer(newLabel.polygon_list[action.poly_id], action);
-            return newLabel;
-
-        case 'CANCEL_POLY':
-            newLabel.polygon_list.pop();
-            return newLabel;
-
-        case 'TOGGLE_TEXT':
-            if (newLabel.button === "Create") {
-                newLabel.button = "Cancel";
-            } else {
-                newLabel.button = "Create";
+        case 'ADD_ANN':
+            if(action.ann_type === "polygon") {
+                newLabel.polygons.push(annotationReducer({id: label.polygons.length}, action));
+            }else{
+                newLabel.lines.push(annotationReducer({id: label.lines.length}, action));
             }
+            return newLabel;
+
+        case 'LOCK_ANN':
+        case 'UNLOCK_ANN':
+        case 'UPDATE_ANN':
+            if(action.ann_type === "polygon") {
+                newLabel.polygons[action.item_id] = annotationReducer(newLabel.polygons[action.item_id], action);
+            }else{
+                newLabel.lines[action.item_id] = annotationReducer(newLabel.lines[action.item_id], action);
+            }
+            return newLabel;
+
+        case 'CANCEL_ANN':
+            if(action.ann_type === "polygon"){
+                newLabel.polygons.pop();
+            }else{
+                newLabel.lines.pop();
+            }
+            return newLabel;
+
+        case 'TOGGLE_BUTTON':
+            newLabel[action.button_type] = !newLabel[action.button_type];
             return newLabel;
 
         case 'TOGGLE_LABEL':
