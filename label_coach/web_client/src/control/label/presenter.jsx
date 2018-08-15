@@ -1,10 +1,11 @@
 import * as React from "react";
 import Counter from "../counter/counter";
-import PolygonList from "../polygon_list/polygon_list";
 import "./label.css";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faAngleDown, faAngleUp} from '@fortawesome/free-solid-svg-icons'
-import CreateButton from "../create_button/container";
+import CreatePolyButton from "../create_buttons/poly/container";
+import CreateLineButton from "../create_buttons/line/container";
+import AnnotationListP from "../annotation_list/presenter";
 
 export default class LabelP extends React.Component {
     constructor(props) {
@@ -15,20 +16,31 @@ export default class LabelP extends React.Component {
         let faType = this.props.active ? faAngleUp : faAngleDown;
         let activeClass = this.props.active ? "active" : "";
 
-        let count = this.props.polygonList.length;
+        let count = this.props.polygons.length;
 
         return (
+            <div >
+                <div className={"container-fluid label side-vert-bar " + this.props.color + " " + activeClass}>
+                    <div className={"row align-items-center"} >
+                        <div className={"col-sm-6 text"} onClick={this.props.onClick}>
+                            {this.props.text}
+                            <Counter key={"c_" + this.props.id} count={count}/>
+                        </div>
+                        <div className={"col-sm-2"}>
+                            <CreateLineButton active={this.props.active} label={this.props} buttonState={this.props.lineButtonState}/>
+                        </div>
+                        <div className={"col-sm-2"}>
+                            <CreatePolyButton active={this.props.active} label={this.props} buttonState={this.props.polyButtonState}/>
+                        </div>
 
-            <li className={"list-group-item " + this.props.color + " " + activeClass}>
-           {this.props.text}
-           <div className="row">
-            <span class="badge badge-secondary float-right badge-pill"> <Counter key={"c_" + this.props.id} count={count}/></span>
-            <PolygonList key={"ann_" + this.props.id} label_id={this.props.id} polygonList={this.props.polygonList}
+                        <div className={"col-sm-1"} onClick={this.props.onClick}>
+                            <FontAwesomeIcon icon={faType}/>
+                        </div>
+                    </div>
+                </div>
+                <AnnotationListP key={"ann_" + this.props.id} label_id={this.props.id} polygons={this.props.polygons} lines={this.props.lines}
                           color={this.props.id} active={this.props.active}/>
-                          <CreateButton active={this.props.active} label={this.props} text={this.props.button}/>
-                          </div>
-             </li>
-
+            </div>
         )
     }
 }

@@ -1,5 +1,5 @@
 import * as React from "react";
-import "./polygon_item.css";
+import "./style.css";
 
 export default class PolygonItemP extends React.Component {
     constructor(props) {

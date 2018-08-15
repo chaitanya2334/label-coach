@@ -28,7 +28,7 @@ export default class Polygon extends Shape {
         this.drawState = "read-only";
         this.label_id = label_id;
         this.poly_id = poly_id;
-        this.potentialDot = new Dot(this.overlay, this.viewer, this, this.dots.length, null, this.zoom);
+        this.potentialDot = new Dot(this.overlay, this.viewer, this, this.dots.length, null, this.zoom, true);
         this.CLOSE_THRESH = 0.001;
     }
 
@@ -52,7 +52,7 @@ export default class Polygon extends Shape {
         this.dots = [];
     }
 
-    onClick(event) {
+    onDblClick(event) {
         // The canvas-click event gives us a position in web coordinates.
         let webPoint = event.position;
 
@@ -61,17 +61,18 @@ export default class Polygon extends Shape {
 
         // Convert from viewport coordinates to image coordinates.
         let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
-
-        if (this.selected) {
-            this.acceptPolygon();
-        } else {
-            this.selected = viewportPoint;
-            this.setDotsCenter();
+        if(this.drawState === "edit") {
+            if (this.selected) {
+                this.save();
+            } else {
+                this.selected = viewportPoint;
+                this.setDotsCenter();
+            }
         }
     }
 
     appendDot(vpPoint) {
-        this.dots.push(new Dot(this.overlay, this.viewer, this, this.dots.length, vpPoint, this.zoom));
+        this.dots.push(new Dot(this.overlay, this.viewer, this, this.dots.length, vpPoint, this.zoom, true));
         this.updatePolygon();
     }
 
@@ -111,8 +112,13 @@ export default class Polygon extends Shape {
         this.updatePolygon();
     }
 
-    end() {
-        this.acceptPolygon();
+    save() {
+        this.color = 'green';
+        this.d3obj.classed('accept', true);
+        this.complete = true;
+        this.selected = false;
+        this.selectedDot = false;
+        this.updatePolygon();
     }
 
     onZoom(event) {
@@ -217,14 +223,7 @@ export default class Polygon extends Shape {
         this.d3obj.attr('points', points);
     }
 
-    acceptPolygon() {
-        this.color = 'green';
-        this.d3obj.classed('accept', true);
-        this.complete = true;
-        this.selected = false;
-        this.selectedDot = false;
-        this.updatePolygon();
-    }
+
 
     isComplete() {
         return this.complete;

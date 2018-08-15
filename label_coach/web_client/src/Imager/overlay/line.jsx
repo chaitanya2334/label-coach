@@ -2,43 +2,79 @@ import Shape from "./shape"
 import OpenSeadragon from "openseadragon";
 import "./osdSvgOverlay";
 import * as d3 from 'd3';
+import Dot from "./dot";
 
 export default class Line extends Shape {
-    constructor(overlay, id, vpPoint1, vpPoint2){
-        super(overlay);
-        if(vpPoint1){
-            this.p1 = vpPoint2;
-        }else{
-            this.p1 = new OpenSeadragon.Point(0, 0);
-        }
-        if(vpPoint2){
-            this.p2 = vpPoint2;
-        }else{
-            this.p2 = new OpenSeadragon.Point(0, 0);
-        }
-        this.draw(this.p1, this.p2);
-    }
-
-    draw(vpPoint1, vpPoint2) {
-
+    constructor(overlay, viewer, labelId, lineId, zoom) {
+        super(overlay, viewer);
+        this.lineId = lineId;
+        this.labelId = labelId;
+        this.zoom = zoom;
+        this.strokeWidth = 0.002;
         this.d3obj = d3.select(this.overlay.node())
-                       .append("line")
-                       .style('fill', '#f00')
-                       .attr('id', 'c1')
-                       .attr('x1', vpPoint1.x)
-                       .attr('y1', vpPoint1.y)
-                       .attr('x2', vpPoint2.x)
-                       .attr('y2', vpPoint2.y)
-                       .attr('stroke-width', 2)
-                       .attr('stroke', 'black');
+                       .append("path")
+                       .attr('class', 'transparent')
+                       .attr('id', this.lineId)
+                       .attr('stroke-width', this.strokeWidth * (1 / this.zoom));
+        this.dots = [];
+        this.setDrawState("read-only");
+
     }
 
-    update(vpPoint1, vpPoint2) {
-        this.p1 = vpPoint1;
-        this.p2 = vpPoint2;
-        this.d3obj.attr('x1', this.p1.x)
-            .attr('y1', this.p1.y)
-            .attr('x2', this.p2.x)
-            .attr('y2', this.p2.y)
+    setDrawState(state) {
+        this.drawState = state;
     }
+
+    getImagePoints() {
+        let points = [];
+        for (let dot of this.dots) {
+            points.push(dot.getImgPoint());
+        }
+        return points;
+    }
+
+    addImagePoints(points) {
+        for (let point of points) {
+            let imgPoint = new OpenSeadragon.Point(parseInt(point.x), parseInt(point.y));
+            let vpPoint = this.viewer.viewport.imageToViewportCoordinates(imgPoint);
+            this.appendDot(vpPoint);
+        }
+    }
+
+    appendDot(vpPoint) {
+        this.dots.push(new Dot(this.overlay, this.viewer, this, this.dots.length, vpPoint, this.zoom, false));
+        this.draw(d3.curveCardinalOpen);
+    }
+
+    draw(curveType) {
+        let points = [];
+        for (let dot of this.dots) {
+            points.push([dot.p.x, dot.p.y]);
+        }
+        if(this.labelId === 0 && this.lineId === 2) {
+            console.log(curveType);
+            console.log(this.drawState);
+        }
+        this.d3obj.datum(points)
+            .attr('d', d3.line()
+                           .curve(curveType));
+    }
+
+    save() {
+        this.color = 'green';
+        this.d3obj.classed('accept', true);
+        this.complete = true;
+        this.selected = false;
+        this.selectedDot = false;
+        this.draw(d3.curveCardinalClosed);
+    }
+
+    delete() {
+        this.d3obj.remove();
+        for (let dot of this.dots) {
+            dot.delete();
+        }
+        this.dots = [];
+    }
+
 }
