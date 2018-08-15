@@ -19,12 +19,14 @@ export default class LabelP extends React.Component {
 
         return (
 
-            <li className={"list-group-item d-flex justify-content-between align-items-center " + this.props.color + " " + activeClass}>
+            <li className={"list-group-item " + this.props.color + " " + activeClass}>
            {this.props.text}
-            <span class="badge badge-primary badge-pill"> <Counter key={"c_" + this.props.id} count={count}/></span>
+           <div className="row">
+            <span class="badge badge-secondary float-right badge-pill"> <Counter key={"c_" + this.props.id} count={count}/></span>
             <PolygonList key={"ann_" + this.props.id} label_id={this.props.id} polygonList={this.props.polygonList}
                           color={this.props.id} active={this.props.active}/>
                           <CreateButton active={this.props.active} label={this.props} text={this.props.button}/>
+                          </div>
              </li>
 
         )

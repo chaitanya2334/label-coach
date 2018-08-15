@@ -16,9 +16,8 @@ export default class LabelsCardP extends React.Component {
         if (labels_json['labels'].length > 0) {
             labels_json['labels'].forEach((label, i) => {
                 rows.push(
-                    <li className={"label-item"}>
                         <Label key={label.id} id={label.id} text={label.text} color={label.color} active={label.active} button={label.button} polygonList={label.polygon_list}/>
-                    </li>
+
                 );
             });
         }

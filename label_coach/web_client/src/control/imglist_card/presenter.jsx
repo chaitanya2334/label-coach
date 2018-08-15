@@ -1,4 +1,5 @@
 import * as React from "react";
+import Thumbnail from "../thumbnail/container";
 
 export default class ImgListCardP extends React.Component {
     constructor(props) {
@@ -20,7 +21,7 @@ onClick(){
     </div>
     <div id="imglist-block" className="collapse in show">
         <div className="card-block">
-            card block
+           <Thumbnail/>
         </div>
     </div>
 </div>

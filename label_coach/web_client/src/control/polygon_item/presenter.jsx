@@ -13,19 +13,18 @@ export default class PolygonItemP extends React.Component {
         });
         return (
             <div className={"poly_item"}>
-                <div className={"row no-gutters align-items-center"}>
-                    <div className={"col-sm-9"}>
-                        <div className={"ann-text"}>{this.props.text}</div>
-                        <div className={"ann-subtext"}>{subtext}</div>
-                    </div>
-                    <div className={"col-sm-3"}>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                {this.props.text}
+                <div className="row">
+                    <span class="badge badge-primary badge-pill">{subtext}</span>
+                        <div className={"col-sm-12"}>
                         <PolyButton donePoly={this.props.donePoly} doneCreatePoly={this.props.doneCreatePoly} editPoly={this.props.editPoly}
                                     label_id={this.props.label_id} poly_id={this.props.poly_id}
                                     drawState={this.props.drawState}/>
-                    </div>
-
+                        </div>
                 </div>
-            </div>
+                </li>
+             </div>
         );
     }
 }

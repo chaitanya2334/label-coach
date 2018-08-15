@@ -5,5 +5,6 @@
     padding-left: 0;
 }
 
-.sidebar il{
+.sidebar il .d-flex{
+display:relative !important;
 }

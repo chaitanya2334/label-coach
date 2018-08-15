@@ -20,7 +20,9 @@ onClick(){
     </div>
     <div id="navigator-block" className="collapse in show">
         <div className="card-block">
-            card block
+            <div className="navigator-wrapper">
+            <div id="navigator"/>
+            </div>
         </div>
     </div>
 </div>

@@ -49,7 +49,7 @@ export default class LabelTasker extends React.Component {
                         <ToolBar/>
                  </div>
                  <div className="col-lg-9">
-                        <ImageViewer/>
+                       <ImageViewer/>
                  </div>
                     <div className={"col-lg-2"}>
                         <SideBar/>

@@ -51,10 +51,6 @@ html, body, #container, .app {
 }
 
 .navigator-wrapper {
-    position: fixed;
-    left: 5px;
-    top: 5px;
-    background: #000;
     overflow: hidden;
     width: 166px;
     height: 178px;
