@@ -4,6 +4,7 @@ import "./label_tasker.css";
 import SideBar from "./control/sidebar/container"
 import ToolBar from "./control/toolbar/container"
 import labels from "./dummy_data.json";
+import ImgListCard from "./control/imglist_card/container";
 import {Provider} from "react-redux";
 import {createStore} from "redux";
 import rootReducer from "./root_reducer";
@@ -45,11 +46,16 @@ export default class LabelTasker extends React.Component {
             </nav>
 
                 <div className={"row"}>
-                <div className="col-lg-1">
-                        <ToolBar/>
+                <div className="col-lg-2">
+                     <ImgListCard/>
                  </div>
-                 <div className="col-lg-9">
-                       <ImageViewer/>
+                 <div className="col-lg-8">
+                    <div className="row">
+                        <ToolBar/>
+                      </div>
+                    <div className="row">
+                        <ImageViewer/>
+                    </div>
                  </div>
                     <div className={"col-lg-2"}>
                         <SideBar/>

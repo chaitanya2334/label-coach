@@ -1,7 +1,7 @@
 .toolbar{
-  /*position: absolute !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;*/
+  position: absolute !important;
+  left: 25% !important;
+  z-index: 200 !important;
   }
 
 .toolbar button{

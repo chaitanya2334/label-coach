@@ -1,7 +1,6 @@
 import * as React from "react";
 import NavigatorCard from "../navigator_card/container";
 import LabelsCard from "../labels_card/container";
-import ImgListCard from "../imglist_card/container";
 import PrevButton from "../prev_button/prev_button";
 import NextButton from "../next_button/next_button";
 import "./sidebar.css";
@@ -20,7 +19,6 @@ export default class SideBarP extends React.Component {
             <div className={"sidebar"}>
                 <NavigatorCard/>
                 <LabelsCard/>
-                <ImgListCard/>
             </div>
         )
     }

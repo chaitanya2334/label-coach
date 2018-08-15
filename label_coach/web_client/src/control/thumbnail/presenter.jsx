@@ -1,5 +1,7 @@
 import * as React from "react";
 import "./thumbnail.css";
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faImage} from '@fortawesome/free-solid-svg-icons';
 
 
 export default class ThumbnailP extends React.Component {
@@ -14,12 +16,15 @@ onClick(){
 
     render() {
         return (
-            <div class="media">
-                <div class="media-left">
-                    <img class="media-object" src="label_coach/web_client/static/images/dsc_9336.jpg" />
+            <div className="media">
+                <div className="media-left">
+                    <div className="media-object">
+                    <div className="placeholder"></div>
+                    </div>
                 </div>
-                <div class="media-body">
-                    <h4 class="media-heading">DSC_9336.jpg</h4>
+                <div className="media-body">
+                    <h5 className="media-heading">DSC_9336.jpg</h5>
+                    <p>no labels</p>
                 </div>
             </div>
         );
