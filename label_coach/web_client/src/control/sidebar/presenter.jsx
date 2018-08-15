@@ -2,7 +2,7 @@ import * as React from "react";
 import SearchBar from "../search_bar/container";
 import PrevButton from "../prev_button/prev_button";
 import NextButton from "../next_button/next_button";
-import "./sidebar.css";
+import "./style.css";
 import Logo from "../../logo";
 import Label from "../label/container";
 
@@ -13,32 +13,21 @@ export default class SideBarP extends React.Component {
     }
 
     render() {
-        let rows = [];
-        if (this.props.labels.length > 0) {
-            this.props.labels.forEach((label, i) => {
-                rows.push(
-                    <li className={"label-item"}>
-                        <Label key={label.id} id={label.id} text={label.text} color={label.color} active={label.active}
-                               lineButtonState={label.line_button} polyButtonState={label.poly_button}
-                               polygons={label.polygons} lines={label.lines}/>
-                    </li>
-                );
-            });
-        }
-
         return (
 
             <div className={"sidebar"}>
-                <ul className={"sidebar-container"}>
+                <ul className={"sidebar-header"}>
                     <li>
                         <Logo/>
                     </li>
                     <li>
-                        <SearchBar/>
+                        <SearchBar id={this.props.itemType}/>
                     </li>
                 </ul>
-                <ul className={"sidebar-container"}>
-                    {rows}
+
+                {this.props.children}
+
+                <ul className={"sidebar-footer"}>
                     <li className={"button-group"}>
                         <div className={"container-fluid"}>
                             <div className={"row justify-content-between"}>

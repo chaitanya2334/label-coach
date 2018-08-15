@@ -6,9 +6,9 @@ function mapStateToProps(state){
     return state;
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch, ownProps) {
     return {
-        onSearch: (event) => dispatch(addSearchEntry(event.target.value)),
+        onSearch: (event) => dispatch(addSearchEntry(event.target.value, ownProps.id)),
     }
 }
 

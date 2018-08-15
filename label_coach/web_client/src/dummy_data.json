@@ -1,5 +1,19 @@
 {
-  "search": "",
+  "searchLabels": "",
+  "searchImages": "",
+  "images":[
+    {
+      "id": 0,
+      "active": true,
+      "title": "TCGA-GM-A2DO-01A-01-TSA",
+      "resPath": "/api/v1/image/slide"
+    },{
+      "id": 1,
+      "active": false,
+      "title": "BCGA-GM-A2DO-01A-01-TSA",
+      "resPath": "/api/v1/image/slide"
+    }
+  ],
   "labels": [
     {
       "id": 0,

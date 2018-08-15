@@ -2,8 +2,12 @@
     padding-right: 0 !important;
 }
 
+.remove-left-padding{
+    padding-left: 0 !important;
+}
+
 body.background{
-    background-color: #c5c5c5 !important;
+    background-color: #E7E8E8 !important;
 }
 
 /* fixing issues with modal in girder*/
