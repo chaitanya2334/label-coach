@@ -11,8 +11,54 @@
     padding-right: 0 !important;
 }
 
-body{
-    background-color: #c5c5c5 !important;
+.remove-left-padding{
+    padding-left: 0 !important;
+}
+
+body.background{
+    background-color: #E7E8E8 !important;
+}
+
+/* fixing issues with modal in girder*/
+.modal.in .modal-dialog {
+    -webkit-transform: translate(0)!important;
+    -ms-transform: translate(0)!important;
+    -o-transform: translate(0)!important;
+    transform: translate(0)!important;
+}
+
+.fade.in {
+    opacity: 1!important;
+}
+
+.modal-backdrop.in {
+    filter: alpha(opacity=50)!important;
+    opacity: .5!important;
+}
+
+body {
+    font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
+    font-size: 14px!important;
+    line-height: 1.42857143!important;
+    color: #333!important;
+    background-color: #fff!important;
+}
+
+.modal-header{
+    display: block!important;
+}
+
+.btn{
+    font-size: 14px!important;
+}
+
+.input-sm {
+    display: inline!important;
+    height: 30px!important;
+    padding: 5px 10px!important;
+    font-size: 12px!important;
+    line-height: 1.5!important;
+    border-radius: 3px!important;
 }
 
 .navbar{

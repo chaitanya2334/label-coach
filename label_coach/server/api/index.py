@@ -25,7 +25,6 @@ class IndexAPIHandler(Resource):
         Description('Find a cat'))
     @rest.rawResponse
     def index(self, params):
-        print('findCat() was called!')
         print('params is', params)
         path = os.path.join(self.cp_config['tools.staticdir.dir'], self.cp_config['tools.staticdir.index'])
         return cherrypy.lib.static.serve_file(path)

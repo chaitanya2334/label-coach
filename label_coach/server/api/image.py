@@ -17,7 +17,7 @@ from io import BytesIO
 
 class PILBytesIO(BytesIO):
     def fileno(self):
-        '''Classic PIL doesn't understand io.UnsupportedOperation.'''
+        """Classic PIL doesn't understand io.UnsupportedOperation."""
         raise AttributeError('Not supported')
 
 
@@ -87,6 +87,5 @@ class ImageResource(Resource):
             print('-' * 60)
             traceback.print_exc()
             print('-' * 60)
-
 
         return resp
