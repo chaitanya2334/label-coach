@@ -22,3 +22,28 @@ body.background{
     filter: alpha(opacity=50)!important;
     opacity: .5!important;
 }
+
+body {
+    font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
+    font-size: 14px!important;
+    line-height: 1.42857143!important;
+    color: #333!important;
+    background-color: #fff!important;
+}
+
+.modal-header{
+    display: block!important;
+}
+
+.btn{
+    font-size: 14px!important;
+}
+
+.input-sm {
+    display: inline!important;
+    height: 30px!important;
+    padding: 5px 10px!important;
+    font-size: 12px!important;
+    line-height: 1.5!important;
+    border-radius: 3px!important;
+}
