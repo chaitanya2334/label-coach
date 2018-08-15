@@ -1,11 +1,10 @@
 import * as React from "react";
-import NavigatorCard from "../navigator_card/container";
-import LabelsCard from "../labels_card/container";
 import PrevButton from "../prev_button/prev_button";
 import NextButton from "../next_button/next_button";
 import "./style.css";
 import Logo from "../../logo";
 import Label from "../label/container";
+import SearchBar from "../search_bar/container";
 
 export default class SideBarP extends React.Component {
     constructor(props) {

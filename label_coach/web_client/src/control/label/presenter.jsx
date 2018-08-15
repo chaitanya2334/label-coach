@@ -19,27 +19,25 @@ export default class LabelP extends React.Component {
         let count = this.props.polygons.length;
 
         return (
-            <div >
-                <div className={"container-fluid label side-vert-bar " + this.props.color + " " + activeClass}>
-                    <div className={"row align-items-center"} >
-                        <div className={"col-sm-6 text"} onClick={this.props.onClick}>
-                            {this.props.text}
-                            <Counter key={"c_" + this.props.id} count={count}/>
-                        </div>
-                        <div className={"col-sm-2"}>
-                            <CreateLineButton active={this.props.active} label={this.props} buttonState={this.props.lineButtonState}/>
-                        </div>
-                        <div className={"col-sm-2"}>
-                            <CreatePolyButton active={this.props.active} label={this.props} buttonState={this.props.polyButtonState}/>
-                        </div>
+            <div className={"list-group-item d-flex justify-content-between align-items-center " + this.props.color +
+            " " + activeClass}>
 
-                        <div className={"col-sm-1"} onClick={this.props.onClick}>
-                            <FontAwesomeIcon icon={faType}/>
-                        </div>
-                    </div>
+                <FontAwesomeIcon icon={faType}/>
+                {this.props.text}
+
+                <span className="badge badge-primary badge-pill"> <Counter key={"c_" + this.props.id}
+                                                                           count={count}/></span>
+                <AnnotationListP key={"ann_" + this.props.id} label_id={this.props.id}
+                                 polygons={this.props.polygons} lines={this.props.lines}
+                                 color={this.props.id} active={this.props.active}/>
+                <CreateLineButton active={this.props.active} label={this.props}
+                                  buttonState={this.props.lineButtonState}/>
+
+                <CreatePolyButton active={this.props.active} label={this.props}
+                                  buttonState={this.props.polyButtonState}/>
+                <div className={"col-sm-1"} onClick={this.props.onClick}>
+                    <FontAwesomeIcon icon={faType}/>
                 </div>
-                <AnnotationListP key={"ann_" + this.props.id} label_id={this.props.id} polygons={this.props.polygons} lines={this.props.lines}
-                          color={this.props.id} active={this.props.active}/>
             </div>
         )
     }

@@ -102,7 +102,7 @@
       "poly_button": true,
       "line_button": true,
       "color": "color1",
-      "polygon_list": [
+      "polygons": [
         {
           "id": 0,
           "drawState": "read-only",

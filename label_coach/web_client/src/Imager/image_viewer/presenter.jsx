@@ -50,6 +50,9 @@ export default class ImageViewerP extends React.Component {
                 this.el = node;
             }}>
 
+                <div className="navigator-wrapper c-shadow">
+                    <div id="navigator"/>
+                </div>
                 <div className="openseadragon" id={this.id}/>
                 <ul className="ocd-toolbar">
                     <li>
@@ -76,23 +79,23 @@ export default class ImageViewerP extends React.Component {
     }
 
     initSeaDragon() {
-        this.viewer = OpenSeadragon({
-                                        id: this.id,
-                                        visibilityRatio: 1.0,
-                                        constrainDuringPan: false,
-                                        defaultZoomLevel: 1,
-                                        zoomPerClick: 1,
-                                        minZoomLevel: 1,
-                                        maxZoomLevel: 10,
-                                        zoomInButton: 'zoom-in',
-                                        zoomOutButton: 'zoom-out',
-                                        homeButton: 'reset',
-                                        fullPageButton: 'full-page',
-                                        nextButton: 'next',
-                                        previousButton: 'previous',
-                                        showNavigator: true,
-                                        navigatorId: 'navigator',
-                                    });
+        this.viewer = new OpenSeadragon({
+                                            id: this.id,
+                                            visibilityRatio: 1.0,
+                                            constrainDuringPan: false,
+                                            defaultZoomLevel: 1,
+                                            zoomPerClick: 1,
+                                            minZoomLevel: 1,
+                                            maxZoomLevel: 10,
+                                            zoomInButton: 'zoom-in',
+                                            zoomOutButton: 'zoom-out',
+                                            homeButton: 'reset',
+                                            fullPageButton: 'full-page',
+                                            nextButton: 'next',
+                                            previousButton: 'previous',
+                                            showNavigator: true,
+                                            navigatorId: 'navigator',
+                                        });
         this.onViewerReady();
     }
 
@@ -240,7 +243,7 @@ export default class ImageViewerP extends React.Component {
 
 
     componentDidMount() {
-        this.initSeaDragon()
+        this.initSeaDragon();
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
