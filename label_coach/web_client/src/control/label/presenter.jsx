@@ -20,9 +20,9 @@ export default class LabelP extends React.Component {
 
         return (
             <div>
-                <div className={"container-fluid label " + this.props.color + " " + activeClass} onClick={this.props.onClick}>
+                <div className={"container-fluid label " + this.props.color + " " + activeClass} >
                     <div className={"row align-items-center"}>
-                        <div className={"col-sm-6 text"}>
+                        <div className={"col-sm-6 text"} onClick={this.props.onClick}>
                             {this.props.text}<br/>
                             <Counter key={"c_" + this.props.id} count={count}/>
                         </div>
@@ -35,7 +35,7 @@ export default class LabelP extends React.Component {
                                               buttonState={this.props.polyButtonState}/>
                         </div>
 
-                        <div className={"col-sm-1"}>
+                        <div className={"col-sm-1"} onClick={this.props.onClick}>
                             <FontAwesomeIcon icon={faType} className="icon-size"/>
                         </div>
                     </div>

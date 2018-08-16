@@ -1,13 +1,15 @@
+
 .annotations {
     transition: all 0.3s linear;
-    max-height: 0;
+    height: 0;
     visibility: hidden;
-    overflow-y: auto;
+    transform-origin: top;
+    overflow: hidden;
+    z-index: 0;
 }
 
 .annotations.active {
-    max-height: 13rem;
-
+    height: auto;
     visibility: visible;
     transition: all 0.3s linear;
 }

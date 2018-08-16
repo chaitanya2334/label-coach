@@ -35,9 +35,11 @@ export default class AnnotationListP extends React.Component {
         }
 
         return (
+
             <div className={"annotations " + colorClass + " " + activeClass}>
                 {rows}
             </div>
+
         );
     }
 
