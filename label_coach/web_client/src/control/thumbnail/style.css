@@ -1,7 +1,5 @@
 .l-img-thumbnail {
     width: 100%;
-    padding-top: 15%;
-    padding-bottom: 15%;
     background: black;
 }
 
@@ -10,12 +8,21 @@
     height: auto;
 }
 
-.image-card {
-    padding: 8px;
+.tn-card {
     background: #fff;
     border-radius: 2px;
     display: inline-block;
     margin: 1rem;
     position: relative;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.tn-title{
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.tn-subtitle{
+    font-size: 12px;
+    font-weight: 300;
 }

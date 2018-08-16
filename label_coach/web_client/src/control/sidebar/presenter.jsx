@@ -2,10 +2,7 @@ import * as React from "react";
 import PrevButton from "../prev_button/prev_button";
 import NextButton from "../next_button/next_button";
 import "./style.css";
-import Logo from "../../logo";
-import Label from "../label/container";
 import SearchBar from "../search_bar/container";
-import NavigatorCard from "../navigator_card/container";
 
 export default class SideBarP extends React.Component {
     constructor(props) {
@@ -39,8 +36,6 @@ export default class SideBarP extends React.Component {
                         </div>
                     </li>
                 </ul>
-
-
             </div>
         )
     }
