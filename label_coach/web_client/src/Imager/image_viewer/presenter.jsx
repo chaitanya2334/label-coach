@@ -49,6 +49,9 @@ export default class ImageViewerP extends React.Component {
             <div className="ocd-div" ref={node => {
                 this.el = node;
             }}>
+                <div className="navigator-wrapper c-shadow">
+                    <div id="navigator"/>
+                </div>
                 <div className="openseadragon" id={this.id}/>
                 <ul className="ocd-toolbar">
                     <li>

@@ -33,12 +33,6 @@ export default class SideBarP extends React.Component {
             <div className={"sidebar"}>
                 <ul className={"sidebar-container"}>
                     <li>
-                        <NavigatorCard/>
-                    </li>
-
-                </ul>
-                <ul className={"sidebar-container"}>
-                    <li>
                         <SearchBar/>
                     </li>
                     {rows}
