@@ -14,7 +14,7 @@ export default class ThumbnailP extends React.Component {
     render() {
         let thumbnailPath = this.getThumbnailPath();
         return (
-            <div className={"tn-card"}>
+            <li className="tn-card">
                 <div className="l-img-thumbnail">
                     <img src={thumbnailPath}/>
                 </div>
@@ -26,8 +26,7 @@ export default class ThumbnailP extends React.Component {
                         4 labels
                     </div>
                 </div>
-
-            </div>
+            </li>
         );
     }
 

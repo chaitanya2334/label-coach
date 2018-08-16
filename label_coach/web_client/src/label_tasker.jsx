@@ -44,12 +44,12 @@ export default class LabelTasker extends React.Component {
                     </nav>
 
                     <div className={"row"}>
-                        <div className={"col-lg-2 remove-left-padding"}>
+                        <div className={"col-lg-2 hack-sm-2 remove-left-padding"}>
                             <SideBarP itemType="images">
                                 <ImageContainer/>
                             </SideBarP>
                         </div>
-                        <div className={"col-lg-8 align-self-top"}>
+                        <div className={"col-lg-8 hack-grow-8 align-self-top"}>
                             <ToolBar/>
                             <ImageViewer/>
                         </div>

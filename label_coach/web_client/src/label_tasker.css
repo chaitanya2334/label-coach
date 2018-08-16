@@ -4,12 +4,22 @@
 }
 
 .remove-right-padding{
-    padding-right: 0 !important;
+    padding-right: 8px !important;
 }
 
 .remove-left-padding{
-    padding-left: 0 !important;
+    padding-left: 8px !important;
 }
+/*TODO remove*/
+.hack-sm-2{
+    flex: 0 0 13.8%!important;
+}
+
+.hack-grow-8{
+    flex: 2 0 66.66666%!important;
+    max-width: none!important;
+}
+
 
 .navigator-wrapper {
     background: #000;

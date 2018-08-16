@@ -13,10 +13,8 @@ export default class ImageContainerP extends React.Component {
         if (this.props.images.length > 0) {
             this.props.images.forEach((image, i) => {
                 rows.push(
-                    <li className={"image-item"}>
-                        <ThumbnailP key={image.id} id={image.id} active={image.active} title={image.title}
+                    <ThumbnailP key={image.id} id={image.id} active={image.active} title={image.title}
                                 resPath={image.resPath}/>
-                    </li>
                 );
             });
         }
