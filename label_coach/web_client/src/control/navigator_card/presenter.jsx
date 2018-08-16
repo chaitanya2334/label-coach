@@ -1,4 +1,5 @@
 import * as React from "react";
+import "./style.css";
 
 export default class NavigatorCardP extends React.Component {
     constructor(props) {
@@ -6,26 +7,24 @@ export default class NavigatorCardP extends React.Component {
 
     }
 
-onClick(){
+    onClick() {
 
     }
 
     render() {
         return (
             <div className="card">
-    <div className="card-header">
-        <a data-toggle="collapse" href="#navigator-block" aria-expanded="true" aria-controls="navigator-block">
-            Navigator
-        </a>
-    </div>
-    <div id="navigator-block" className="collapse in show">
-        <div className="card-block">
-            <div className="navigator-wrapper">
-            <div id="navigator"/>
+                <div className="card-header">
+                    <a data-toggle="collapse" aria-expanded="true" aria-controls="navigator-block">
+                        Navigator
+                    </a>
+                </div>
+
+                <div className="navigator-wrapper c-shadow">
+                    <div id="navigator"/>
+                </div>
+
             </div>
-        </div>
-    </div>
-</div>
         );
     }
 

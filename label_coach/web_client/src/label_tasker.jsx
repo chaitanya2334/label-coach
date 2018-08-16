@@ -15,6 +15,7 @@ import SideBarP from "./control/sidebar/presenter";
 import ImageContainer from "./control/image_container/container";
 import LabelContainer from "./control/label_container/container";
 import SideBar from "./control/sidebar2/container";
+import Logo from "./logo";
 
 export default class LabelTasker extends React.Component {
     constructor(props) {
@@ -31,10 +32,9 @@ export default class LabelTasker extends React.Component {
         return (
             <Provider store={this.store}>
                 <div className={"container-fluid remove-left-padding remove-right-padding"}>
-                    <nav className={"navbar sticky-top navbar-light bg-light"}>
+                    <nav className={"navbar sticky-top navbar-light bg-light remove-left-padding"}>
                         <a className={"navbar-brand"}>
-                            <FontAwesomeIcon icon={faRobot}/>
-                            Label Coach
+                            <Logo/>
                         </a>
                         <ul className={"navbar-nav"}>
                             <li className={"nav-item active"}>

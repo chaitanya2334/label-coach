@@ -50,30 +50,6 @@ html, body, #container, .app {
     height: 80%;
 }
 
-.navigator-wrapper {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    background: #000;
-    overflow: hidden;
-    width: 166px;
-    height: 148px;
-    border: solid 0px #ffffff;
-    z-index: 3100
-}
-
-#navigator {
-    width: 166px;
-    height: 148px;
-    position: absolute;
-    bottom: 0;
-}
-
-#navigator-displayregion {
-    border: 1px #d53015 !important;
-    z-index: 4500 !important;
-    background: rgba(0, 0, 0, .2) !important;
-}
 
 .rm-padding{
     padding: 0!important;

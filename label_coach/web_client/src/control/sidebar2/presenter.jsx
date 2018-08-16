@@ -5,6 +5,8 @@ import NextButton from "../next_button/next_button";
 import "./sidebar.css";
 import Logo from "../../logo";
 import Label from "../label/container";
+import NavigatorCardP from "../navigator_card/presenter";
+import NavigatorCard from "../navigator_card/container";
 
 export default class SideBarP extends React.Component {
     constructor(props) {
@@ -31,13 +33,14 @@ export default class SideBarP extends React.Component {
             <div className={"sidebar"}>
                 <ul className={"sidebar-container"}>
                     <li>
-                        <Logo/>
+                        <NavigatorCard/>
                     </li>
+
+                </ul>
+                <ul className={"sidebar-container"}>
                     <li>
                         <SearchBar/>
                     </li>
-                </ul>
-                <ul className={"sidebar-container"}>
                     {rows}
                     <li className={"button-group"}>
                         <div className={"container-fluid"}>

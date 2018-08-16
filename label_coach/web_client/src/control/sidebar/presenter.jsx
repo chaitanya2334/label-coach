@@ -5,6 +5,7 @@ import "./style.css";
 import Logo from "../../logo";
 import Label from "../label/container";
 import SearchBar from "../search_bar/container";
+import NavigatorCard from "../navigator_card/container";
 
 export default class SideBarP extends React.Component {
     constructor(props) {
@@ -18,9 +19,9 @@ export default class SideBarP extends React.Component {
             <div className={"sidebar"}>
                 <ul className={"sidebar-header"}>
                     <li>
-                        <Logo/>
+                        <NavigatorCard/>
                     </li>
-                    <li>
+                    <li className={"marginTop"}>
                         <SearchBar id={this.props.itemType}/>
                     </li>
                 </ul>
