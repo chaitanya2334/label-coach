@@ -18,9 +18,6 @@ export default class SideBarP extends React.Component {
 
             <div className={"sidebar"}>
                 <ul className={"sidebar-header"}>
-                    <li>
-                        <NavigatorCard/>
-                    </li>
                     <li className={"marginTop"}>
                         <SearchBar id={this.props.itemType}/>
                     </li>

@@ -3,7 +3,6 @@ import ImageViewer from "./Imager/image_viewer/container";
 import "./label_tasker.css";
 import ToolBar from "./control/toolbar/container"
 import labels from "./dummy_data.json";
-import ImgListCard from "./control/imglist_card/container";
 import {Provider} from "react-redux";
 import {createStore} from "redux";
 import rootReducer from "./root_reducer";
@@ -14,7 +13,6 @@ import {faUser, faRobot} from '@fortawesome/free-solid-svg-icons'
 import SideBarP from "./control/sidebar/presenter";
 import ImageContainer from "./control/image_container/container";
 import LabelContainer from "./control/label_container/container";
-import SideBar from "./control/sidebar2/container";
 import Logo from "./logo";
 
 export default class LabelTasker extends React.Component {
@@ -26,7 +24,6 @@ export default class LabelTasker extends React.Component {
         );
 
     }
-
 
     render() {
         return (
@@ -47,18 +44,19 @@ export default class LabelTasker extends React.Component {
                     </nav>
 
                     <div className={"row"}>
-                        <div className="col-lg-2">
-                            <ImgListCard/>
+                        <div className={"col-lg-2 remove-left-padding"}>
+                            <SideBarP itemType="images">
+                                <ImageContainer/>
+                            </SideBarP>
                         </div>
-                        <div className="col-lg-8">
-
+                        <div className={"col-lg-8 align-self-top"}>
                             <ToolBar/>
-
                             <ImageViewer/>
-
                         </div>
-                        <div className={"col-lg-2"}>
-                            <SideBar/>
+                        <div className={"col-lg-2 remove-right-padding"}>
+                            <SideBarP itemType="labels">
+                                <LabelContainer/>
+                            </SideBarP>
                         </div>
                     </div>
                 </div>
