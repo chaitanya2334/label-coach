@@ -1,7 +1,7 @@
 import OpenSeadragon from "openseadragon";
 import Shape from "./shape";
 import "./osdSvgOverlay";
-import "./dot.css";
+import "../../styles/Dot.css";
 import * as d3 from "d3";
 import clone from "../../utils"
 

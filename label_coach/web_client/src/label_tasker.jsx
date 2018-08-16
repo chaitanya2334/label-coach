@@ -1,7 +1,5 @@
 import * as React from "react";
-import ImageViewer from "./Imager/image_viewer/container";
 import "./label_tasker.css";
-import ToolBar from "./control/toolbar/container"
 import labels from "./dummy_data.json";
 import {Provider} from "react-redux";
 import {createStore} from "redux";
@@ -9,11 +7,12 @@ import rootReducer from "./root_reducer";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faUser, faRobot} from '@fortawesome/free-solid-svg-icons'
 
-
-import SideBarP from "./control/sidebar/presenter";
-import ImageContainer from "./control/image_container/container";
-import LabelContainer from "./control/label_container/container";
 import Logo from "./logo";
+import SideBarP from "./control/SideBar";
+import ImageContainer from "./control/ImageContainer";
+import ToolBar from "./control/ToolBar";
+import ImageViewer from "./Imager/ImageViewer";
+import {LabelContainer} from "./control/LabelContainer";
 
 export default class LabelTasker extends React.Component {
     constructor(props) {

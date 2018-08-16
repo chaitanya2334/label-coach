@@ -1,7 +1,5 @@
 import {combineReducers} from "redux";
-import {images} from "./control/thumbnail/reducers";
-import {labels} from "./control/label_container/reducers";
-import {searchImages, searchLabels} from "./control/search_bar/reducers";
+import {images, labels, searchImages, searchLabels} from "./control/controlReducers";
 
 export default combineReducers({
                                    images,

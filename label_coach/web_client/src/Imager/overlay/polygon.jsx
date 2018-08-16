@@ -1,7 +1,7 @@
 import Shape from "./shape"
 import Dot from "./dot"
 import * as d3 from "d3";
-import "./polygon.css";
+import "../../styles/Polygon.css";
 import OpenSeadragon from "openseadragon";
 
 
