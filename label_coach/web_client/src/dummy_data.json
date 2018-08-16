@@ -18,7 +18,7 @@
     {
       "id": 0,
       "active": false,
-      "text": "A",
+      "text": "Normal",
       "poly_button": true,
       "line_button": true,
       "color": "color0",
@@ -98,7 +98,7 @@
     {
       "id": 1,
       "active": false,
-      "text": "B",
+      "text": "Benign",
       "poly_button": true,
       "line_button": true,
       "color": "color1",

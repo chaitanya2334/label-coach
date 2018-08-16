@@ -1,29 +1,39 @@
-.side-vert-bar{
+.side-vert-bar {
     border-left: 3px solid;
     transition: border-left 0.15s 0.15s linear;
 }
 
-.side-vert-bar.active{
+
+.side-vert-bar.active {
     border-left: 0 solid;
     transition: border-left 0.15s linear;
 }
 
-.color0{
+.color0 {
     border-color: #0A7EbE;
 }
 
-.color1{
+.color1 {
     border-color: black;
 }
 
-.label .text{
+.label{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #d9d9d9;
+}
+
+.label .text {
     position: relative;
-    padding-top:10px;
     font-size: 22px;
     font-weight: 500;
 }
 
 .label:hover {
-    background-color: rgba(0,0,0,.05);
+    background-color: rgba(0, 0, 0, .05);
     cursor: pointer;
+}
+
+.icon-size{
+    font-size: 22px;
 }

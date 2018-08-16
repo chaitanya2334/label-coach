@@ -30,7 +30,7 @@ export default class LabelTasker extends React.Component {
     render() {
         return (
             <Provider store={this.store}>
-                <div className={"container-fluid"}>
+                <div className={"container-fluid remove-left-padding remove-right-padding"}>
                     <nav className={"navbar sticky-top navbar-light bg-light"}>
                         <a className={"navbar-brand"}>
                             <FontAwesomeIcon icon={faRobot}/>
