@@ -8,7 +8,7 @@ export default class ThumbnailP extends React.Component {
     }
 
     getThumbnailPath() {
-        return this.props.resPath + "_files/8/0_0.jpeg";
+        return this.props.resPath;
     }
 
     render() {

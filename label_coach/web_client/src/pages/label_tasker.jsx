@@ -1,27 +1,29 @@
 import * as React from "react";
-import "./label_tasker.css";
-import labels from "./dummy_data.json";
+import "../styles/LabelTasker.css";
 import {Provider} from "react-redux";
-import {createStore} from "redux";
-import rootReducer from "./root_reducer";
+import {applyMiddleware, createStore} from "redux";
+import rootReducer from "../root_reducer";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faUser, faRobot} from '@fortawesome/free-solid-svg-icons'
 
-import Logo from "./logo";
-import SideBarP from "./control/SideBar";
-import ImageContainer from "./control/ImageContainer";
-import ToolBar from "./control/ToolBar";
-import ImageViewer from "./Imager/ImageViewer";
-import {LabelContainer} from "./control/LabelContainer";
+import Logo from "../logo";
+import SideBarP from "../control/SideBar";
+import ImageContainer from "../control/ImageContainer";
+import ToolBar from "../control/ToolBar";
+import ImageViewer from "../Imager/ImageViewer";
+import {LabelContainer} from "../control/LabelContainer";
+import thunk from "redux-thunk";
+import {fetchImages, fetchLabels} from "../control/controlActions";
 
 export default class LabelTasker extends React.Component {
     constructor(props) {
         super(props);
-        this.store = createStore(rootReducer, labels);
+        this.store = createStore(rootReducer, applyMiddleware(thunk));
         const unsubscribe = this.store.subscribe(() =>
                                                      console.log(this.store.getState())
         );
-
+        this.store.dispatch(fetchImages());
+        this.store.dispatch(fetchLabels("5b771fc32a554e01faec0154"));
     }
 
     render() {

@@ -32,8 +32,11 @@
     "jquery": "^3.3.1",
     "openseadragon": "^2.4.0",
     "popper.js": "^1.14.3",
+    "react-bootstrap": "^0.32.1",
     "react-redux": "^5.0.7",
+    "react-router-dom": "^4.3.1",
     "redux": "^4.0.0",
+    "redux-thunk": "^2.3.0",
     "svg-inline-loader": "^0.8.0",
     "webpack-bundle-analyzer": "^2.13.1"
   }

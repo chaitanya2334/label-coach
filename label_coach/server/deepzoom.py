@@ -12,12 +12,7 @@ def slugify(text):
     return re.sub('[^a-z0-9]+', '-', text)
 
 
-
-
 def load_slide(slidefile):
-    if slidefile is None:
-        print("Hello")
-        raise ValueError('No slide file specified')
 
     print("there is an image")
     slide = open_slide(slidefile)

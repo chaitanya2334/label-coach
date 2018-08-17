@@ -1,14 +1,30 @@
-
 import produce from "immer";
 
-export function images(images=[], action) {
-    return images
+export function images(images = [], action) {
+    switch (action.type) {
+        case 'POPULATE_IMAGES':
+
+            return produce(images, draftState => {
+                for (let image of action.images) {
+                    draftState.push({
+                                        id: draftState.length,
+                                        active: false,
+                                        title: image.title,
+                                        getDzi: image.getDzi,
+                                        getThumbnail: image.getThumbnail
+                                    })
+                }
+            });
+        default:
+            return images;
+    }
+    return images;
 }
 
-export function searchLabels(search="", action) {
+export function searchLabels(search = "", action) {
     switch (action.type) {
         case 'ADD_SEARCH_ENTRY':
-            if(action.id === "labels") {
+            if (action.id === "labels") {
                 return action.search_text;
             }
         default:
@@ -16,10 +32,10 @@ export function searchLabels(search="", action) {
     }
 }
 
-export function searchImages(search="", action) {
+export function searchImages(search = "", action) {
     switch (action.type) {
         case 'ADD_SEARCH_ENTRY':
-            if(action.id === "images") {
+            if (action.id === "images") {
                 return action.search_text;
             }
         default:
@@ -27,11 +43,39 @@ export function searchImages(search="", action) {
     }
 }
 
-export function labels(labels=[], action) {
-    let newLabels = produce(labels, (draftState) => {
-        draftState[action.label_id] = labelReducer(draftState[action.label_id], action)
-    });
-    return newLabels;
+export function labels(labels = [], action) {
+    switch (action.type) {
+        case 'POPULATE_LABELS':
+            return produce(labels, draftState => {
+                for (let label of action.labels)
+                    draftState.push({
+                                        id: draftState.length,
+                                        active: false,
+                                        text: label.text,
+                                        poly_button: true,
+                                        line_button: true,
+                                        color: label.color,
+                                        polygons: label.polygons.map((polygon, index) => ({
+                                            id: index,
+                                            drawState: "read-only",
+                                            text: polygon.text,
+                                            points: polygon.points
+                                        })),
+                                        lines: label.lines.map((line, index) => ({
+                                            id: index,
+                                            drawState: "read-only",
+                                            text: line.text,
+                                            points: line.points
+                                        })),
+                                    });
+            });
+        default:
+            return produce(labels, (draftState) => {
+                draftState[action.label_id] = labelReducer(draftState[action.label_id], action)
+            });
+
+    }
+
 }
 
 export function annotationReducer(ann, action) {
@@ -64,9 +108,9 @@ export function labelReducer(label, action) {
     let newLabel = Object.assign({}, label);
     switch (action.type) {
         case 'ADD_ANN':
-            if(action.ann_type === "polygon") {
+            if (action.ann_type === "polygon") {
                 newLabel.polygons.push(annotationReducer({id: label.polygons.length}, action));
-            }else{
+            } else {
                 newLabel.lines.push(annotationReducer({id: label.lines.length}, action));
             }
             return newLabel;
@@ -74,17 +118,17 @@ export function labelReducer(label, action) {
         case 'LOCK_ANN':
         case 'UNLOCK_ANN':
         case 'UPDATE_ANN':
-            if(action.ann_type === "polygon") {
+            if (action.ann_type === "polygon") {
                 newLabel.polygons[action.item_id] = annotationReducer(newLabel.polygons[action.item_id], action);
-            }else{
+            } else {
                 newLabel.lines[action.item_id] = annotationReducer(newLabel.lines[action.item_id], action);
             }
             return newLabel;
 
         case 'CANCEL_ANN':
-            if(action.ann_type === "polygon"){
+            if (action.ann_type === "polygon") {
                 newLabel.polygons.pop();
-            }else{
+            } else {
                 newLabel.lines.pop();
             }
             return newLabel;

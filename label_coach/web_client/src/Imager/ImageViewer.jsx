@@ -100,7 +100,7 @@ class ImageViewerP extends React.Component {
     }
 
     onViewerReady() {
-        this.open_slide("/api/v1/image/slide", 0.2505);
+        //this.open_slide("/api/v1/image/slide", 0.2505);
         this.overlay = this.viewer.svgOverlay();
         let onClick = this.onClick.bind(this);
         let onZoom = this.onZoom.bind(this);
