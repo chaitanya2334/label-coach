@@ -13,7 +13,7 @@ import ToolBar from "../control/ToolBar";
 import ImageViewer from "../Imager/ImageViewer";
 import {LabelContainer} from "../control/LabelContainer";
 import thunk from "redux-thunk";
-import {fetchImages, fetchLabels} from "../control/controlActions";
+import {fetchImages, fetchLabels, postLabels} from "../control/controlActions";
 
 export default class LabelTasker extends React.Component {
     constructor(props) {
@@ -22,8 +22,12 @@ export default class LabelTasker extends React.Component {
         const unsubscribe = this.store.subscribe(() =>
                                                      console.log(this.store.getState())
         );
+
+        const serverUpdate = this.store.subscribe(()=>{
+            let state = this.store.getState();
+            this.store.dispatch(postLabels(state));
+        });
         this.store.dispatch(fetchImages());
-        this.store.dispatch(fetchLabels("5b771fc32a554e01faec0154"));
     }
 
     render() {

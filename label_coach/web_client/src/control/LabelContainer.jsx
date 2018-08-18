@@ -4,8 +4,7 @@ import {connect} from "react-redux";
 import Label from "./Label";
 
 
-
-export class LabelContainerP extends React.Component{
+export class LabelContainerP extends React.Component {
     constructor(props) {
         super(props);
 
@@ -34,12 +33,12 @@ export class LabelContainerP extends React.Component{
 
 // ---------- Container ----------
 
-function getSearchLabels(labels, searchTerm){
+function getSearchLabels(labels, searchTerm) {
     return labels.filter(item => item.text.match(searchTerm));
 }
 
 function mapStateToProps(state) {
-    return{
+    return {
         labels: getSearchLabels(state.labels, state.searchLabels)
     }
 }

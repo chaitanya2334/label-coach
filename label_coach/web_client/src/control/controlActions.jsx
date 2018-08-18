@@ -1,3 +1,5 @@
+import {restRequest} from "girder/rest";
+
 export function addAnnotation(ann_type, label_id) {
     return {
         type: 'ADD_ANN',
@@ -98,10 +100,38 @@ export function fetchImages() {
     }
 }
 
+function postData(url = ``, data = {}) {
+  // Default options are marked with *
+    console.log(JSON.stringify(data));
+    return restRequest({
+            url: url,
+            method: 'POST',
+            data: {
+                labels: JSON.stringify(data)
+            }
+        })
+    .then(response => console.log(response)); // parses response to JSON
+}
+
 export function selectImage(image_id){
     return {
         type: 'SELECT_IMAGE',
         image_id: image_id
+    }
+}
+
+export function postLabels(state){
+
+    return function (dispatch) {
+        let label_id = "";
+        for(let image of state.images){
+            if(image.active){
+                label_id = image.labelFileId;
+            }
+        }
+        if(label_id) {
+            postData("label?label_id=" + label_id, state.labels)
+        }
     }
 }
 
