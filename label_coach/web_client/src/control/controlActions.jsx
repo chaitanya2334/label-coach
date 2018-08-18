@@ -72,9 +72,9 @@ export function populateImages(images) {
     }
 }
 
-export function populateLabels(labels){
+export function replaceLabels(labels){
     return {
-        type: 'POPULATE_LABELS',
+        type: 'REPLACE_LABELS',
         labels: labels
     }
 }
@@ -85,16 +85,23 @@ export function fetchImages() {
             .then(response => response.json())
             .then((json) => {
 
-                let images = json.map(image_tuple => {
-                    let image = image_tuple[1];
+                let images = json.map(image => {
                     return {
                         getDzi: "api/v1/image/" + image._id.$oid,
-                        getThumbnail: "api/v1/image/" + image._id.$oid + "/slide_files/8/0_0.jpeg",
+                        getThumbnail: "api/v1/image/" + image._id.$oid + "_files/8/0_0.jpeg",
+                        labelFileId: image.label_id.$oid,
                         title: image.name
                     }
                 });
                 dispatch(populateImages(images));
             })
+    }
+}
+
+export function selectImage(image_id){
+    return {
+        type: 'SELECT_IMAGE',
+        image_id: image_id
     }
 }
 
@@ -110,7 +117,7 @@ export function fetchLabels(label_id) {
                     polygons: label.polygons,
                     lines: label.lines,
                 }));
-                dispatch(populateLabels(labels));
+                dispatch(replaceLabels(labels));
             });
 
     }

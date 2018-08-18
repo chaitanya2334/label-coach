@@ -18,7 +18,7 @@ class LabelP extends React.Component {
         let faType = this.props.active ? faAngleUp : faAngleDown;
         let activeClass = this.props.active ? "active" : "";
 
-        let count = this.props.polygons.length;
+        console.log(this.props.polygons.length + this.props.lines.length);
 
         return (
             <div>
@@ -26,7 +26,7 @@ class LabelP extends React.Component {
                     <div className={"row align-items-center"}>
                         <div className={"col-sm-6 text"} onClick={this.props.onClick}>
                             {this.props.text}<br/>
-                            <Counter key={"c_" + this.props.id} count={count}/>
+                            <Counter key={"c_" + this.props.id} count={this.props.polygons.length + this.props.lines.length}/>
                         </div>
                         <div className={"col-sm-2"}>
                             <CreateLineButton active={this.props.active} label={this.props}

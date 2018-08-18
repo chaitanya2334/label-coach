@@ -1,5 +1,20 @@
 import produce from "immer";
 
+export function imageReducer(image, action) {
+    switch (action.type) {
+        case 'SELECT_IMAGE':
+            return produce(image, draftState => {
+                draftState.active = true;
+            });
+        case 'DESELECT_IMAGE':
+            return produce(image, draftState => {
+                draftState.active = false;
+            });
+        default:
+            return image;
+    }
+}
+
 export function images(images = [], action) {
     switch (action.type) {
         case 'POPULATE_IMAGES':
@@ -11,9 +26,19 @@ export function images(images = [], action) {
                                         active: false,
                                         title: image.title,
                                         getDzi: image.getDzi,
-                                        getThumbnail: image.getThumbnail
+                                        getThumbnail: image.getThumbnail,
+                                        labelFileId: image.labelFileId
                                     })
                 }
+            });
+        case 'SELECT_IMAGE':
+            return produce(images, (draftState) => {
+                // deselect everybody
+                for (let image of draftState) {
+                    image.active = false;
+                }
+
+                draftState[action.image_id] = imageReducer(draftState[action.image_id], action)
             });
         default:
             return images;
@@ -45,9 +70,10 @@ export function searchImages(search = "", action) {
 
 export function labels(labels = [], action) {
     switch (action.type) {
-        case 'POPULATE_LABELS':
+        case 'REPLACE_LABELS':
             return produce(labels, draftState => {
-                for (let label of action.labels)
+                draftState = [];
+                for (let label of action.labels) {
                     draftState.push({
                                         id: draftState.length,
                                         active: false,
@@ -68,11 +94,22 @@ export function labels(labels = [], action) {
                                             points: line.points
                                         })),
                                     });
+                }
+                return draftState;
             });
-        default:
+        case 'ADD_ANN':
+        case 'LOCK_ANN':
+        case 'UNLOCK_ANN':
+        case 'UPDATE_ANN':
+        case 'CANCEL_ANN':
+        case 'TOGGLE_BUTTON':
+        case 'TOGGLE_LABEL':
             return produce(labels, (draftState) => {
                 draftState[action.label_id] = labelReducer(draftState[action.label_id], action)
             });
+
+        default:
+            return labels;
 
     }
 

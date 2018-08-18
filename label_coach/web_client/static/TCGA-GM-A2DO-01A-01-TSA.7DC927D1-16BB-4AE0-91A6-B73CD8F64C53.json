@@ -22,20 +22,6 @@
               "y": 1233
             }
           ]
-        },
-        {
-          "id": 1,
-          "text": "polygon1",
-          "points": [
-            {
-              "x": 0,
-              "y": 0
-            },
-            {
-              "x": 0,
-              "y": 0
-            }
-          ]
         }
       ],
       "lines": [
@@ -75,26 +61,12 @@
     },
     {
       "id": 1,
-      "text": "Benign",
+      "text": "InSitu",
       "color": "color1",
       "polygons": [
         {
           "id": 0,
           "text": "polygon2",
-          "points": [
-            {
-              "x": 0,
-              "y": 0
-            },
-            {
-              "x": 0,
-              "y": 0
-            }
-          ]
-        },
-        {
-          "id": 1,
-          "text": "polygon3",
           "points": [
             {
               "x": 0,

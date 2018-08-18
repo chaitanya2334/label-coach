@@ -1,7 +1,9 @@
 import * as React from "react";
 import "../styles/Thumbnail.css";
+import connect from "react-redux/es/connect/connect";
+import {fetchLabels, selectImage} from "./controlActions";
 
-export default class ThumbnailP extends React.Component {
+class ThumbnailP extends React.Component {
     constructor(props) {
         super(props);
 
@@ -13,8 +15,9 @@ export default class ThumbnailP extends React.Component {
 
     render() {
         let thumbnailPath = this.getThumbnailPath();
+        let activeClass = this.props.active ? 'active': "";
         return (
-            <li className="tn-card">
+            <li className={"tn-card " + activeClass} onClick={this.props.onSelect}>
                 <div className="l-img-thumbnail">
                     <img src={thumbnailPath}/>
                 </div>
@@ -31,3 +34,26 @@ export default class ThumbnailP extends React.Component {
     }
 
 }
+
+// ---------- Container ----------
+
+function mapStateToProps(state, ownProps) {
+
+   return state;
+}
+
+function mapDispatchToProps(dispatch, ownProps) {
+    return {
+        onSelect: (event) => {
+            dispatch(selectImage(ownProps.id));
+            dispatch(fetchLabels(ownProps.labelFileId));
+        },
+    }
+}
+
+const Thumbnail = connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(ThumbnailP);
+
+export default Thumbnail;

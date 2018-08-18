@@ -27,3 +27,7 @@
     font-size: 12px;
     font-weight: 300;
 }
+
+.tn-card.active{
+    border: blue 1px solid;
+}

@@ -1,6 +1,7 @@
 import * as React from "react";
 import "../styles/SearchBar.css";
 import {connect} from "react-redux";
+import {addSearchEntry} from "./controlActions";
 
 
 class SearchBarP extends React.Component{

@@ -1,7 +1,8 @@
 import * as React from "react";
 import "../styles/ImageContainer.css"
 import {connect} from "react-redux";
-import ThumbnailP from "./Thumbnail";
+import Thumbnail from "./Thumbnail";
+
 
 class ImageContainerP extends React.Component {
     constructor(props) {
@@ -14,8 +15,8 @@ class ImageContainerP extends React.Component {
         if (this.props.images.length > 0) {
             this.props.images.forEach((image, i) => {
                 rows.push(
-                    <ThumbnailP key={image.id} id={image.id} active={image.active} title={image.title}
-                                resPath={image.getThumbnail}/>
+                    <Thumbnail key={image.id} id={image.id} active={image.active} title={image.title}
+                                resPath={image.getThumbnail} labelFileId={image.labelFileId}/>
                 );
             });
         }

@@ -100,7 +100,7 @@ class ImageViewerP extends React.Component {
     }
 
     onViewerReady() {
-        //this.open_slide("/api/v1/image/slide", 0.2505);
+
         this.overlay = this.viewer.svgOverlay();
         let onClick = this.onClick.bind(this);
         let onZoom = this.onZoom.bind(this);
@@ -241,13 +241,19 @@ class ImageViewerP extends React.Component {
         }
     }
 
-
     componentDidMount() {
         this.initSeaDragon();
     }
 
+    getSnapshotBeforeUpdate(prevProps){
+        if(prevProps.getDzi !== this.props.getDzi) {
+            this.open_slide(this.props.getDzi, 0.2505);
+        }
+    }
+
     componentDidUpdate(prevProps, prevState, snapshot) {
         // delete all polygons
+
         for (let polygon of this.polygons) {
             polygon.delete();
         }
@@ -293,6 +299,14 @@ class ImageViewerP extends React.Component {
 function mapStateToProps(state) {
     let polygons = [];
     let lines = [];
+    let getDzi = "";
+    for (let image of state.images) {
+        if (image.active) {
+            getDzi = image.getDzi;
+            break;
+        }
+    }
+
     for (let label of state.labels) {
         let newPolygons = label.polygons.map((poly) => {
             let newPoly = Object.assign({}, poly);
@@ -310,6 +324,7 @@ function mapStateToProps(state) {
         polygons = polygons.concat(newPolygons);
     }
     return {
+        getDzi: getDzi,
         polygons: polygons,
         lines: lines
     };
@@ -326,7 +341,7 @@ function mapDispatchToProps(dispatch) {
         updateLine: (label_id, line_id, points) => {
             dispatch(updateAnnotation("line", label_id, line_id, points));
         },
-        lockLine: (label_id, line_id) =>{
+        lockLine: (label_id, line_id) => {
             dispatch(lockAnnotation("line", label_id, line_id));
         }
     };

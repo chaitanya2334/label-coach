@@ -15,7 +15,7 @@ from girder.models.assetstore import Assetstore
 from girder.models.collection import Collection
 from girder.models.file import File
 from girder.models.user import User
-from ..bcolors import print_ok, print_fail
+from ..bcolors import print_ok, print_fail, print_ok2
 from ..deepzoom import load_slide
 
 
@@ -34,7 +34,7 @@ class ImageResource(Resource):
                           'tools.staticdir.index': 'index.html'}
         self.route('GET', (), handler=self.getImageList)
         self.route('GET', (':image_id',), self.dzi)
-        self.route('GET', (':image_id', ':tile_id', ':level', ':tfile'), self.tile)
+        self.route('GET', (':image_id', ':level', ':tfile'), self.tile)
         user = User().authenticate(login="dummy", password="dummy1234")
         setCurrentUser(user)
         self.collection_model = Collection()
@@ -49,6 +49,15 @@ class ImageResource(Resource):
 
         return slides
 
+    def find_label_id(self, name):
+        labels = self.collection_model.fileList(self.collection, user=self.getCurrentUser(), data=False,
+                                                includeMetadata=True, mimeFilter=['application/json'])
+        for labelname, label in labels:
+            labelname = os.path.splitext(labelname)[0]
+            print_ok2("labelname: " + labelname)
+            if labelname == name:
+                return label['_id']
+
     @access.public
     @autoDescribeRoute(
         Description('Get image list'))
@@ -59,9 +68,16 @@ class ImageResource(Resource):
         try:
             files = self.collection_model.fileList(self.collection, user=self.getCurrentUser(), data=False,
                                                    includeMetadata=True, mimeFilter=['application/octet-stream'])
-            files = list(files)
+
+            ret_files = []
+            for filename, file in files:
+                filename = os.path.splitext(filename)[0]
+                print_ok("filename: " + filename)
+                file['label_id'] = self.find_label_id(filename)
+                ret_files.append(file)
+
             cherrypy.response.headers["Content-Type"] = "application/json"
-            return dumps(files)
+            return dumps(ret_files)
 
         except:
             print_fail(traceback.print_exc)
@@ -91,11 +107,11 @@ class ImageResource(Resource):
     @autoDescribeRoute(
         Description('get tiles'))
     @rest.rawResponse
-    def tile(self, image_id, tile_id, level, tfile):
+    def tile(self, image_id, level, tfile):
         resp = ""
         try:
+            image_id = re.search(r'(.*)_files', image_id).group(1)
             slides = self.load_slides(image_id)
-            slide_id = re.search(r'(.*)_files', tile_id).group(1)
             pos, _format = tfile.split('.')
             col, row = pos.split('_')
             _format = _format.lower()
@@ -104,7 +120,7 @@ class ImageResource(Resource):
                 # Not supported by Deep Zoom
                 cherrypy.response.status = 404
 
-            tile_image = slides[slide_id].get_tile(int(level), (int(col), int(row)))
+            tile_image = slides['slide'].get_tile(int(level), (int(col), int(row)))
             buf = PILBytesIO()
             tile_image.save(buf, _format, quality=100)
             cherrypy.response.headers["Content-Type"] = 'image/%s' % _format
