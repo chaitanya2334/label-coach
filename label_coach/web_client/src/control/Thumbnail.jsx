@@ -1,7 +1,7 @@
 import * as React from "react";
 import "../styles/Thumbnail.css";
 import connect from "react-redux/es/connect/connect";
-import {fetchLabels, selectImage} from "./controlActions";
+import {createLabelFile, fetchLabels, selectImage} from "./controlActions";
 
 class ThumbnailP extends React.Component {
     constructor(props) {
@@ -45,8 +45,13 @@ function mapStateToProps(state, ownProps) {
 function mapDispatchToProps(dispatch, ownProps) {
     return {
         onSelect: (event) => {
+
             dispatch(selectImage(ownProps.id));
-            dispatch(fetchLabels(ownProps.labelFileId));
+            if(ownProps.labelFileId) {
+                dispatch(fetchLabels(ownProps.labelFileId));
+            }else{
+                dispatch(createLabelFile(ownProps.title + ".json", ownProps.id));
+            }
         },
     }
 }

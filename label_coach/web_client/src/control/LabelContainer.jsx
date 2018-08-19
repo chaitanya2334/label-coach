@@ -16,7 +16,7 @@ export class LabelContainerP extends React.Component {
             this.props.labels.forEach((label, i) => {
                 rows.push(
                     <li className={"label-item"}>
-                        <Label key={label.id} id={label.id} text={label.text} color={label.color} active={label.active}
+                        <Label key={label.id} id={label.id} name={label.name} color={label.color} active={label.active}
                                lineButtonState={label.line_button} polyButtonState={label.poly_button}
                                polygons={label.polygons} lines={label.lines}/>
                     </li>
@@ -34,7 +34,7 @@ export class LabelContainerP extends React.Component {
 // ---------- Container ----------
 
 function getSearchLabels(labels, searchTerm) {
-    return labels.filter(item => item.text.match(searchTerm));
+    return labels.filter(item => item.name.match(searchTerm));
 }
 
 function mapStateToProps(state) {

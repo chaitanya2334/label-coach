@@ -25,7 +25,7 @@ class LabelP extends React.Component {
                 <div className={"container-fluid label " + this.props.color + " " + activeClass} >
                     <div className={"row align-items-center"}>
                         <div className={"col-sm-6 text"} onClick={this.props.onClick}>
-                            {this.props.text}<br/>
+                            {this.props.name}<br/>
                             <Counter key={"c_" + this.props.id} count={this.props.polygons.length + this.props.lines.length}/>
                         </div>
                         <div className={"col-sm-2"}>

@@ -22,12 +22,21 @@ export default class LabelTasker extends React.Component {
         const unsubscribe = this.store.subscribe(() =>
                                                      console.log(this.store.getState())
         );
-
-        const serverUpdate = this.store.subscribe(()=>{
-            let state = this.store.getState();
-            this.store.dispatch(postLabels(state));
-        });
         this.store.dispatch(fetchImages());
+        this.actors = [postLabels,];
+        this.acting = false;
+        this.store.subscribe(() => {
+            // Ensure that any action dispatched by actors do not result in a new
+            // actor run, allowing actors to dispatch with impunity.
+            if (!this.acting) {
+                this.acting = true;
+                this.actors.forEach((actor, index) => {
+                    console.log(actor, index);
+                    this.store.dispatch(actor(this.store.getState()))
+                });
+                this.acting = false
+            }
+        })
     }
 
     render() {

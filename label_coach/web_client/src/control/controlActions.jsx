@@ -74,7 +74,7 @@ export function populateImages(images) {
     }
 }
 
-export function replaceLabels(labels){
+export function replaceLabels(labels) {
     return {
         type: 'REPLACE_LABELS',
         labels: labels
@@ -88,11 +88,15 @@ export function fetchImages() {
             .then((json) => {
 
                 let images = json.map(image => {
+                    let labelFileId = null;
+                    if (image.label_id && image.label_id.$oid){
+                        labelFileId = image.label_id.$oid;
+                    }
                     return {
                         getDzi: "api/v1/image/" + image._id.$oid,
                         getThumbnail: "api/v1/image/" + image._id.$oid + "_files/8/0_0.jpeg",
-                        labelFileId: image.label_id.$oid,
-                        title: image.name
+                        labelFileId: labelFileId,
+                        title: image.name.replace(/\.[^/.]+$/, "")
                     }
                 });
                 dispatch(populateImages(images));
@@ -101,36 +105,57 @@ export function fetchImages() {
 }
 
 function postData(url = ``, data = {}) {
-  // Default options are marked with *
+    // Default options are marked with *
     console.log(JSON.stringify(data));
     return restRequest({
-            url: url,
-            method: 'POST',
-            data: {
-                labels: JSON.stringify(data)
-            }
-        })
-    .then(response => console.log(response)); // parses response to JSON
+                           url: url,
+                           method: 'POST',
+                           data: {
+                               labels: JSON.stringify(data)
+                           }
+                       })
+        .then(response => console.log(response)); // parses response to JSON
 }
 
-export function selectImage(image_id){
+export function selectImage(image_id) {
     return {
         type: 'SELECT_IMAGE',
         image_id: image_id
     }
 }
 
-export function postLabels(state){
+export function addLabelId(image_id, label_id){
+    return {
+        type: 'ADD_LABEL_ID',
+        image_id: image_id,
+        label_id: label_id
+    }
+}
+
+export function createLabelFile(fileName, imageId) {
+    return function (dispatch) {
+        return fetch("/api/v1/label/create?file_name=" + fileName)
+            .then(response => response.json())
+            .then(json => {
+                // TODO move it out of this action. Not really happy about dispatching this action here.
+                let labelId = json.label_id.$oid;
+                dispatch(addLabelId(imageId, labelId));
+                dispatch(fetchLabels(labelId));
+            })
+    }
+}
+
+export function postLabels(state) {
 
     return function (dispatch) {
         let label_id = "";
-        for(let image of state.images){
-            if(image.active){
+        for (let image of state.images) {
+            if (image.active) {
                 label_id = image.labelFileId;
             }
         }
-        if(label_id) {
-            postData("label?label_id=" + label_id, state.labels)
+        if (label_id) {
+            postData("label?label_id=" + label_id, state.labels);
         }
     }
 }
@@ -142,7 +167,7 @@ export function fetchLabels(label_id) {
             .then(json => {
                 let labels = json.labels;
                 labels = labels.map(label => ({
-                    text: label.text,
+                    name: label.name,
                     color: label.color,
                     polygons: label.polygons,
                     lines: label.lines,

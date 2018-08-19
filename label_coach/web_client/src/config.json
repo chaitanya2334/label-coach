@@ -1,0 +1,44 @@
+{
+  "labels":[
+    {
+      "id": 0,
+      "name": "Normal",
+      "color": "#ffffff",
+      "active": false,
+      "line_button": true,
+      "poly_button": true,
+      "lines": [],
+      "polygons": []
+    },
+    {
+      "id": 1,
+      "name": "Benign",
+      "color": "#ffffff",
+      "active": false,
+      "line_button": true,
+      "poly_button": true,
+      "lines": [],
+      "polygons": []
+    },
+    {
+      "id": 2,
+      "name": "InSitu",
+      "color": "#ffffff",
+      "active": false,
+      "line_button": true,
+      "poly_button": true,
+      "lines": [],
+      "polygons": []
+    },
+    {
+      "id": 3,
+      "name": "Invasive",
+      "color": "#ffffff",
+      "active": false,
+      "line_button": true,
+      "poly_button": true,
+      "lines": [],
+      "polygons": []
+    }
+  ]
+}

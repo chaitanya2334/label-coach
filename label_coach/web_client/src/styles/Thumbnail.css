@@ -9,6 +9,7 @@
 }
 
 .tn-card {
+    cursor: pointer;
     text-align: center;
     background: #fff;
     border-radius: 2px;

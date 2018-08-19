@@ -3,22 +3,22 @@ import "../styles/CreateLineButton.css";
 import {connect} from "react-redux";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faPen, faTimes} from '@fortawesome/free-solid-svg-icons'
-import {addAnnotation, cancelAnnotation, toggleLabelButton} from "./controlActions";
+import {addAnnotation, cancelAnnotation, postLabels, toggleLabelButton} from "./controlActions";
 import "../styles/CreateLineButton.css"
 
 
-class CreateLineButtonP extends React.Component{
+class CreateLineButtonP extends React.Component {
     constructor(props) {
         super(props);
         this.onClick = this.onClick.bind(this);
     }
 
 
-    onClick(){
-        if(this.props.buttonState){
+    onClick() {
+        if (this.props.buttonState) {
             // trigger Create
             this.props.addLine();
-        }else{
+        } else {
             // trigger Cancel
             this.props.cancelLine();
         }
@@ -26,11 +26,12 @@ class CreateLineButtonP extends React.Component{
     }
 
     render() {
-        let activeClass = this.props.active ? "active": "";
-        let faType = this.props.buttonState ? faPen: faTimes;
+        let activeClass = this.props.active ? "active" : "";
+        let faType = this.props.buttonState ? faPen : faTimes;
         return (
             <div className={"create_button " + activeClass}>
-                <button type="button" className={"btn btn-primary"} onClick={this.onClick}><FontAwesomeIcon icon={faType}/></button>
+                <button type="button" className={"btn btn-primary"} onClick={this.onClick}><FontAwesomeIcon
+                    icon={faType}/></button>
             </div>
         );
     }
@@ -39,15 +40,21 @@ class CreateLineButtonP extends React.Component{
 
 
 // ---------- Container ----------
-function mapStateToProps(state, ownProps){
+function mapStateToProps(state, ownProps) {
     return state;
 }
 
-function mapDispatchToProps(dispatch, ownProps){
-    return{
-        addLine: ()=>{dispatch(addAnnotation("line", ownProps.label.id))},
-        cancelLine: ()=>{dispatch(cancelAnnotation("line", ownProps.label.id))},
-        toggleText: ()=>{dispatch(toggleLabelButton(ownProps.label.id, "line_button"))}
+function mapDispatchToProps(dispatch, ownProps) {
+    return {
+        addLine: () => {
+            dispatch(addAnnotation("line", ownProps.label.id));
+        },
+        cancelLine: () => {
+            dispatch(cancelAnnotation("line", ownProps.label.id));
+        },
+        toggleText: () => {
+            dispatch(toggleLabelButton(ownProps.label.id, "line_button"))
+        }
     }
 }
 

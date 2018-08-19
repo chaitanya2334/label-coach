@@ -10,6 +10,10 @@ export function imageReducer(image, action) {
             return produce(image, draftState => {
                 draftState.active = false;
             });
+        case 'ADD_LABEL_ID':
+            return produce(image, draftState => {
+                draftState.labelFileId = action.label_id
+            });
         default:
             return image;
     }
@@ -40,6 +44,10 @@ export function images(images = [], action) {
 
                 draftState[action.image_id] = imageReducer(draftState[action.image_id], action)
             });
+        case 'ADD_LABEL_ID':
+            return produce(images, (draftState) => {
+                draftState[action.image_id] = imageReducer(draftState[action.image_id], action)
+            })
         default:
             return images;
     }
@@ -77,7 +85,7 @@ export function labels(labels = [], action) {
                     draftState.push({
                                         id: draftState.length,
                                         active: false,
-                                        text: label.text,
+                                        name: label.name,
                                         poly_button: true,
                                         line_button: true,
                                         color: label.color,
