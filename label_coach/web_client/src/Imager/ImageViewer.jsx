@@ -241,19 +241,8 @@ class ImageViewerP extends React.Component {
         }
     }
 
-    componentDidMount() {
-        this.initSeaDragon();
-    }
-
-    getSnapshotBeforeUpdate(prevProps){
-        if(prevProps.getDzi !== this.props.getDzi) {
-            this.open_slide(this.props.getDzi, 0.2505);
-        }
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
+    updateOverlay() {
         // delete all polygons
-
         for (let polygon of this.polygons) {
             polygon.delete();
         }
@@ -263,9 +252,9 @@ class ImageViewerP extends React.Component {
         }
         this.lines = [];
         this.polygons = [];
-        //create polygons from props
-
         this.activePolygon = null;
+
+        //create polygons from props
         for (let polygon of this.props.polygons) {
             let polyObj = new Polygon(this.overlay, this.viewer, polygon.label_id, polygon.poly_id, this.zoom);
             polyObj.addImagePoints(polygon.points);
@@ -290,6 +279,23 @@ class ImageViewerP extends React.Component {
             }
         }
 
+    }
+
+    componentDidMount() {
+        this.initSeaDragon();
+
+    }
+
+    getSnapshotBeforeUpdate(prevProps) {
+        if (prevProps.getDzi !== this.props.getDzi) {
+            this.open_slide(this.props.getDzi, 0.2505);
+            this.updateOverlay = this.updateOverlay.bind(this);
+            this.viewer.addOnceHandler('open', this.updateOverlay);
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        this.updateOverlay();
     }
 
 }
