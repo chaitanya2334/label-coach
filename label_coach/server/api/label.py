@@ -40,7 +40,7 @@ class LabelResource(Resource):
         user = User().authenticate(login="dummy", password="dummy1234")
         setCurrentUser(user)
         self.collection_model = Collection()
-        self.collection = self.collection_model.load("5b736cad2a554e4d0f6c937f", user=self.getCurrentUser())
+        self.collection = list(self.collection_model.list(user=user, offset=0, limit=1))[0]
         self.parent_folder = self.get_root_folder()
         self.assetstore = Assetstore().getCurrent()
         print_ok(self.collection)
