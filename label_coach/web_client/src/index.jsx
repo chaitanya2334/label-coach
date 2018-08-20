@@ -6,6 +6,7 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Login from "./pages/login";
 import {BrowserRouter as Router, Route, Link} from "react-router-dom";
+import CollectionBrowserP from "./pages/collection_browser";
 
 class Index extends React.Component {
     render() {
@@ -13,6 +14,7 @@ class Index extends React.Component {
             <Router>
                 <div>
                     <Route exact path="/" component={LabelTasker}/>
+                     <Route exact path="/content" component={CollectionBrowserP}/>
                 </div>
             </Router>
         );

@@ -14,6 +14,8 @@ import ImageViewer from "../Imager/ImageViewer";
 import {LabelContainer} from "../control/LabelContainer";
 import thunk from "redux-thunk";
 import {fetchImages, fetchLabels, postLabels} from "../control/controlActions";
+import {Link} from "react-router-dom";
+import CollectionBrowserP from "./collection_browser";
 
 export default class LabelTasker extends React.Component {
     constructor(props) {
@@ -44,9 +46,11 @@ export default class LabelTasker extends React.Component {
             <Provider store={this.store}>
                 <div className={"container-fluid remove-left-padding remove-right-padding"}>
                     <nav className={"navbar sticky-top navbar-light bg-light remove-left-padding"}>
-                        <a className={"navbar-brand"}>
-                            <Logo/>
-                        </a>
+                        <Link to="/content" component={CollectionBrowserP}>
+                            <div className={"navbar-brand"}>
+                                <Logo/>
+                            </div>
+                        </Link>
                         <ul className={"navbar-nav"}>
                             <li className={"nav-item active"}>
                                 <a className={"nav-link"} href={"#"}>
