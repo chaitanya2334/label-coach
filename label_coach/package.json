@@ -19,6 +19,7 @@
     "@fortawesome/fontawesome-free": "^5.2.0",
     "@fortawesome/free-solid-svg-icons": "^5.2.0",
     "@fortawesome/react-fontawesome": "0.1.0-11",
+    "@material/elevation": "^0.38.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
     "babel-plugin-istanbul": "^4.1.6",
