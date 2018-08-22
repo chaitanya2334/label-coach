@@ -42,6 +42,8 @@ class ImageResource(Resource):
         print_ok(self.collection)
 
     def load_slides(self, image_id):
+        user = User().authenticate(login="dummy", password="dummy1234")
+        setCurrentUser(user)
         file = File().load(image_id, level=AccessType.READ, user=self.getCurrentUser())
         assetstore = Assetstore().load(file['assetstoreId'])
         slides, associated_images, slide_properties, slide_mpp = \
@@ -66,6 +68,10 @@ class ImageResource(Resource):
         print_ok('getImageList() was called!')
 
         try:
+            user = User().authenticate(login="dummy", password="dummy1234")
+            setCurrentUser(user)
+            print_ok(self.getCurrentUser())
+            print_ok(self.collection)
             files = self.collection_model.fileList(self.collection, user=self.getCurrentUser(), data=False,
                                                    includeMetadata=True, mimeFilter=['application/octet-stream'])
 

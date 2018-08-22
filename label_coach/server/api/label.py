@@ -83,6 +83,8 @@ class LabelResource(Resource):
         print_ok('getLabelsList() was called!')
 
         try:
+            user = User().authenticate(login="dummy", password="dummy1234")
+            setCurrentUser(user)
             files = self.collection_model.fileList(self.collection, user=self.getCurrentUser(), data=False,
                                                    includeMetadata=True, mimeFilter=['application/json'])
             files = list(files)
@@ -131,6 +133,8 @@ class LabelResource(Resource):
     def getLabel(self, label_id):
         try:
             fileModel = File()
+            user = User().authenticate(login="dummy", password="dummy1234")
+            setCurrentUser(user)
             file = fileModel.load(label_id, level=AccessType.READ, user=self.getCurrentUser())
             cherrypy.response.headers["Content-Type"] = "application/json"
             return fileModel.download(file)
