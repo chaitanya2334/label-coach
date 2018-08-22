@@ -111,6 +111,7 @@ class LabelResource(Resource):
                 file = self.create_new_file(file_name)
 
                 config_file = list(File().find({'name': "config.json"}))[0]
+                print_ok(config_file)
                 res = self.copy(config_file, file)
                 print_ok(res['fileId'])
                 return dumps({

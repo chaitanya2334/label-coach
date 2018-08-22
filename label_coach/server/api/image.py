@@ -38,7 +38,7 @@ class ImageResource(Resource):
         user = User().authenticate(login="dummy", password="dummy1234")
         setCurrentUser(user)
         self.collection_model = Collection()
-        self.collection = self.collection_model.load("5b736cad2a554e4d0f6c937f", user=self.getCurrentUser())
+        self.collection = list(self.collection_model.list(user=self.getCurrentUser(), limit=1))[0]
         print_ok(self.collection)
 
     def load_slides(self, image_id):

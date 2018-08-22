@@ -74,6 +74,7 @@ body {
     line-height: 1.42857143!important;
     color: #333!important;
     background-color: #fff!important;
+    overflow: visible!important;
 }
 
 .modal-header{

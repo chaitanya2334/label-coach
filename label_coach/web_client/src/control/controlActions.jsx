@@ -154,7 +154,7 @@ export function postLabels(state) {
                 label_id = image.labelFileId;
             }
         }
-        if (label_id) {
+        if (label_id && state.labels.length > 0) {
             postData("label?label_id=" + label_id, state.labels);
         }
     }

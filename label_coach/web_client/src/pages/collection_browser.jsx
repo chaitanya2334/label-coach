@@ -8,11 +8,13 @@ import {applyMiddleware, createStore} from "redux";
 import thunk from "redux-thunk";
 import rootReducer from "../root_reducer"
 import CollectionGrid from "../browser/CollectionGrid";
+import {fetchImages} from "../control/controlActions";
 
 export default class CollectionBrowserP extends React.Component {
     constructor(props) {
         super(props);
         this.store = createStore(rootReducer, applyMiddleware(thunk));
+        this.store.dispatch(fetchImages());
     }
 
     render() {
@@ -35,8 +37,8 @@ export default class CollectionBrowserP extends React.Component {
                         </ul>
                     </nav>
 
-                    <div className={"row"}>
-                        <div className={"col-lg-8 hack-grow-8 align-self-top"}>
+                    <div className={"row justify-content-center"}>
+                        <div className={"col-lg-8 align-self-top"}>
                             <CollectionGrid className={"layout"} isDraggable={false} isResizable={false} items={50}
                                             rowHeight={48}/>
                         </div>
