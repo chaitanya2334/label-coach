@@ -1,14 +1,14 @@
 import * as React from "react";
-import "../styles/Thumbnail.css";
+import "../styles/Collection.css";
 import connect from "react-redux/es/connect/connect";
-import {createLabelFile, fetchLabels, selectImage} from "./controlActions";
+import {createLabelFile, fetchLabels, selectImage} from "../control/controlActions";
 import "@material/elevation/dist/mdc.elevation.css";
 
-class ThumbnailP extends React.Component {
+class CollectionP extends React.Component {
     constructor(props) {
         super(props);
         this.handleHover = this.handleHover.bind(this);
-        this.state={
+        this.state = {
             isHovered: false
         }
     }
@@ -27,14 +27,27 @@ class ThumbnailP extends React.Component {
         let thumbnailPath = this.getThumbnailPath();
         let activeClass = this.props.active ? 'active' : "";
         let hoverClass = this.state.isHovered ? "mdc-elevation--z6" : "mdc-elevation--z0";
-        let widthClass = this.props.fixedWidth ? "fixed-width": "";
+        let widthClass = this.props.fixedWidth ? "fixed-width" : "";
         return (
             <li className={"tn-card " + hoverClass + " " + widthClass + " mdc-elevation-transition " + activeClass}
                 onClick={this.props.onSelect}
                 onMouseEnter={this.handleHover}
                 onMouseLeave={this.handleHover}>
-                <div className="l-img-thumbnail">
-                    <img src={thumbnailPath}/>
+                <div className="row remove-all-margin">
+                    <div className="col-6 remove-all-padding thumbnail-container">
+                        <img className="preview" src={thumbnailPath}/>
+                    </div>
+                    <div className="col-6 remove-all-padding thumbnail-container">
+                        <img className="preview" src={thumbnailPath}/>
+                    </div>
+                </div>
+                <div className="row remove-all-margin">
+                    <div className="col-6 remove-all-padding thumbnail-container">
+                        <img className="preview" src={thumbnailPath}/>
+                    </div>
+                    <div className="col-6 remove-all-padding thumbnail-container">
+                        <img className="preview" src={thumbnailPath}/>
+                    </div>
                 </div>
                 <div className={"tn-text"}>
                     <div className={"tn-title"}>
@@ -71,9 +84,9 @@ function mapDispatchToProps(dispatch, ownProps) {
     }
 }
 
-const Thumbnail = connect(
+const Collection = connect(
     mapStateToProps,
     mapDispatchToProps
-)(ThumbnailP);
+)(CollectionP);
 
-export default Thumbnail;
+export default Collection;

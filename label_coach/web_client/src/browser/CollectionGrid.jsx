@@ -3,6 +3,8 @@ import _ from "lodash";
 import RGL, {WidthProvider} from "react-grid-layout";
 import {connect} from "react-redux";
 import Thumbnail from "../control/Thumbnail";
+import "../styles/CollectionGrid.css"
+import Collection from "./Collection";
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -17,8 +19,8 @@ class CollectionGridP extends React.PureComponent {
         if (this.props.images.length > 0) {
             this.props.images.forEach((image, i) => {
                 rows.push(
-                    <Thumbnail key={image.id} id={image.id} active={image.active} title={image.title}
-                               resPath={image.getThumbnail} labelFileId={image.labelFileId}/>
+                    <Collection key={image.id} id={image.id} active={image.active} title={image.title}
+                               resPath={image.getThumbnail} labelFileId={image.labelFileId} fixedWidth={true}/>
                 );
             });
         }
@@ -27,7 +29,7 @@ class CollectionGridP extends React.PureComponent {
 
     render() {
         return (
-            <ReactGridLayout
+            <ReactGridLayout className="layout"
                 {...this.props}
             >
                 {this.generateDOM()}

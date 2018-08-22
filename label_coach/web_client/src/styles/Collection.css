@@ -1,0 +1,21 @@
+.thumbnail-container {
+    width: 100px;
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+    height: 50px;
+
+}
+
+img.preview{
+    border: 1px solid black;
+    max-height: 100%;
+}
+
+.remove-all-padding{
+    padding: 0!important;
+}
+
+.remove-all-margin{
+    margin: 0!important;
+}
