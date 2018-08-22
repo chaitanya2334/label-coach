@@ -5,9 +5,10 @@
 ## Installation Instructions
 
 Requirements
-1. Node 8+
+1. Node 8.11.4+
 2. mongodb
-3. python 3.6
+3. npm 5.6+
+4. python 3.6
 
 ### Step 1: Install girder
 
