@@ -1,6 +1,6 @@
 import * as React from "react";
 import "../styles/LabelTasker.css";
-import {Provider} from "react-redux";
+import {connect, Provider} from "react-redux";
 import {applyMiddleware, createStore} from "redux";
 import rootReducer from "../root_reducer";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
@@ -16,69 +16,63 @@ import thunk from "redux-thunk";
 import {fetchImages, fetchLabels, postLabels} from "../control/controlActions";
 import {Link} from "react-router-dom";
 import CollectionBrowserP from "./collection_browser";
+import UserControl from "../control/UserControl";
 
-export default class LabelTasker extends React.Component {
+class LabelTaskerP extends React.Component {
     constructor(props) {
         super(props);
-        this.store = createStore(rootReducer, applyMiddleware(thunk));
-        const unsubscribe = this.store.subscribe(() =>
-                                                     console.log(this.store.getState())
-        );
-        this.store.dispatch(fetchImages());
-        this.actors = [postLabels,];
-        this.acting = false;
-        this.store.subscribe(() => {
-            // Ensure that any action dispatched by actors do not result in a new
-            // actor run, allowing actors to dispatch with impunity.
-            if (!this.acting) {
-                this.acting = true;
-                this.actors.forEach((actor, index) => {
-                    console.log(actor, index);
-                    this.store.dispatch(actor(this.store.getState()))
-                });
-                this.acting = false
-            }
-        })
+        this.props.fetchImages();
     }
 
     render() {
         return (
-            <Provider store={this.store}>
-                <div className={"container-fluid remove-left-padding remove-right-padding"}>
-                    <nav className={"navbar sticky-top navbar-light bg-light remove-left-padding"}>
-                        <Link to="/content" component={CollectionBrowserP}>
-                            <div className={"navbar-brand"}>
-                                <Logo/>
-                            </div>
-                        </Link>
-                        <ul className={"navbar-nav"}>
-                            <li className={"nav-item active"}>
-                                <a className={"nav-link"} href={"#"}>
-                                    <FontAwesomeIcon icon={faUser}/>
-                                    aaljuhani
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
+            <div className={"container-fluid remove-left-padding remove-right-padding"}>
+                <nav className={"navbar sticky-top navbar-light bg-light remove-left-padding"}>
+                    <Link to="/content">
+                        <div className={"navbar-brand"}>
+                            <Logo/>
+                        </div>
+                    </Link>
+                    <UserControl/>
+                </nav>
 
-                    <div className={"row"}>
-                        <div className={"col-lg-2 hack-sm-2 remove-left-padding"}>
-                            <SideBarP itemType="images">
-                                <ImageContainer/>
-                            </SideBarP>
-                        </div>
-                        <div className={"col-lg-8 hack-grow-8 align-self-top"}>
-                            <ToolBar/>
-                            <ImageViewer/>
-                        </div>
-                        <div className={"col-lg-2 remove-right-padding"}>
-                            <SideBarP itemType="labels">
-                                <LabelContainer/>
-                            </SideBarP>
-                        </div>
+                <div className={"row"}>
+                    <div className={"col-lg-2 hack-sm-2 remove-left-padding"}>
+                        <SideBarP itemType="images">
+                            <ImageContainer/>
+                        </SideBarP>
+                    </div>
+                    <div className={"col-lg-8 hack-grow-8 align-self-top"}>
+                        <ToolBar/>
+                        <ImageViewer/>
+                    </div>
+                    <div className={"col-lg-2 remove-right-padding"}>
+                        <SideBarP itemType="labels">
+                            <LabelContainer/>
+                        </SideBarP>
                     </div>
                 </div>
-            </Provider>
+            </div>
+
         );
     }
 }
+
+// ---------- Container ----------
+
+function mapStateToProps(state){
+    return state;
+}
+
+function mapDispatchToProps(dispatch){
+    return {
+        fetchImages: ()=>{dispatch(fetchImages())}
+    };
+}
+
+const LabelTasker = connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(LabelTaskerP);
+
+export default LabelTasker;

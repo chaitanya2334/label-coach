@@ -83,13 +83,16 @@ export function replaceLabels(labels) {
 
 export function fetchImages() {
     return function (dispatch) {
-        return fetch("/api/v1/image")
-            .then(response => response.json())
-            .then((json) => {
 
+        return restRequest({
+                               url: "image",
+                               method: 'GET',
+                               data: {}
+                           })
+            .then((json) => {
                 let images = json.map(image => {
                     let labelFileId = null;
-                    if (image.label_id && image.label_id.$oid){
+                    if (image.label_id && image.label_id.$oid) {
                         labelFileId = image.label_id.$oid;
                     }
                     return {
@@ -124,7 +127,7 @@ export function selectImage(image_id) {
     }
 }
 
-export function addLabelId(image_id, label_id){
+export function addLabelId(image_id, label_id) {
     return {
         type: 'ADD_LABEL_ID',
         image_id: image_id,
@@ -134,8 +137,13 @@ export function addLabelId(image_id, label_id){
 
 export function createLabelFile(fileName, imageId) {
     return function (dispatch) {
-        return fetch("/api/v1/label/create?file_name=" + fileName)
-            .then(response => response.json())
+        return restRequest({
+                               url: "/label/create",
+                               method: 'GET',
+                               data: {
+                                   file_name: fileName
+                               }
+                           })
             .then(json => {
                 // TODO move it out of this action. Not really happy about dispatching this action here.
                 let labelId = json.label_id.$oid;
@@ -162,8 +170,13 @@ export function postLabels(state) {
 
 export function fetchLabels(label_id) {
     return function (dispatch) {
-        return fetch("/api/v1/label/" + label_id)
-            .then(response => response.json())
+        return restRequest({
+                               url: "/label/" + label_id,
+                               method: 'GET',
+                               data: {
+                                   label_id: label_id
+                               }
+                           })
             .then(json => {
                 let labels = json.labels;
                 labels = labels.map(label => ({

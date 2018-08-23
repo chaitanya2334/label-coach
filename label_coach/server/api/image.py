@@ -35,11 +35,6 @@ class ImageResource(Resource):
         self.route('GET', (), handler=self.getImageList)
         self.route('GET', (':image_id',), self.dzi)
         self.route('GET', (':image_id', ':level', ':tfile'), self.tile)
-        user = User().authenticate(login="dummy", password="dummy1234")
-        setCurrentUser(user)
-        self.collection_model = Collection()
-        self.collection = list(self.collection_model.list(user=self.getCurrentUser(), limit=1))[0]
-        print_ok(self.collection)
 
     def load_slides(self, image_id):
         file = File().load(image_id, level=AccessType.READ, user=self.getCurrentUser())
@@ -50,8 +45,10 @@ class ImageResource(Resource):
         return slides
 
     def find_label_id(self, name):
-        labels = self.collection_model.fileList(self.collection, user=self.getCurrentUser(), data=False,
-                                                includeMetadata=True, mimeFilter=['application/json'])
+        collection_model = Collection()
+        collection = list(collection_model.list(user=self.getCurrentUser(), limit=1))[0]
+        labels = collection_model.fileList(collection, user=self.getCurrentUser(), data=False,
+                                           includeMetadata=True, mimeFilter=['application/json'])
         for labelname, label in labels:
             labelname = os.path.splitext(labelname)[0]
             print_ok2("labelname: " + labelname)
@@ -66,8 +63,10 @@ class ImageResource(Resource):
         print_ok('getImageList() was called!')
 
         try:
-            files = self.collection_model.fileList(self.collection, user=self.getCurrentUser(), data=False,
-                                                   includeMetadata=True, mimeFilter=['application/octet-stream'])
+            collection_model = Collection()
+            collection = list(collection_model.list(user=self.getCurrentUser(), limit=1))[0]
+            files = collection_model.fileList(collection, user=self.getCurrentUser(), data=False,
+                                              includeMetadata=True, mimeFilter=['application/octet-stream'])
 
             ret_files = []
             for filename, file in files:

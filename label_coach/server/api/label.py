@@ -37,17 +37,11 @@ class LabelResource(Resource):
         self.route('GET', (':label_id',), self.getLabel)
         self.route('GET', ('create',), self.create_label_file)
         self.route('POST', (), self.postLabel)
-        user = User().authenticate(login="dummy", password="dummy1234")
-        setCurrentUser(user)
-        self.collection_model = Collection()
-        self.collection = list(self.collection_model.list(user=user, offset=0, limit=1))[0]
-        self.parent_folder = self.get_root_folder()
-        self.assetstore = Assetstore().getCurrent()
-        print_ok(self.collection)
-        print_ok(self.getCurrentUser())
 
     def get_root_folder(self):
-        return list(Folder().find({'parentId': self.collection['_id']}))[0]
+        collection_model = Collection()
+        collection = list(collection_model.list(user=self.getCurrentUser(), offset=0, limit=1))[0]
+        return list(Folder().find({'parentId': collection['_id']}))[0]
 
     def write_to_file(self, file, data):
         j = json.dumps(data, indent=2, sort_keys=True)
@@ -59,9 +53,10 @@ class LabelResource(Resource):
         return upload
 
     def create_new_file(self, file_name):
+        parent_folder = self.get_root_folder()
         item = Item().createItem(file_name,
                                  creator=self.getCurrentUser(),
-                                 folder=self.parent_folder,
+                                 folder=parent_folder,
                                  description='label file',
                                  reuseExisting=False)
 
@@ -83,8 +78,10 @@ class LabelResource(Resource):
         print_ok('getLabelsList() was called!')
 
         try:
-            files = self.collection_model.fileList(self.collection, user=self.getCurrentUser(), data=False,
-                                                   includeMetadata=True, mimeFilter=['application/json'])
+            collection_model = Collection()
+            collection = list(collection_model.list(user=self.getCurrentUser(), offset=0, limit=1))[0]
+            files = collection_model.fileList(collection, user=self.getCurrentUser(), data=False,
+                                              includeMetadata=True, mimeFilter=['application/json'])
             files = list(files)
             cherrypy.response.headers["Content-Type"] = "application/json"
             return dumps(files)
@@ -99,17 +96,11 @@ class LabelResource(Resource):
     @rest.rawResponse
     def create_label_file(self, file_name):
         try:
-
             itemModel = Item()
             uploadModel = Upload()
             print(list(itemModel.find({'name': file_name})))
             if not list(itemModel.find({'name': file_name})):
-                # I shouldnt have to do this... TODO find why i lose currentUser
-                user = User().authenticate(login="dummy", password="dummy1234")
-                setCurrentUser(user)
-                print_ok2(self.getCurrentUser())
                 file = self.create_new_file(file_name)
-
                 config_file = list(File().find({'name': "config.json"}))[0]
                 print_ok(config_file)
                 res = self.copy(config_file, file)
@@ -147,8 +138,7 @@ class LabelResource(Resource):
     def postLabel(self, label_id, params):
         try:
             fileModel = File()
-            user = self.getCurrentUser()
-            file = fileModel.load(label_id, level=AccessType.WRITE, user=user)
+            file = fileModel.load(label_id, level=AccessType.WRITE, user=self.getCurrentUser())
             cherrypy.response.headers["Content-Type"] = "application/json"
             params['labels'] = json.loads(params['labels'])
             upload = self.write_to_file(file, params)
