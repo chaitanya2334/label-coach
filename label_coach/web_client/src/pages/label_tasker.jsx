@@ -44,39 +44,38 @@ export default class LabelTasker extends React.Component {
     render() {
         return (
             <Provider store={this.store}>
-                <div className={"container-fluid remove-left-padding remove-right-padding"}>
-                    <nav className={"navbar sticky-top navbar-light bg-light remove-left-padding"}>
-                        <Link to="/content" component={CollectionBrowserP}>
-                            <div className={"navbar-brand"}>
-                                <Logo/>
-                            </div>
-                        </Link>
-                        <ul className={"navbar-nav"}>
-                            <li className={"nav-item active"}>
-                                <a className={"nav-link"} href={"#"}>
-                                    <FontAwesomeIcon icon={faUser}/>
-                                    aaljuhani
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-
+                <div className={"container-fluid"}>
+                        <nav className={"navbar row sticky-top navbar-dark bg-dark navbar-slim"}>
+                                <Link to="/content" component={CollectionBrowserP}>
+                                    <div className={"navbar-brand"}>
+                                        <Logo/>
+                                    </div>
+                                </Link>
+                                <ul className={"navbar-nav"}>
+                                    <li className={"nav-item active"}>
+                                        <a className={"nav-link"} href={"#"}>
+                                            <FontAwesomeIcon icon={faUser}/>
+                                            aaljuhani
+                                        </a>
+                                    </li>
+                                </ul>
+                        </nav>
                     <div className={"row"}>
-                        <div className={"col-lg-2 hack-sm-2 remove-left-padding"}>
-                            <SideBarP itemType="images">
-                                <ImageContainer/>
-                            </SideBarP>
+                        <div className={"col-lg-2 hack-sm-2 "}>
+                                <SideBarP itemType="images">
+                                    <ImageContainer/>
+                                </SideBarP>
+                            </div>
+                            <div className={"col-lg-8 hack-grow-8 align-self-top"}>
+                                <ToolBar/>
+                                <ImageViewer/>
+                            </div>
+                            <div className={"col-lg-2 "}>
+                                <SideBarP itemType="labels">
+                                    <LabelContainer/>
+                                </SideBarP>
+                            </div>
                         </div>
-                        <div className={"col-lg-8 hack-grow-8 align-self-top"}>
-                            <ToolBar/>
-                            <ImageViewer/>
-                        </div>
-                        <div className={"col-lg-2 remove-right-padding"}>
-                            <SideBarP itemType="labels">
-                                <LabelContainer/>
-                            </SideBarP>
-                        </div>
-                    </div>
                 </div>
             </Provider>
         );
