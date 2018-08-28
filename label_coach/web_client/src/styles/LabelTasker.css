@@ -49,6 +49,7 @@
 
 body.background{
     background-color: #E7E8E8 !important;
+    overflow: hidden!important;
 }
 
 /* fixing issues with modal in girder*/

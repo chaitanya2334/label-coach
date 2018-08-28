@@ -17,7 +17,9 @@ from girder.models.item import Item
 from girder.models.upload import Upload
 from girder.models.user import User
 from girder.utility import RequestBodyStream
-from ..bcolors import print_ok, print_fail, print_ok2
+
+from ..error import errorMessage
+from ..bcolors import printOk, printFail, print_ok2
 
 
 class PILBytesIO(BytesIO):
@@ -35,7 +37,7 @@ class LabelResource(Resource):
                           'tools.staticdir.index': 'index.html'}
         self.route('GET', (), handler=self.getLabelList)
         self.route('GET', (':label_id',), self.getLabel)
-        self.route('GET', ('create',), self.create_label_file)
+        self.route('GET', ('create',), self.createLabelFile)
         self.route('POST', (), self.postLabel)
 
     def get_root_folder(self):
@@ -52,7 +54,7 @@ class LabelResource(Resource):
         uploadModel.handleChunk(upload, chunk, filter=True, user=self.getCurrentUser())
         return upload
 
-    def create_new_file(self, file_name):
+    def createNewFile(self, file_name):
         parent_folder = self.get_root_folder()
         item = Item().createItem(file_name,
                                  creator=self.getCurrentUser(),
@@ -75,7 +77,7 @@ class LabelResource(Resource):
         Description('Get label list'))
     @rest.rawResponse
     def getLabelList(self):
-        print_ok('getLabelsList() was called!')
+        printOk('getLabelsList() was called!')
 
         try:
             collection_model = Collection()
@@ -87,33 +89,38 @@ class LabelResource(Resource):
             return dumps(files)
 
         except:
-            print_fail(traceback.print_exc)
+            printFail(traceback.print_exc)
+
 
     @access.public
     @autoDescribeRoute(
         Description('Create a new label file if it doesnt exist')
             .param('file_name', 'label file name'))
     @rest.rawResponse
-    def create_label_file(self, file_name):
+    def createLabelFile(self, file_name):
         try:
-            itemModel = Item()
-            file = list(File().find({'name': file_name}))[0]
+            file = list(File().find({'name': file_name}).limit(1))
             print(file)
             if not file:
-                file = self.create_new_file(file_name)
-                config_file = list(File().find({'name': "config.json"}))[0]
-                print_ok(config_file)
-                res = self.copy(config_file, file)
-                print_ok(res['fileId'])
-                return dumps({
-                    "label_id": res['fileId']
-                })
+                file = self.createNewFile(file_name)
+                config_file = list(File().find({'name': "config.json"}).limit(1))
+                if not config_file:
+                    printFail("No config file found")
+                    return errorMessage("No config file found")
+                else:
+                    config_file = config_file[0]
+                    printOk(config_file)
+                    res = self.copy(config_file, file)
+                    printOk(res['fileId'])
+                    return dumps({
+                        "label_id": res['fileId']
+                    })
 
             return dumps({
-                "label_id": file['_id']
+                "label_id": file[0]['_id']
             })
         except:
-            print_fail(traceback.print_exc)
+            printFail(traceback.print_exc)
             cherrypy.response.status = 500
 
     @access.public
@@ -129,7 +136,7 @@ class LabelResource(Resource):
             return fileModel.download(file)
         except:
             # Unknown slug
-            print_fail(traceback.print_exc)
+            printFail(traceback.print_exc)
             cherrypy.response.status = 404
 
     @access.public
@@ -149,5 +156,5 @@ class LabelResource(Resource):
 
         except:
             # Unknown slug
-            print_fail(traceback.print_exc)
+            printFail(traceback.print_exc)
             cherrypy.response.status = 404
