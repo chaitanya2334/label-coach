@@ -15,6 +15,7 @@ export function folders(folders = [], action) {
     switch (action.type) {
         case 'POPULATE_FOLDERS':
             return produce(folders, draftState => {
+                draftState = [];
                 for (let folder of action.folders) {
                     draftState.push({
                                         id: draftState.length,

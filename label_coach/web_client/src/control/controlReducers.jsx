@@ -24,6 +24,7 @@ export function images(images = [], action) {
         case 'POPULATE_IMAGES':
 
             return produce(images, draftState => {
+                draftState = [];
                 for (let image of action.images) {
                     draftState.push({
                                         id: draftState.length,
