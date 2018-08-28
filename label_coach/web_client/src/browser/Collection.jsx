@@ -53,7 +53,7 @@ class CollectionP extends React.Component {
                 onMouseEnter={this.handleHover}
                 onMouseLeave={this.handleHover}>
                 <ReactGridLayout className="layout" autoSize={true} isDraggable={false} isResizable={false}
-                                 rowHeight={50} responsive={false}>
+                                 rowHeight={50} responsive={false} margin={[2, 2]}>
                     {this.getThumbnails(4)}
                 </ReactGridLayout>
                 <div className={"co-text"}>
