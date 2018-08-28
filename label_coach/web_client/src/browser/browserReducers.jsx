@@ -25,6 +25,7 @@ export function folders(folders = [], action) {
                                         updated: folder.updated
                                     })
                 }
+                return draftState;
             });
         case 'UPDATE_FOLDER_THUMBNAILS':
             return produce(folders, (draftState) => {

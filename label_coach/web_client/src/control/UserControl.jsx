@@ -13,20 +13,28 @@ class UserControlP extends React.Component {
 
     render() {
         let username = "no-login";
-        if(this.props.user === undefined){
+        if (this.props.user === undefined) {
             this.props.fetchCurrentUser();
-        }else{
+        } else {
             username = this.props.user.login;
         }
         return (
-            <ul className={"navbar-nav"}>
-                <li className={"nav-item active"}>
-                    <a className={"nav-link"} href={"#"}>
-                        <FontAwesomeIcon icon={faUser}/>
-                        {username}
-                    </a>
-                </li>
-            </ul>
+            <div className="dropdown show">
+                <a className="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <FontAwesomeIcon icon={faUser}/>
+                    {username}
+                </a>
+
+                <div className="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                    <a className="dropdown-item" href="#">Settings</a>
+                    <a className="dropdown-item" href="#">Another action</a>
+                    <div className="dropdown-divider"/>
+                    <a className="dropdown-item" href="#">Logout</a>
+                </div>
+            </div>
+
+
         );
     }
 
@@ -34,15 +42,17 @@ class UserControlP extends React.Component {
 
 // ---------- Container ----------
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
     return {
         user: state.authentication.user
     };
 }
 
-function mapDispatchToProps(dispatch, ownProps){
+function mapDispatchToProps(dispatch, ownProps) {
     return {
-        fetchCurrentUser: ()=>{dispatch(getLoggedUser(ownProps.history))}
+        fetchCurrentUser: () => {
+            dispatch(getLoggedUser(ownProps.history))
+        }
     };
 }
 
