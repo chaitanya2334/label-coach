@@ -26,7 +26,7 @@ class ThumbnailP extends React.Component {
     render() {
         let thumbnailPath = this.getThumbnailPath();
         let activeClass = this.props.active ? 'active' : "";
-        let hoverClass = this.state.isHovered ? "mdc-elevation--z6" : "mdc-elevation--z0";
+        let hoverClass = this.state.isHovered ? "mdc-elevation--z3" : "mdc-elevation--z0";
         let widthClass = this.props.fixedWidth ? "fixed-width": "";
         return (
             <li className={"tn-card " + hoverClass + " " + widthClass + " mdc-elevation-transition " + activeClass}

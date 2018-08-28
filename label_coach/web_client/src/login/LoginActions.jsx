@@ -1,9 +1,10 @@
-import {login as authLogin, logout as authLogout} from 'girder/auth';
-
+import {login as authLogin, logout as authLogout, fetchCurrentUser} from 'girder/auth';
+import {restRequest} from 'girder/rest';
 import {browserHistory} from "react-router";
 import {corsAuth, getCurrentToken, getCurrentUser, setCurrentToken, setCurrentUser} from "girder/auth";
 import events from "girder/events";
 import {handleClose} from "girder/dialog";
+import UserModel from "girder/models/UserModel";
 
 
 export function successMessage(message) {
@@ -16,6 +17,23 @@ export function errorMessage(message) {
 
 export function clearMessage() {
     return {type: 'ALERT_CLEAR'};
+}
+
+export function getLoggedUser(history) {
+    return dispatch => {
+        fetchCurrentUser()
+            .done(user => {
+                dispatch(success(user));
+            })
+            .fail(error => {
+                dispatch(errorMessage(error.toString));
+                history.push("/");
+            });
+    };
+
+    function success(user) {
+        return {type: 'LOGIN_SUCCESS', user}
+    }
 }
 
 export function login(username, password, history) {

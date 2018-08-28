@@ -14,6 +14,8 @@ import UserControl from "../control/UserControl";
 export default class CollectionBrowserP extends React.Component {
     constructor(props) {
         super(props);
+        // make sure the user is logged in
+
     }
 
     render() {

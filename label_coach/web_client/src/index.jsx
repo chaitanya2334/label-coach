@@ -5,14 +5,14 @@ import LabelTasker from "./pages/label_tasker";
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import LoginPage from "./pages/login";
-import {BrowserRouter as Router, Route, Link} from "react-router-dom";
+import {Route, HashRouter} from "react-router-dom";
 import CollectionBrowserP from "./pages/collection_browser";
 import RegisterPage from "./pages/register";
 import {Provider} from "react-redux";
 import {applyMiddleware, createStore} from "redux";
 import rootReducer from "./root_reducer";
 import thunk from "redux-thunk";
-import {fetchImages, postLabels} from "./control/controlActions";
+import {postLabels} from "./control/controlActions";
 
 class Index extends React.Component {
     constructor(props) {
@@ -40,14 +40,14 @@ class Index extends React.Component {
     render() {
         return (
             <Provider store={this.store}>
-                <Router>
+                <HashRouter>
                     <div>
                         <Route exact path="/" component={LoginPage}/>
                         <Route exact path="/register" component={RegisterPage}/>
                         <Route exact path="/tasker" component={LabelTasker}/>
                         <Route exact path="/content" component={CollectionBrowserP}/>
                     </div>
-                </Router>
+                </HashRouter>
             </Provider>
         );
     }
