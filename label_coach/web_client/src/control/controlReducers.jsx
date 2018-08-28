@@ -47,7 +47,7 @@ export function images(images = [], action) {
         case 'ADD_LABEL_ID':
             return produce(images, (draftState) => {
                 draftState[action.image_id] = imageReducer(draftState[action.image_id], action)
-            })
+            });
         default:
             return images;
     }

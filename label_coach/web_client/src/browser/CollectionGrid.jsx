@@ -5,6 +5,7 @@ import {connect} from "react-redux";
 import Thumbnail from "../control/Thumbnail";
 import "../styles/CollectionGrid.css"
 import Collection from "./Collection";
+import {fetchFolders} from "./browserActions";
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -12,15 +13,15 @@ class CollectionGridP extends React.PureComponent {
 
     constructor(props) {
         super(props);
+        this.props.fetchFolders("5b7c7bca3a42672d1b00d601")
     }
 
     generateDOM() {
         let rows = [];
-        if (this.props.images.length > 0) {
-            this.props.images.forEach((image, i) => {
+        if (this.props.folders.length > 0) {
+            this.props.folders.forEach((collection, i) => {
                 rows.push(
-                    <Collection key={image.id} id={image.id} active={image.active} title={image.title}
-                               resPath={image.getThumbnail} labelFileId={image.labelFileId} fixedWidth={true}/>
+                    <Collection key={collection.id} objId={collection.objId} title={collection.name} fixedWidth={true}/>
                 );
             });
         }
@@ -30,7 +31,7 @@ class CollectionGridP extends React.PureComponent {
     render() {
         return (
             <ReactGridLayout className="layout"
-                {...this.props}
+                             {...this.props}
             >
                 {this.generateDOM()}
             </ReactGridLayout>
@@ -40,18 +41,23 @@ class CollectionGridP extends React.PureComponent {
 
 // ---------- Container ----------
 
-function getSearchLabels(images, searchTerm) {
-    return images.filter(image => image.title.match(searchTerm));
+function getSearchLabels(folders, searchTerm) {
+    return folders.filter(folder => folder.name.match(searchTerm));
 }
 
 function mapStateToProps(state) {
     return {
-        images: getSearchLabels(state.images, state.searchImages)
+        id: state,
+        folders: getSearchLabels(state.folders, state.searchFolders)
     }
 }
 
 function mapDispatchToProps(dispatch) {
-    return {};
+    return {
+        fetchFolders: (id) => {
+            dispatch(fetchFolders(id))
+        }
+    };
 }
 
 

@@ -10,19 +10,15 @@ import RegisterForm from "../login/RegisterForm";
 export default class RegisterPage extends React.Component {
     constructor(props) {
         super(props);
-        this.store = createStore(rootReducer, applyMiddleware(thunk));
-        const unsubscribe = this.store.subscribe(() =>
-                                                     console.log(this.store.getState())
-        );
     }
 
     render() {
         return (
-            <Provider store={this.store}>
+
                 <div className="jumbotron">
                     <RegisterForm/>
                 </div>
-            </Provider>
+
         );
     }
 }

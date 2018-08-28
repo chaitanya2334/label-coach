@@ -1,8 +1,13 @@
 import * as React from "react";
 import "../styles/Collection.css";
 import connect from "react-redux/es/connect/connect";
-import {createLabelFile, fetchLabels, selectImage} from "../control/controlActions";
 import "@material/elevation/dist/mdc.elevation.css";
+import {fetchThumbnails, selectCollection} from "./browserActions";
+import {WidthProvider} from "react-grid-layout";
+import RGL from "react-grid-layout";
+import {withRouter} from "react-router";
+
+const ReactGridLayout = WidthProvider(RGL);
 
 class CollectionP extends React.Component {
     constructor(props) {
@@ -10,11 +15,26 @@ class CollectionP extends React.Component {
         this.handleHover = this.handleHover.bind(this);
         this.state = {
             isHovered: false
-        }
+        };
+        this.props.getThumbnails(4);
     }
 
-    getThumbnailPath() {
-        return this.props.resPath;
+    getThumbnails(n) {
+        let ret = [];
+        let w = 6;
+        let h = 1;
+
+        for (let i = 0; i < n; i++) {
+            let path = "";
+            if (this.props.thumbnails.length > i) {
+                path = "api/v1/image/" + this.props.thumbnails[i].id + "_files/8/0_0.jpeg";
+            }
+            ret.push(
+                <div className="thumbnail-container" key={i} data-grid={{x:w*(i%2), y:h * Math.floor(i/2), w: w, h: h}}>
+                    <img className="preview" src={path}/>
+                </div>);
+        }
+        return ret;
     }
 
     handleHover() {
@@ -24,36 +44,23 @@ class CollectionP extends React.Component {
     }
 
     render() {
-        let thumbnailPath = this.getThumbnailPath();
-        let activeClass = this.props.active ? 'active' : "";
-        let hoverClass = this.state.isHovered ? "mdc-elevation--z6" : "mdc-elevation--z0";
+        let hoverClass = this.state.isHovered ? "mdc-elevation--z2" : "mdc-elevation--z1";
         let widthClass = this.props.fixedWidth ? "fixed-width" : "";
+
         return (
-            <li className={"tn-card " + hoverClass + " " + widthClass + " mdc-elevation-transition " + activeClass}
+            <li className={"tn-card " + hoverClass + " " + widthClass + " mdc-elevation-transition "}
                 onClick={this.props.onSelect}
                 onMouseEnter={this.handleHover}
                 onMouseLeave={this.handleHover}>
-                <div className="row remove-all-margin">
-                    <div className="col-6 remove-all-padding thumbnail-container">
-                        <img className="preview" src={thumbnailPath}/>
-                    </div>
-                    <div className="col-6 remove-all-padding thumbnail-container">
-                        <img className="preview" src={thumbnailPath}/>
-                    </div>
-                </div>
-                <div className="row remove-all-margin">
-                    <div className="col-6 remove-all-padding thumbnail-container">
-                        <img className="preview" src={thumbnailPath}/>
-                    </div>
-                    <div className="col-6 remove-all-padding thumbnail-container">
-                        <img className="preview" src={thumbnailPath}/>
-                    </div>
-                </div>
-                <div className={"tn-text"}>
-                    <div className={"tn-title"}>
+                <ReactGridLayout className="layout" autoSize={true} isDraggable={false} isResizable={false}
+                                 rowHeight={50} responsive={false}>
+                    {this.getThumbnails(4)}
+                </ReactGridLayout>
+                <div className={"co-text"}>
+                    <div className={"co-title"}>
                         {this.props.title}
                     </div>
-                    <div className={"tn-subtitle"}>
+                    <div className={"co-subtitle"}>
                         4 labels
                     </div>
                 </div>
@@ -66,27 +73,26 @@ class CollectionP extends React.Component {
 // ---------- Container ----------
 
 function mapStateToProps(state, ownProps) {
-
-    return state;
+    let id = state.folders.findIndex(x => x.objId === ownProps.objId);
+    return {
+        thumbnails: state.folders[id].thumbnails || []
+    }
 }
 
 function mapDispatchToProps(dispatch, ownProps) {
     return {
         onSelect: (event) => {
-
-            dispatch(selectImage(ownProps.id));
-            if (ownProps.labelFileId) {
-                dispatch(fetchLabels(ownProps.labelFileId));
-            } else {
-                dispatch(createLabelFile(ownProps.title + ".json", ownProps.id));
-            }
+            dispatch(selectCollection(ownProps.objId, ownProps.history));
         },
+        getThumbnails: (count) => {
+            dispatch(fetchThumbnails(ownProps.objId, count));
+        }
     }
 }
 
-const Collection = connect(
+const Collection = withRouter(connect(
     mapStateToProps,
     mapDispatchToProps
-)(CollectionP);
+)(CollectionP));
 
 export default Collection;

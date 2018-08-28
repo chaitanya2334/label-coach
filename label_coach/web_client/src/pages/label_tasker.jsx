@@ -21,7 +21,6 @@ import UserControl from "../control/UserControl";
 class LabelTaskerP extends React.Component {
     constructor(props) {
         super(props);
-        this.props.fetchImages();
     }
 
     render() {

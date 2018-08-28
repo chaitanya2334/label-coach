@@ -81,13 +81,15 @@ export function replaceLabels(labels) {
     }
 }
 
-export function fetchImages() {
+export function fetchImages(id) {
     return function (dispatch) {
 
         return restRequest({
                                url: "image",
                                method: 'GET',
-                               data: {}
+                               data: {
+                                   folderId: id
+                               }
                            })
             .then((json) => {
                 let images = json.map(image => {

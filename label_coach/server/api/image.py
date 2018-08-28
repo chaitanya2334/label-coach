@@ -14,7 +14,8 @@ from girder.constants import AccessType
 from girder.models.assetstore import Assetstore
 from girder.models.collection import Collection
 from girder.models.file import File
-from girder.models.user import User
+
+from girder.models.folder import Folder
 from ..bcolors import print_ok, print_fail, print_ok2
 from ..deepzoom import load_slide
 
@@ -57,17 +58,16 @@ class ImageResource(Resource):
 
     @access.public
     @autoDescribeRoute(
-        Description('Get image list'))
+        Description('Get image list').param('folderId', 'folder id'))
     @rest.rawResponse
-    def getImageList(self):
+    def getImageList(self, folderId):
         print_ok('getImageList() was called!')
 
         try:
-            collection_model = Collection()
-            collection = list(collection_model.list(user=self.getCurrentUser(), limit=1))[0]
-            files = collection_model.fileList(collection, user=self.getCurrentUser(), data=False,
-                                              includeMetadata=True, mimeFilter=['application/octet-stream'])
-
+            folderModel = Folder()
+            folder = folderModel.load(folderId, level=AccessType.READ, user=self.getCurrentUser())
+            files = folderModel.fileList(doc=folder, user=self.getCurrentUser(), data=False, includeMetadata=True,
+                                         mimeFilter=['application/octet-stream'])
             ret_files = []
             for filename, file in files:
                 filename = os.path.splitext(filename)[0]

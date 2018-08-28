@@ -24,7 +24,7 @@ export function login(username, password, history) {
             .done(
                 user => {
                     dispatch(success(user));
-                    history.push("/tasker");
+                    history.push("/content");
 
                 })
             .fail(
