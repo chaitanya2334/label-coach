@@ -146,6 +146,13 @@ export function createLabelFile(fileName, imageId) {
                                    file_name: fileName
                                }
                            })
+            .then(response => {
+                if (typeof response === 'string') {
+                    return JSON.parse(response);
+                }else{
+                    return response;
+                }
+            })
             .then(json => {
                 // TODO move it out of this action. Not really happy about dispatching this action here.
                 let labelId = json.label_id.$oid;

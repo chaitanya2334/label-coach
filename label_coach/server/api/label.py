@@ -97,9 +97,9 @@ class LabelResource(Resource):
     def create_label_file(self, file_name):
         try:
             itemModel = Item()
-            uploadModel = Upload()
-            print(list(itemModel.find({'name': file_name})))
-            if not list(itemModel.find({'name': file_name})):
+            file = list(File().find({'name': file_name}))[0]
+            print(file)
+            if not file:
                 file = self.create_new_file(file_name)
                 config_file = list(File().find({'name': "config.json"}))[0]
                 print_ok(config_file)
@@ -109,7 +109,9 @@ class LabelResource(Resource):
                     "label_id": res['fileId']
                 })
 
-            return {}
+            return dumps({
+                "label_id": file['_id']
+            })
         except:
             print_fail(traceback.print_exc)
             cherrypy.response.status = 500

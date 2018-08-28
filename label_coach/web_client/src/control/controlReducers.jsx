@@ -35,6 +35,7 @@ export function images(images = [], action) {
                                         labelFileId: image.labelFileId
                                     })
                 }
+                return draftState;
             });
         case 'SELECT_IMAGE':
             return produce(images, (draftState) => {

@@ -44,7 +44,7 @@ class Index extends React.Component {
                     <div>
                         <Route exact path="/" component={LoginPage}/>
                         <Route exact path="/register" component={RegisterPage}/>
-                        <Route exact path="/tasker" component={LabelTasker}/>
+                        <Route path="/tasker/:id" component={LabelTasker}/>
                         <Route exact path="/content" component={CollectionBrowserP}/>
                     </div>
                 </HashRouter>

@@ -17,6 +17,7 @@ import {fetchImages, fetchLabels, postLabels} from "../control/controlActions";
 import {Link} from "react-router-dom";
 import CollectionBrowserP from "./collection_browser";
 import UserControl from "../control/UserControl";
+import {withRouter} from "react-router";
 
 class LabelTaskerP extends React.Component {
     constructor(props) {
@@ -24,6 +25,9 @@ class LabelTaskerP extends React.Component {
     }
 
     render() {
+        if(this.props.images.length === 0){
+            this.props.fetchImages();
+        }
         return (
             <div className={"container-fluid remove-left-padding remove-right-padding"}>
                 <nav className={"navbar sticky-top navbar-light bg-light remove-left-padding"}>
@@ -60,18 +64,20 @@ class LabelTaskerP extends React.Component {
 // ---------- Container ----------
 
 function mapStateToProps(state){
-    return state;
-}
-
-function mapDispatchToProps(dispatch){
     return {
-        fetchImages: ()=>{dispatch(fetchImages())}
+        images: state.images
     };
 }
 
-const LabelTasker = connect(
+function mapDispatchToProps(dispatch, ownProps){
+    return {
+        fetchImages: ()=>{dispatch(fetchImages(ownProps.match.params.id))}
+    };
+}
+
+const LabelTasker = withRouter(connect(
     mapStateToProps,
     mapDispatchToProps
-)(LabelTaskerP);
+)(LabelTaskerP));
 
 export default LabelTasker;

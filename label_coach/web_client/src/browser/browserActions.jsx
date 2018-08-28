@@ -18,8 +18,7 @@ function updateFolderThumbnails(folderId, thumbnails){
 
 export function selectCollection(id, history){
     return (dispatch)=>{
-        dispatch(fetchImages(id));
-        history.push("/tasker");
+        history.push("/tasker/" + id);
     }
 }
 
