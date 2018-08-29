@@ -60,7 +60,6 @@ function mapStateToProps(state, ownProps) {
 function mapDispatchToProps(dispatch, ownProps) {
     return {
         onSelect: (event) => {
-
             dispatch(selectImage(ownProps.id));
             if (ownProps.labelFileId) {
                 dispatch(fetchLabels(ownProps.labelFileId));

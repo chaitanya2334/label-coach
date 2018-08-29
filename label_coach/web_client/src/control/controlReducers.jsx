@@ -1,5 +1,24 @@
 import produce from "immer";
 
+export function saveIndicator(saveIndicator={}, action){
+    switch (action.type) {
+        case 'EDIT_SAVE_INDICATOR_TEXT':
+            return produce(saveIndicator, draftState => {
+                draftState.text = action.text
+            });
+        case 'SET_SAVE_STATUS':
+            return produce(saveIndicator, draftState => {
+                draftState.status = action.status
+            });
+        case 'SET_LAST_UPDATED':
+            return produce(saveIndicator, draftState => {
+                draftState.lastUpdated = action.date;
+            });
+        default:
+            return saveIndicator;
+    }
+}
+
 export function imageReducer(image, action) {
     switch (action.type) {
         case 'SELECT_IMAGE':

@@ -21,20 +21,6 @@ class Index extends React.Component {
         const unsubscribe = this.store.subscribe(() =>
                                                      console.log(this.store.getState())
         );
-        this.actors = [postLabels,];
-        this.acting = false;
-        this.store.subscribe(() => {
-            // Ensure that any action dispatched by actors do not result in a new
-            // actor run, allowing actors to dispatch with impunity.
-            if (!this.acting) {
-                this.acting = true;
-                this.actors.forEach((actor, index) => {
-                    console.log(actor, index);
-                    this.store.dispatch(actor(this.store.getState()))
-                });
-                this.acting = false
-            }
-        })
     }
 
     render() {

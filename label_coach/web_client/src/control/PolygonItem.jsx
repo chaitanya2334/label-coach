@@ -1,7 +1,7 @@
 import * as React from "react";
 import "../styles/PolygonItem.css";
 import {connect} from "react-redux";
-import {lockAnnotation, toggleLabelButton, unlockAnnotation} from "./controlActions";
+import {lockAnnotation, setSaveStatus, toggleLabelButton, unlockAnnotation} from "./controlActions";
 
 class PolygonItemP extends React.Component {
     constructor(props) {
@@ -83,10 +83,12 @@ function mapDispatchToProps(dispatch) {
             dispatch(unlockAnnotation("polygon", label_id, poly_id))
         },
         donePoly: (label_id, poly_id) => {
-            dispatch(lockAnnotation("polygon", label_id, poly_id))
+            dispatch(lockAnnotation("polygon", label_id, poly_id));
+            dispatch(setSaveStatus("dirty"));
         },
         doneCreatePoly: (label_id, poly_id) =>{
             dispatch(lockAnnotation("polygon", label_id, poly_id));
+            dispatch(setSaveStatus("dirty"));
             dispatch(toggleLabelButton(label_id, "poly_button"));
         }
     };

@@ -19,7 +19,7 @@ from girder.models.user import User
 from girder.utility import RequestBodyStream
 
 from ..error import errorMessage
-from ..bcolors import printOk, printFail, print_ok2
+from ..bcolors import printOk, printFail, printOk2
 
 
 class PILBytesIO(BytesIO):
@@ -37,6 +37,7 @@ class LabelResource(Resource):
                           'tools.staticdir.index': 'index.html'}
         self.route('GET', (), handler=self.getLabelList)
         self.route('GET', (':label_id',), self.getLabel)
+        self.route('GET', ('meta',), self.getLabelMeta)
         self.route('GET', ('create',), self.createLabelFile)
         self.route('POST', (), self.postLabel)
 
@@ -91,7 +92,6 @@ class LabelResource(Resource):
         except:
             printFail(traceback.print_exc)
 
-
     @access.public
     @autoDescribeRoute(
         Description('Create a new label file if it doesnt exist')
@@ -141,6 +141,21 @@ class LabelResource(Resource):
 
     @access.public
     @autoDescribeRoute(
+        Description('Get label by id')
+            .param('label_id', 'label file id'))
+    def getLabelMeta(self, label_id):
+        try:
+            fileModel = File()
+            file = fileModel.load(label_id, level=AccessType.READ, user=self.getCurrentUser())
+            cherrypy.response.headers["Content-Type"] = "application/json"
+            return dumps(file)
+        except:
+            # Unknown slug
+            printFail(traceback.print_exc)
+            cherrypy.response.status = 404
+
+    @access.public
+    @autoDescribeRoute(
         Description('Post label by id')
             .param('label_id', 'label file id'))
     @rest.rawResponse
@@ -151,7 +166,8 @@ class LabelResource(Resource):
             cherrypy.response.headers["Content-Type"] = "application/json"
             params['labels'] = json.loads(params['labels'])
             upload = self.write_to_file(file, params)
-            print_ok2(upload)
+            printOk2(file)
+            printOk(upload)
             return dumps(upload)
 
         except:

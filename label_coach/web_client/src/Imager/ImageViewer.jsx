@@ -10,9 +10,10 @@ import {
     faSearchPlus
 } from '@fortawesome/free-solid-svg-icons'
 import connect from "react-redux/es/connect/connect";
-import {lockAnnotation, updateAnnotation} from "../control/controlActions";
+import {lockAnnotation, setSaveStatus, updateAnnotation} from "../control/controlActions";
 import Polygon from "./overlay/polygon";
 import Line from "./overlay/line";
+import SaveIndicator from "../control/SaveIndicator";
 
 // helper function to load image using promises
 function loadImage(src) {
@@ -47,33 +48,37 @@ class ImageViewerP extends React.Component {
     render() {
 
         return (
-            <div className="ocd-div" ref={node => {
-                this.el = node;
-            }}>
-                <div className="navigator-wrapper c-shadow">
-                    <div id="navigator"/>
+            <div>
+                <div className={"title"}>{this.props.title}</div>
+                <SaveIndicator/>
+                <div className="ocd-div" ref={node => {
+                    this.el = node;
+                }}>
+                    <div className="navigator-wrapper c-shadow">
+                        <div id="navigator"/>
+                    </div>
+                    <div className="openseadragon" id={this.id}/>
+                    <ul className="ocd-toolbar">
+                        <li>
+                            <a id="zoom-in"><FontAwesomeIcon icon={faSearchPlus}/></a>
+                            <div className="vert-divider"/>
+                        </li>
+
+                        <li>
+                            <a id="reset"><FontAwesomeIcon icon={faHome}/></a>
+                            <div className="vert-divider"/>
+                        </li>
+
+                        <li>
+                            <a id="zoom-out"><FontAwesomeIcon icon={faSearchMinus}/></a>
+                            <div className="vert-divider"/>
+                        </li>
+
+                        <li>
+                            <a id="full-page"><FontAwesomeIcon icon={faExpand}/></a>
+                        </li>
+                    </ul>
                 </div>
-                <div className="openseadragon" id={this.id}/>
-                <ul className="ocd-toolbar">
-                    <li>
-                        <a id="zoom-in"><FontAwesomeIcon icon={faSearchPlus}/></a>
-                        <div className="vert-divider"/>
-                    </li>
-
-                    <li>
-                        <a id="reset"><FontAwesomeIcon icon={faHome}/></a>
-                        <div className="vert-divider"/>
-                    </li>
-
-                    <li>
-                        <a id="zoom-out"><FontAwesomeIcon icon={faSearchMinus}/></a>
-                        <div className="vert-divider"/>
-                    </li>
-
-                    <li>
-                        <a id="full-page"><FontAwesomeIcon icon={faExpand}/></a>
-                    </li>
-                </ul>
             </div>
         )
     }
@@ -306,8 +311,10 @@ function mapStateToProps(state) {
     let polygons = [];
     let lines = [];
     let getDzi = "";
+    let title = "Untitled";
     for (let image of state.images) {
         if (image.active) {
+            title = image.title;
             getDzi = image.getDzi;
             break;
         }
@@ -330,6 +337,7 @@ function mapStateToProps(state) {
         polygons = polygons.concat(newPolygons);
     }
     return {
+        title: title,
         getDzi: getDzi,
         polygons: polygons,
         lines: lines
@@ -343,12 +351,14 @@ function mapDispatchToProps(dispatch) {
         },
         lockPolygon: (label_id, poly_id) => {
             dispatch(lockAnnotation("polygon", label_id, poly_id));
+            dispatch(setSaveStatus("dirty"));
         },
         updateLine: (label_id, line_id, points) => {
             dispatch(updateAnnotation("line", label_id, line_id, points));
         },
         lockLine: (label_id, line_id) => {
             dispatch(lockAnnotation("line", label_id, line_id));
+            dispatch(setSaveStatus("dirty"));
         }
     };
 }

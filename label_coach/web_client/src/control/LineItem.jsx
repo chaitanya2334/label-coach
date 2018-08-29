@@ -1,7 +1,7 @@
 import * as React from "react";
 import "../styles/LineItem.css";
 import {connect} from "react-redux";
-import {lockAnnotation, toggleLabelButton, unlockAnnotation} from "./controlActions";
+import {lockAnnotation, setSaveStatus, toggleLabelButton, unlockAnnotation} from "./controlActions";
 
 
 // ------- Presenter ---------
@@ -87,10 +87,12 @@ function mapDispatchToProps(dispatch) {
             dispatch(unlockAnnotation("line", label_id, line_id))
         },
         doneLine: (label_id, line_id) => {
-            dispatch(lockAnnotation("line", label_id, line_id))
+            dispatch(lockAnnotation("line", label_id, line_id));
+            dispatch(setSaveStatus("dirty"));
         },
         doneCreateLine: (label_id, line_id) =>{
             dispatch(lockAnnotation("line", label_id, line_id));
+            dispatch(setSaveStatus("dirty"));
             dispatch(toggleLabelButton(label_id, "line_button"));
         }
     };

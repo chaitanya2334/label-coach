@@ -16,7 +16,7 @@ from girder.models.collection import Collection
 from girder.models.file import File
 
 from girder.models.folder import Folder
-from ..bcolors import printOk, printFail, print_ok2
+from ..bcolors import printOk, printFail, printOk2
 from ..deepzoom import load_slide
 
 
@@ -51,7 +51,7 @@ class ImageResource(Resource):
                                    mimeFilter=['application/json'])
         for labelname, label in labels:
             labelname = os.path.splitext(labelname)[0]
-            print_ok2("labelname: " + labelname + " " + name)
+            printOk2("labelname: " + labelname + " " + name)
             if labelname == name:
                 return label['_id']
 

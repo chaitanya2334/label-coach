@@ -19,7 +19,7 @@ def printOk(obj):
 
     print(BColors.ENDC)
 
-def print_ok2(obj):
+def printOk2(obj):
     print(BColors.OKBLUE)
 
     if hasattr(obj, '__call__'):
