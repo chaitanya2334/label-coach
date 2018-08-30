@@ -23,10 +23,18 @@
     border-bottom: 1px solid #d9d9d9;
 }
 
-.card-header{
-    padding : 0.5rem 0.25rem !important;
+.card{
+    border: none;
 }
 
+.card-header{
+    padding : 0.5rem 0.25rem !important;
+    cursor:pointer;
+}
+
+.card-body{
+    padding : 0 !important;
+}
 .label .text {
     position: relative;
     font-size: 22px;

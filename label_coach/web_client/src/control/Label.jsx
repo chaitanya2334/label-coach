@@ -39,7 +39,7 @@ class LabelP extends React.Component {
                             <CreatePolyButton active={this.props.active} label={this.props}
                                               buttonState={this.props.polyButtonState}/>
 
-                    <span className={"badge badge-dark float-right"}><Counter key={"c_" + this.props.id} count={this.props.polygons.length + this.props.lines.length}/>
+                    <span className={"badge badge-pill badge-secondary float-right"}><Counter key={"c_" + this.props.id} count={this.props.polygons.length + this.props.lines.length}/>
                         </span>
                   </h5>
                 </div>
