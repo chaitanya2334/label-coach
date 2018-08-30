@@ -13,14 +13,9 @@ export default class SideBarP extends React.Component {
     render() {
         return (
 
-            <div className={"sidebar row"}>
-                <ul className={"sidebar-header"}>
-                    <li className={"marginTop"}>
-                        <SearchBar id={this.props.itemType}/>
-                    </li>
-                </ul>
-
-               
+            <div className={"sidebar"}>
+                <SearchBar id={this.props.itemType}/>
+                    {this.props.children}
             </div>
         )
     }

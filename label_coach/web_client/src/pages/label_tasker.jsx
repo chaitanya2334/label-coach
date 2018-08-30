@@ -67,7 +67,6 @@ export default class LabelTasker extends React.Component {
                                 </SideBarP>
                             </div>
                             <div className={"col-lg-8 hack-grow-8 align-self-top"}>
-                                <ToolBar/>
                                 <ImageViewer/>
                             </div>
                             <div className={"col-lg-2 "}>
