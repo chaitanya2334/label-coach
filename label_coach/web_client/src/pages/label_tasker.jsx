@@ -29,8 +29,8 @@ class LabelTaskerP extends React.Component {
             this.props.fetchImages();
         }
         return (
-            <div className={"container-fluid remove-left-padding remove-right-padding"}>
-                <nav className={"navbar sticky-top navbar-light bg-light remove-left-padding"}>
+            <div className={"container-fluid"}>
+                <nav className={"navbar row sticky-top navbar-dark bg-dark navbar-slim"}>
                     <Link to="/content">
                         <div className={"navbar-brand"}>
                             <Logo/>

@@ -29,7 +29,7 @@ class CreateLineButtonP extends React.Component {
         let activeClass = this.props.active ? "active" : "";
         let faType = this.props.buttonState ? faPen : faTimes;
         return (
-            <div className={"create_button " + activeClass}>
+            <div className={"create_button active" }>
                 <button type="button" className={"btn btn-primary"} onClick={this.onClick}><FontAwesomeIcon
                     icon={faType}/></button>
             </div>

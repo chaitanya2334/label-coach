@@ -21,18 +21,32 @@
     margin: 0.5rem;
     position: relative;
     border: rgba(0, 0, 0, 0.3) 1px solid;
+    padding: 5px 5px;
+}
+
+.tn-text{
+width: 130px;
+text-overflow: ellipsis;
+
+  /* Required for text-overflow to do anything */
+  white-space: nowrap;
+  overflow: hidden;
+
 }
 
 .tn-title {
-    font-size: 16px;
+    font-size: 0.7rem;
     font-weight: 700;
+
+
 }
 
 .tn-subtitle {
-    font-size: 12px;
+    font-size: 0.7rem;
     font-weight: 300;
 }
 
 .tn-card.active {
     border: #4D9DE0 1px solid;
 }
+

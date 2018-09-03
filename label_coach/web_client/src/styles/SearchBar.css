@@ -4,6 +4,12 @@
     border-radius: 0 !important;
 }
 
+.search-box{
+    padding-bottom: 10px;
+    padding-top: 10px;
+
+}
+
 input[type=text]{
     font-weight: 300;
 }

@@ -59,6 +59,19 @@ export function toggleLabel(label) {
     }
 }
 
+export function toggleCollapse(label) {
+    return {
+        type: 'TOGGLE_COLLAPSE',
+        label_id: label.id,
+    }
+}
+export function toggleExpand(label) {
+    return {
+        type: 'TOGGLE_EXPAND',
+        label_id: label.id,
+    }
+}
+
 export function addSearchEntry(text, id) {
     return {
         type: 'ADD_SEARCH_ENTRY',

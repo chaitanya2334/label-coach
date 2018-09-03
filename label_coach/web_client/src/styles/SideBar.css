@@ -5,8 +5,11 @@
     flex-direction: column;
     position: relative;
     background-color: white;
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16), 0 2px 10px 0 rgba(0, 0, 0, .12);
-    -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16), 0 2px 10px 0 rgba(0, 0, 0, .12);
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    overflow-y: scroll;
+    margin-right: -15px;
+    margin-left: -15px;
+
 }
 .card-header {
     padding: 0.50rem 1.25rem !important;

@@ -37,9 +37,9 @@ class ThumbnailP extends React.Component {
                     <img src={thumbnailPath}/>
                 </div>
                 <div className={"tn-text"}>
-                    <div className={"tn-title"}>
+                    <p className={"tn-title"}>
                         {this.props.title}
-                    </div>
+                    </p>
                     <div className={"tn-subtitle"}>
                         4 labels
                     </div>

@@ -17,35 +17,41 @@ class LabelP extends React.Component {
     render() {
         let faType = this.props.active ? faAngleUp : faAngleDown;
         let activeClass = this.props.active ? "active" : "";
+        let collapse = this.props.collapse ? "collapse" : "";
+        let areaexpand = this.props.areaexpand ? "true" : "false";
 
         console.log(this.props.polygons.length + this.props.lines.length);
 
         return (
-            <div>
-                <div className={"container-fluid label " + this.props.color + " " + activeClass} >
-                    <div className={"row align-items-center"}>
-                        <div className={"col-sm-6 text"} onClick={this.props.onClick}>
-                            {this.props.name}<br/>
-                            <Counter key={"c_" + this.props.id} count={this.props.polygons.length + this.props.lines.length}/>
-                        </div>
-                        <div className={"col-sm-2"}>
+
+
+            <div className="card">
+                <div  className={"card-header " + this.props.color + " " + activeClass} id={"heading_"+this.props.name}>
+                  <h5 className="mb-0">
+                    <span onClick={this.props.onClick}> <FontAwesomeIcon icon={faType} className="icon-size"/> </span>
+                    <a  onClick={this.props.onClick} data-toggle={collapse} data-target={"#collapse_"+this.props.name} aria-expanded={areaexpand} aria-controls={"#collapse_"+this.props.name}>
+                      {this.props.name}
+                    </a>
+
                             <CreateLineButton active={this.props.active} label={this.props}
                                               buttonState={this.props.lineButtonState}/>
-                        </div>
-                        <div className={"col-sm-2"}>
+
                             <CreatePolyButton active={this.props.active} label={this.props}
                                               buttonState={this.props.polyButtonState}/>
-                        </div>
 
-                        <div className={"col-sm-1"} onClick={this.props.onClick}>
-                            <FontAwesomeIcon icon={faType} className="icon-size"/>
-                        </div>
-                    </div>
+                    <span className={"badge badge-pill badge-secondary float-right"}><Counter key={"c_" + this.props.id} count={this.props.polygons.length + this.props.lines.length}/>
+                        </span>
+                  </h5>
                 </div>
-                <AnnotationListP key={"ann_" + this.props.id} label_id={this.props.id} polygons={this.props.polygons}
+
+                <div id={"collapse_"+this.props.name} className={"collapse show "+ collapse} aria-labelledby={"heading_"+this.props.name} >
+                  <div className="card-body">
+                    <AnnotationListP key={"ann_" + this.props.id} label_id={this.props.id} polygons={this.props.polygons}
                                  lines={this.props.lines}
-                                 color={this.props.id} active={this.props.active}/>
-            </div>
+                                 color={this.props.id} active={this.props.active}/> </div>
+                </div>
+             </div>
+
 
         )
     }

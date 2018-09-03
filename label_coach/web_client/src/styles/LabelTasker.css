@@ -95,8 +95,8 @@ body {
     border-radius: 3px!important;
 }
 
-.navbar{
-    margin-bottom: 10px !important;
+.navbar-slim{
+    height: 52px !important;
 }
 
 .img{

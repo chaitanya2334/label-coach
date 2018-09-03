@@ -23,6 +23,10 @@ class ImageContainerP extends React.Component {
         return (
             <ul className="image-container">
                 {rows}
+                {rows}
+                {rows}
+                {rows}
+
             </ul>
         );
     }
