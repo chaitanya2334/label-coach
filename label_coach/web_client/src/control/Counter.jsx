@@ -8,11 +8,9 @@ export default class Counter extends React.Component {
 
     render() {
         return (
-            <div className={"badge badge-primary"}>
-                <div className={"counter"}>
-                    total: {this.props.count}
-                </div>
-            </div>
+
+            <span class="badge"> #{this.props.count}</span>
+
         );
     }
 

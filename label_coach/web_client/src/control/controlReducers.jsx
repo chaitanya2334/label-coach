@@ -186,6 +186,14 @@ export function labelReducer(label, action) {
             newLabel.active = !newLabel.active;
             return newLabel;
 
+        case 'TOGGLE_COLLAPSE':
+            newLabel.collapse = !newLabel.collapse;
+            return;
+
+        case 'TOGGLE_Expand':
+            newLabel.areaexpand = !newLabel.areaexpand;
+            return;
+
         default:
             return newLabel;
     }

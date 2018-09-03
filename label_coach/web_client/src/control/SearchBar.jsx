@@ -12,7 +12,9 @@ class SearchBarP extends React.Component{
 
     render() {
         return (
-            <input className="form-control form-control-lg search-bar" type="text" placeholder="Search" onChange={this.props.onSearch}/>
+        <div className="container search-box">
+            <input className="form-control" type="text" placeholder="Search..." onChange={this.props.onSearch}/>
+        </div>
         );
     }
 
