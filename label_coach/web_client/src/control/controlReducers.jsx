@@ -49,8 +49,8 @@ export function images(images = [], action) {
                                         id: draftState.length,
                                         active: false,
                                         title: image.title,
-                                        getDzi: image.getDzi,
-                                        getThumbnail: image.getThumbnail,
+                                        dbId: image.dbId,
+                                        mimeType: image.mimeType,
                                         labelFileId: image.labelFileId
                                     })
                 }

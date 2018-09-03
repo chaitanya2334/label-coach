@@ -292,8 +292,18 @@ class ImageViewerP extends React.Component {
     }
 
     getSnapshotBeforeUpdate(prevProps) {
-        if (prevProps.getDzi !== this.props.getDzi) {
-            this.open_slide(this.props.getDzi, 0.2505);
+        if (prevProps.dbId !== this.props.dbId) {
+            if (this.props.mimeType === "application/octet-stream") {
+                let dziPath = "api/v1/image/dzi/" + this.props.dbId;
+                this.open_slide(dziPath, 0.2505);
+            } else {
+                let imagePath = "api/v1/image/" + this.props.dbId;
+                this.viewer.open({
+                                     type: 'image',
+                                     url: imagePath,
+                                     buildPyramid: false
+                                 });
+            }
             this.updateOverlay = this.updateOverlay.bind(this);
             this.viewer.addOnceHandler('open', this.updateOverlay);
         }
@@ -310,12 +320,14 @@ class ImageViewerP extends React.Component {
 function mapStateToProps(state) {
     let polygons = [];
     let lines = [];
-    let getDzi = "";
+    let dbId = "";
+    let mimeType = "";
     let title = "Untitled";
     for (let image of state.images) {
         if (image.active) {
             title = image.title;
-            getDzi = image.getDzi;
+            mimeType = image.mimeType;
+            dbId = image.dbId;
             break;
         }
     }
@@ -338,7 +350,8 @@ function mapStateToProps(state) {
     }
     return {
         title: title,
-        getDzi: getDzi,
+        mimeType: mimeType,
+        dbId: dbId,
         polygons: polygons,
         lines: lines
     };

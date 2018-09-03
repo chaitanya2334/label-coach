@@ -60,6 +60,13 @@ body.background{
     transform: translate(0)!important;
 }
 
+.dropdown-menu.show{
+    -webkit-transform: translateX(0)!important;
+    -ms-transform: translateX(0)!important;
+    -o-transform: translateX(0)!important;
+    transform: translateX(0)!important;
+}
+
 .fade.in {
     opacity: 1!important;
 }

@@ -34,8 +34,9 @@ class ImageResource(Resource):
         self.cp_config = {'tools.staticdir.on': True,
                           'tools.staticdir.index': 'index.html'}
         self.route('GET', (), handler=self.getImageList)
-        self.route('GET', (':image_id',), self.dzi)
-        self.route('GET', (':image_id', ':level', ':tfile'), self.tile)
+        self.route('GET', (':image_id',), self.getImage)
+        self.route('GET', ('dzi', ':image_id',), self.dzi)
+        self.route('GET', ('dzi', ':image_id', ':level', ':tfile'), self.tile)
 
     def load_slides(self, image_id):
         file = File().load(image_id, level=AccessType.READ, user=self.getCurrentUser())
@@ -66,7 +67,7 @@ class ImageResource(Resource):
             folderModel = Folder()
             folder = folderModel.load(folderId, level=AccessType.READ, user=self.getCurrentUser())
             files = folderModel.fileList(doc=folder, user=self.getCurrentUser(), data=False, includeMetadata=True,
-                                         mimeFilter=['application/octet-stream'])
+                                         mimeFilter=['application/octet-stream', 'image/png'])
             ret_files = []
             for filename, file in files:
                 filename = os.path.splitext(filename)[0]
@@ -86,7 +87,7 @@ class ImageResource(Resource):
             .param('image_id', 'image file id'))
     @rest.rawResponse
     def dzi(self, image_id):
-        printOk('getImage() was called!')
+        printOk('getDzi() was called!')
         printOk('params is ' + image_id)
 
         try:
@@ -95,6 +96,25 @@ class ImageResource(Resource):
             resp = slides['slide'].get_dzi('jpeg')
             cherrypy.response.headers["Content-Type"] = "application/xml"
             return resp
+
+        except:
+            # Unknown slug
+            printFail(traceback.print_exc)
+            cherrypy.response.status = 404
+
+    @access.public
+    @autoDescribeRoute(
+        Description('Get image')
+            .param('image_id', 'image file id'))
+    @rest.rawResponse
+    def getImage(self, image_id):
+        printOk('getImage() was called!')
+        printOk('params is ' + image_id)
+
+        try:
+            file = File().load(image_id, level=AccessType.READ, user=self.getCurrentUser())
+            cherrypy.response.headers["Content-Type"] = "application/png"
+            return File().download(file)
 
         except:
             # Unknown slug

@@ -111,8 +111,8 @@ export function fetchImages(id) {
                         labelFileId = image.label_id.$oid;
                     }
                     return {
-                        getDzi: "api/v1/image/" + image._id.$oid,
-                        getThumbnail: "api/v1/image/" + image._id.$oid + "_files/8/0_0.jpeg",
+                        dbId: image._id.$oid,
+                        mimeType: image.mimeType,
                         labelFileId: labelFileId,
                         title: image.name.replace(/\.[^/.]+$/, "")
                     }

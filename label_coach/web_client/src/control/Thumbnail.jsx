@@ -14,7 +14,7 @@ class ThumbnailP extends React.Component {
     }
 
     getThumbnailPath() {
-        return this.props.resPath;
+        return "api/v1/image/dzi/" + this.props.imageId + "_files/8/0_0.jpeg";
     }
 
     handleHover() {
