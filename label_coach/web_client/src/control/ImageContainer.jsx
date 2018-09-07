@@ -16,17 +16,13 @@ class ImageContainerP extends React.Component {
             this.props.images.forEach((image, i) => {
                 rows.push(
                     <Thumbnail key={image.id} id={image.id} active={image.active} title={image.title}
-                                resPath={image.getThumbnail} labelFileId={image.labelFileId}/>
+                                imageId={image.dbId} labelFileId={image.labelFileId}/>
                 );
             });
         }
         return (
             <ul className="image-container">
                 {rows}
-                {rows}
-                {rows}
-                {rows}
-
             </ul>
         );
     }

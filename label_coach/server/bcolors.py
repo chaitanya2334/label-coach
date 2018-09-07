@@ -9,7 +9,7 @@ class BColors:
     UNDERLINE = '\033[4m'
 
 
-def print_ok(obj):
+def printOk(obj):
     print(BColors.OKGREEN)
 
     if hasattr(obj, '__call__'):
@@ -19,7 +19,7 @@ def print_ok(obj):
 
     print(BColors.ENDC)
 
-def print_ok2(obj):
+def printOk2(obj):
     print(BColors.OKBLUE)
 
     if hasattr(obj, '__call__'):
@@ -30,7 +30,7 @@ def print_ok2(obj):
     print(BColors.ENDC)
 
 
-def print_fail(obj):
+def printFail(obj):
     print(BColors.FAIL)
     if hasattr(obj, '__call__'):
         obj()

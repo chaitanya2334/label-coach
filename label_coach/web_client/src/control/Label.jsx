@@ -27,7 +27,7 @@ class LabelP extends React.Component {
 
             <div className="card">
                 <div  className={"card-header " + this.props.color + " " + activeClass} id={"heading_"+this.props.name}>
-                  <h5 class="mb-0">
+                  <h5 className="mb-0">
                     <span onClick={this.props.onClick}> <FontAwesomeIcon icon={faType} className="icon-size"/> </span>
                     <a  onClick={this.props.onClick} data-toggle={collapse} data-target={"#collapse_"+this.props.name} aria-expanded={areaexpand} aria-controls={"#collapse_"+this.props.name}>
                       {this.props.name}
@@ -44,8 +44,8 @@ class LabelP extends React.Component {
                   </h5>
                 </div>
 
-                <div id={"collapse_"+this.props.name} class={"collapse show "+ collapse} aria-labelledby={"heading_"+this.props.name} >
-                  <div class="card-body">
+                <div id={"collapse_"+this.props.name} className={"collapse show "+ collapse} aria-labelledby={"heading_"+this.props.name} >
+                  <div className="card-body">
                     <AnnotationListP key={"ann_" + this.props.id} label_id={this.props.id} polygons={this.props.polygons}
                                  lines={this.props.lines}
                                  color={this.props.id} active={this.props.active}/> </div>

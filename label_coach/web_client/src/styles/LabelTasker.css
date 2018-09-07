@@ -49,6 +49,7 @@
 
 body.background{
     background-color: #E7E8E8 !important;
+    overflow: hidden!important;
 }
 
 /* fixing issues with modal in girder*/
@@ -57,6 +58,13 @@ body.background{
     -ms-transform: translate(0)!important;
     -o-transform: translate(0)!important;
     transform: translate(0)!important;
+}
+
+.dropdown-menu.show{
+    -webkit-transform: translateX(0)!important;
+    -ms-transform: translateX(0)!important;
+    -o-transform: translateX(0)!important;
+    transform: translateX(0)!important;
 }
 
 .fade.in {

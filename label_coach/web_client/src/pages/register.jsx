@@ -5,18 +5,20 @@ import {applyMiddleware, createStore} from "redux";
 import rootReducer from "../root_reducer";
 
 import thunk from "redux-thunk";
-import LoginForm from "../login/LoginForm"
+import RegisterForm from "../login/RegisterForm";
 
-export default class LoginPage extends React.Component {
+export default class RegisterPage extends React.Component {
     constructor(props) {
         super(props);
     }
 
     render() {
         return (
+
                 <div className="jumbotron">
-                    <LoginForm/>
+                    <RegisterForm/>
                 </div>
+
         );
     }
 }

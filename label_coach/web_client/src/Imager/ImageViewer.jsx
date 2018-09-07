@@ -10,9 +10,10 @@ import {
     faSearchPlus
 } from '@fortawesome/free-solid-svg-icons'
 import connect from "react-redux/es/connect/connect";
-import {lockAnnotation, updateAnnotation} from "../control/controlActions";
+import {lockAnnotation, setSaveStatus, updateAnnotation} from "../control/controlActions";
 import Polygon from "./overlay/polygon";
 import Line from "./overlay/line";
+import SaveIndicator from "../control/SaveIndicator";
 
 // helper function to load image using promises
 function loadImage(src) {
@@ -47,33 +48,37 @@ class ImageViewerP extends React.Component {
     render() {
 
         return (
-            <div className="ocd-div" ref={node => {
-                this.el = node;
-            }}>
-                <div className="navigator-wrapper c-shadow">
-                    <div id="navigator"/>
+            <div>
+                <div className={"title"}>{this.props.title}</div>
+                <SaveIndicator/>
+                <div className="ocd-div" ref={node => {
+                    this.el = node;
+                }}>
+                    <div className="navigator-wrapper c-shadow">
+                        <div id="navigator"/>
+                    </div>
+                    <div className="openseadragon" id={this.id}/>
+                    <ul className="ocd-toolbar">
+                        <li>
+                            <a id="zoom-in"><FontAwesomeIcon icon={faSearchPlus}/></a>
+                            <div className="vert-divider"/>
+                        </li>
+
+                        <li>
+                            <a id="reset"><FontAwesomeIcon icon={faHome}/></a>
+                            <div className="vert-divider"/>
+                        </li>
+
+                        <li>
+                            <a id="zoom-out"><FontAwesomeIcon icon={faSearchMinus}/></a>
+                            <div className="vert-divider"/>
+                        </li>
+
+                        <li>
+                            <a id="full-page"><FontAwesomeIcon icon={faExpand}/></a>
+                        </li>
+                    </ul>
                 </div>
-                <div className="openseadragon" id={this.id}/>
-                <ul className="ocd-toolbar">
-                    <li>
-                        <a id="zoom-in"><FontAwesomeIcon icon={faSearchPlus}/></a>
-                        <div className="vert-divider"/>
-                    </li>
-
-                    <li>
-                        <a id="reset"><FontAwesomeIcon icon={faHome}/></a>
-                        <div className="vert-divider"/>
-                    </li>
-
-                    <li>
-                        <a id="zoom-out"><FontAwesomeIcon icon={faSearchMinus}/></a>
-                        <div className="vert-divider"/>
-                    </li>
-
-                    <li>
-                        <a id="full-page"><FontAwesomeIcon icon={faExpand}/></a>
-                    </li>
-                </ul>
             </div>
         )
     }
@@ -287,8 +292,18 @@ class ImageViewerP extends React.Component {
     }
 
     getSnapshotBeforeUpdate(prevProps) {
-        if (prevProps.getDzi !== this.props.getDzi) {
-            this.open_slide(this.props.getDzi, 0.2505);
+        if (prevProps.dbId !== this.props.dbId) {
+            if (this.props.mimeType === "application/octet-stream") {
+                let dziPath = "api/v1/image/dzi/" + this.props.dbId;
+                this.open_slide(dziPath, 0.2505);
+            } else {
+                let imagePath = "api/v1/image/" + this.props.dbId;
+                this.viewer.open({
+                                     type: 'image',
+                                     url: imagePath,
+                                     buildPyramid: false
+                                 });
+            }
             this.updateOverlay = this.updateOverlay.bind(this);
             this.viewer.addOnceHandler('open', this.updateOverlay);
         }
@@ -305,10 +320,14 @@ class ImageViewerP extends React.Component {
 function mapStateToProps(state) {
     let polygons = [];
     let lines = [];
-    let getDzi = "";
+    let dbId = "";
+    let mimeType = "";
+    let title = "Untitled";
     for (let image of state.images) {
         if (image.active) {
-            getDzi = image.getDzi;
+            title = image.title;
+            mimeType = image.mimeType;
+            dbId = image.dbId;
             break;
         }
     }
@@ -330,7 +349,9 @@ function mapStateToProps(state) {
         polygons = polygons.concat(newPolygons);
     }
     return {
-        getDzi: getDzi,
+        title: title,
+        mimeType: mimeType,
+        dbId: dbId,
         polygons: polygons,
         lines: lines
     };
@@ -343,12 +364,14 @@ function mapDispatchToProps(dispatch) {
         },
         lockPolygon: (label_id, poly_id) => {
             dispatch(lockAnnotation("polygon", label_id, poly_id));
+            dispatch(setSaveStatus("dirty"));
         },
         updateLine: (label_id, line_id, points) => {
             dispatch(updateAnnotation("line", label_id, line_id, points));
         },
         lockLine: (label_id, line_id) => {
             dispatch(lockAnnotation("line", label_id, line_id));
+            dispatch(setSaveStatus("dirty"));
         }
     };
 }

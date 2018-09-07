@@ -1,6 +1,7 @@
 .toolbar{
   position: absolute !important;
   left: 25% !important;
+  top: 5% !important;
   z-index: 200 !important;
   }
 

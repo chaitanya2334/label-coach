@@ -14,8 +14,9 @@ from girder.constants import AccessType
 from girder.models.assetstore import Assetstore
 from girder.models.collection import Collection
 from girder.models.file import File
-from girder.models.user import User
-from ..bcolors import print_ok, print_fail, print_ok2
+
+from girder.models.folder import Folder
+from ..bcolors import printOk, printFail, printOk2
 from ..deepzoom import load_slide
 
 
@@ -33,17 +34,11 @@ class ImageResource(Resource):
         self.cp_config = {'tools.staticdir.on': True,
                           'tools.staticdir.index': 'index.html'}
         self.route('GET', (), handler=self.getImageList)
-        self.route('GET', (':image_id',), self.dzi)
-        self.route('GET', (':image_id', ':level', ':tfile'), self.tile)
-        user = User().authenticate(login="dummy", password="dummy1234")
-        setCurrentUser(user)
-        self.collection_model = Collection()
-        self.collection = list(self.collection_model.list(user=self.getCurrentUser(), limit=1))[0]
-        print_ok(self.collection)
+        self.route('GET', (':image_id',), self.getImage)
+        self.route('GET', ('dzi', ':image_id',), self.dzi)
+        self.route('GET', ('dzi', ':image_id', ':level', ':tfile'), self.tile)
 
     def load_slides(self, image_id):
-        user = User().authenticate(login="dummy", password="dummy1234")
-        setCurrentUser(user)
         file = File().load(image_id, level=AccessType.READ, user=self.getCurrentUser())
         assetstore = Assetstore().load(file['assetstoreId'])
         slides, associated_images, slide_properties, slide_mpp = \
@@ -51,42 +46,40 @@ class ImageResource(Resource):
 
         return slides
 
-    def find_label_id(self, name):
-        labels = self.collection_model.fileList(self.collection, user=self.getCurrentUser(), data=False,
-                                                includeMetadata=True, mimeFilter=['application/json'])
+    def find_label_id(self, folder, name):
+        collection_model = Collection()
+        labels = Folder().fileList(doc=folder, user=self.getCurrentUser(), data=False, includeMetadata=True,
+                                   mimeFilter=['application/json'])
         for labelname, label in labels:
             labelname = os.path.splitext(labelname)[0]
-            print_ok2("labelname: " + labelname)
+            printOk2("labelname: " + labelname + " " + name)
             if labelname == name:
                 return label['_id']
 
     @access.public
     @autoDescribeRoute(
-        Description('Get image list'))
+        Description('Get image list').param('folderId', 'folder id'))
     @rest.rawResponse
-    def getImageList(self):
-        print_ok('getImageList() was called!')
+    def getImageList(self, folderId):
+        printOk('getImageList() was called!')
 
         try:
-            user = User().authenticate(login="dummy", password="dummy1234")
-            setCurrentUser(user)
-            print_ok(self.getCurrentUser())
-            print_ok(self.collection)
-            files = self.collection_model.fileList(self.collection, user=self.getCurrentUser(), data=False,
-                                                   includeMetadata=True, mimeFilter=['application/octet-stream'])
-
+            folderModel = Folder()
+            folder = folderModel.load(folderId, level=AccessType.READ, user=self.getCurrentUser())
+            files = folderModel.fileList(doc=folder, user=self.getCurrentUser(), data=False, includeMetadata=True,
+                                         mimeFilter=['application/octet-stream', 'image/png'])
             ret_files = []
             for filename, file in files:
                 filename = os.path.splitext(filename)[0]
-                print_ok("filename: " + filename)
-                file['label_id'] = self.find_label_id(filename)
+                printOk("filename: " + filename)
+                file['label_id'] = self.find_label_id(folder, filename)
                 ret_files.append(file)
 
             cherrypy.response.headers["Content-Type"] = "application/json"
             return dumps(ret_files)
 
         except:
-            print_fail(traceback.print_exc)
+            printFail(traceback.print_exc)
 
     @access.public
     @autoDescribeRoute(
@@ -94,8 +87,8 @@ class ImageResource(Resource):
             .param('image_id', 'image file id'))
     @rest.rawResponse
     def dzi(self, image_id):
-        print_ok('getImage() was called!')
-        print_ok('params is ' + image_id)
+        printOk('getDzi() was called!')
+        printOk('params is ' + image_id)
 
         try:
             slides = self.load_slides(image_id)
@@ -106,7 +99,26 @@ class ImageResource(Resource):
 
         except:
             # Unknown slug
-            print_fail(traceback.print_exc)
+            printFail(traceback.print_exc)
+            cherrypy.response.status = 404
+
+    @access.public
+    @autoDescribeRoute(
+        Description('Get image')
+            .param('image_id', 'image file id'))
+    @rest.rawResponse
+    def getImage(self, image_id):
+        printOk('getImage() was called!')
+        printOk('params is ' + image_id)
+
+        try:
+            file = File().load(image_id, level=AccessType.READ, user=self.getCurrentUser())
+            cherrypy.response.headers["Content-Type"] = "application/png"
+            return File().download(file)
+
+        except:
+            # Unknown slug
+            printFail(traceback.print_exc)
             cherrypy.response.status = 404
 
     @access.public

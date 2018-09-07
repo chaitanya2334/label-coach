@@ -1,5 +1,24 @@
 import produce from "immer";
 
+export function saveIndicator(saveIndicator={}, action){
+    switch (action.type) {
+        case 'EDIT_SAVE_INDICATOR_TEXT':
+            return produce(saveIndicator, draftState => {
+                draftState.text = action.text
+            });
+        case 'SET_SAVE_STATUS':
+            return produce(saveIndicator, draftState => {
+                draftState.status = action.status
+            });
+        case 'SET_LAST_UPDATED':
+            return produce(saveIndicator, draftState => {
+                draftState.lastUpdated = action.date;
+            });
+        default:
+            return saveIndicator;
+    }
+}
+
 export function imageReducer(image, action) {
     switch (action.type) {
         case 'SELECT_IMAGE':
@@ -24,16 +43,18 @@ export function images(images = [], action) {
         case 'POPULATE_IMAGES':
 
             return produce(images, draftState => {
+                draftState = [];
                 for (let image of action.images) {
                     draftState.push({
                                         id: draftState.length,
                                         active: false,
                                         title: image.title,
-                                        getDzi: image.getDzi,
-                                        getThumbnail: image.getThumbnail,
+                                        dbId: image.dbId,
+                                        mimeType: image.mimeType,
                                         labelFileId: image.labelFileId
                                     })
                 }
+                return draftState;
             });
         case 'SELECT_IMAGE':
             return produce(images, (draftState) => {
@@ -47,7 +68,7 @@ export function images(images = [], action) {
         case 'ADD_LABEL_ID':
             return produce(images, (draftState) => {
                 draftState[action.image_id] = imageReducer(draftState[action.image_id], action)
-            })
+            });
         default:
             return images;
     }

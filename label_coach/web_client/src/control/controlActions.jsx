@@ -94,20 +94,25 @@ export function replaceLabels(labels) {
     }
 }
 
-export function fetchImages() {
+export function fetchImages(id) {
     return function (dispatch) {
-        return fetch("/api/v1/image")
-            .then(response => response.json())
-            .then((json) => {
 
+        return restRequest({
+                               url: "image",
+                               method: 'GET',
+                               data: {
+                                   folderId: id
+                               }
+                           })
+            .then((json) => {
                 let images = json.map(image => {
                     let labelFileId = null;
-                    if (image.label_id && image.label_id.$oid){
+                    if (image.label_id && image.label_id.$oid) {
                         labelFileId = image.label_id.$oid;
                     }
                     return {
-                        getDzi: "api/v1/image/" + image._id.$oid,
-                        getThumbnail: "api/v1/image/" + image._id.$oid + "_files/8/0_0.jpeg",
+                        dbId: image._id.$oid,
+                        mimeType: image.mimeType,
                         labelFileId: labelFileId,
                         title: image.name.replace(/\.[^/.]+$/, "")
                     }
@@ -117,7 +122,7 @@ export function fetchImages() {
     }
 }
 
-function postData(url = ``, data = {}) {
+function postData(url = ``, data = {}, callback) {
     // Default options are marked with *
     console.log(JSON.stringify(data));
     return restRequest({
@@ -127,7 +132,9 @@ function postData(url = ``, data = {}) {
                                labels: JSON.stringify(data)
                            }
                        })
-        .then(response => console.log(response)); // parses response to JSON
+        .then(response => {
+            callback(response)
+        }); // parses response to JSON
 }
 
 export function selectImage(image_id) {
@@ -137,7 +144,7 @@ export function selectImage(image_id) {
     }
 }
 
-export function addLabelId(image_id, label_id){
+export function addLabelId(image_id, label_id) {
     return {
         type: 'ADD_LABEL_ID',
         image_id: image_id,
@@ -147,8 +154,20 @@ export function addLabelId(image_id, label_id){
 
 export function createLabelFile(fileName, imageId) {
     return function (dispatch) {
-        return fetch("/api/v1/label/create?file_name=" + fileName)
-            .then(response => response.json())
+        return restRequest({
+                               url: "/label/create",
+                               method: 'GET',
+                               data: {
+                                   file_name: fileName
+                               }
+                           })
+            .then(response => {
+                if (typeof response === 'string') {
+                    return JSON.parse(response);
+                } else {
+                    return response;
+                }
+            })
             .then(json => {
                 // TODO move it out of this action. Not really happy about dispatching this action here.
                 let labelId = json.label_id.$oid;
@@ -158,7 +177,7 @@ export function createLabelFile(fileName, imageId) {
     }
 }
 
-export function postLabels(state) {
+export function postLabels(state, callback) {
 
     return function (dispatch) {
         let label_id = "";
@@ -168,16 +187,22 @@ export function postLabels(state) {
             }
         }
         if (label_id && state.labels.length > 0) {
-            postData("label?label_id=" + label_id, state.labels);
+            postData("label?label_id=" + label_id, state.labels, callback);
         }
     }
 }
 
 export function fetchLabels(label_id) {
     return function (dispatch) {
-        return fetch("/api/v1/label/" + label_id)
-            .then(response => response.json())
+        return restRequest({
+                               url: "/label/" + label_id,
+                               method: 'GET',
+                               data: {
+                                   label_id: label_id
+                               }
+                           })
             .then(json => {
+                console.log(json);
                 let labels = json.labels;
                 labels = labels.map(label => ({
                     name: label.name,
@@ -186,7 +211,59 @@ export function fetchLabels(label_id) {
                     lines: label.lines,
                 }));
                 dispatch(replaceLabels(labels));
+                dispatch(fetchLabelMeta(label_id, (file) => {
+                    console.log(file.created);
+                    dispatch(editSaveIndicatorText("Saved"));
+                    dispatch(setLastUpdated(file.created.$date));
+                }))
             });
 
+    }
+}
+
+export function fetchLabelMeta(label_id, callback) {
+    return function (dispatch) {
+        return restRequest({
+                               url: "/label/meta",
+                               method: 'GET',
+                               data: {
+                                   label_id: label_id
+                               }
+                           })
+            .then(response => JSON.parse(response))
+            .then(file => {
+                callback(file);
+            });
+    }
+}
+
+export function editSaveIndicatorText(text) {
+    return {
+        type: 'EDIT_SAVE_INDICATOR_TEXT',
+        text: text
+    }
+}
+
+export function setSaveStatus(status) {
+    return {
+        type: 'SET_SAVE_STATUS',
+        status: status
+    }
+}
+
+export function setLastUpdated(date) {
+    return {
+        type: "SET_LAST_UPDATED",
+        date: date
+    }
+}
+
+export function saveLabels(state) {
+    return (dispatch) => {
+        dispatch(editSaveIndicatorText("Saving ..."));
+        dispatch(postLabels(state, (response) => {
+            dispatch(editSaveIndicatorText("Saved"));
+            dispatch(setLastUpdated(new Date(response.updated.$date)));
+        }));
     }
 }

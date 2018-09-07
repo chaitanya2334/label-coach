@@ -17,7 +17,7 @@ export default class AnnotationListP extends React.Component {
                 .slice()
                 .reverse()
                 .forEach((polygon, i) => {
-                    rows.push(<li class="list-group-item"><PolygonItem key={"poly_" + i} label_id={this.props.label_id}
+                    rows.push(<li className="list-group-item"><PolygonItem key={"poly_" + i} label_id={this.props.label_id}
                                            poly_id={polygon.id} text={polygon.text} points={polygon.points}
                                            drawState={polygon.drawState}/></li>);
                 });
@@ -28,7 +28,7 @@ export default class AnnotationListP extends React.Component {
                 .slice()
                 .reverse()
                 .forEach((line, i) => {
-                    rows.push( <li class="list-group-item"><LineItem key={"line_" + i} label_id={this.props.label_id}
+                    rows.push( <li className="list-group-item"><LineItem key={"line_" + i} label_id={this.props.label_id}
                                         line_id={line.id} text={line.text} points={line.points}
                                         drawState={line.drawState}/></li>);
                 });

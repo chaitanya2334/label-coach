@@ -8,6 +8,10 @@
     height: auto;
 }
 
+.fixed-width{
+    width: 208px!important;
+}
+
 .tn-card {
     cursor: pointer;
     text-align: center;

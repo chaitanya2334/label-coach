@@ -1,6 +1,6 @@
 .sidebar {
-    z-index: 1000;
-    height: 100%;
+    z-index: 940;
+    height: 93%;
     display: flex;
     flex-direction: column;
     position: relative;
