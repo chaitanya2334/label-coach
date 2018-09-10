@@ -14,11 +14,9 @@ export default class RegisterPage extends React.Component {
 
     render() {
         return (
-
-                <div className="jumbotron">
+                <div className="row">
                     <RegisterForm/>
                 </div>
-
         );
     }
 }
