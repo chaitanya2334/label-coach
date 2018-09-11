@@ -27,7 +27,7 @@ class CollectionP extends React.Component {
         for (let i = 0; i < n; i++) {
             let path = "";
             if (this.props.thumbnails.length > i) {
-                path = "api/v1/image/" + this.props.thumbnails[i].id + "_files/8/0_0.jpeg";
+                path = "api/v1/image/dzi/" + this.props.thumbnails[i].id + "_files/8/0_0.jpeg";
             }
             ret.push(
                 <div className="thumbnail-container" key={i} data-grid={{x:w*(i%2), y:h * Math.floor(i/2), w: w, h: h}}>

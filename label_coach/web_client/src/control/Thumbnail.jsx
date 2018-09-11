@@ -8,13 +8,13 @@ class ThumbnailP extends React.Component {
     constructor(props) {
         super(props);
         this.handleHover = this.handleHover.bind(this);
-        this.state={
+        this.state = {
             isHovered: false
         }
     }
 
     getThumbnailPath() {
-        return "api/v1/image/dzi/" + this.props.imageId + "_files/8/0_0.jpeg";
+        return "api/v1/image/dzi/" + this.props.imageId + "_files/10/0_0.jpeg";
     }
 
     handleHover() {
@@ -26,8 +26,8 @@ class ThumbnailP extends React.Component {
     render() {
         let thumbnailPath = this.getThumbnailPath();
         let activeClass = this.props.active ? 'active' : "";
-        let hoverClass = this.state.isHovered ? "mdc-elevation--z3" : "mdc-elevation--z0";
-        let widthClass = this.props.fixedWidth ? "fixed-width": "";
+        let hoverClass = this.state.isHovered ? "mdc-elevation--z4" : "mdc-elevation--z1";
+        let widthClass = this.props.fixedWidth ? "fixed-width" : "";
         return (
             <li className={"tn-card " + hoverClass + " " + widthClass + " mdc-elevation-transition " + activeClass}
                 onClick={this.props.onSelect}
@@ -36,12 +36,18 @@ class ThumbnailP extends React.Component {
                 <div className="l-img-thumbnail">
                     <img src={thumbnailPath}/>
                 </div>
-                <div className={"tn-text"}>
-                    <p className={"tn-title"}>
-                        {this.props.title}
-                    </p>
-                    <div className={"tn-subtitle"}>
-                        4 labels
+                <div className={"tn-container"}>
+                    <div className={"tn-text"}>
+                        <p className={"tn-title line-clamp"}>
+                            {this.props.title}
+                        </p>
+                        <div className={"tn-subtitle"}>
+                            Last Edited 28th Aug 2018
+                        </div>
+                    </div>
+                    <div className={"tn-stats"}>
+                        <img className={"tn-icon"} src={"https://image.flaticon.com/icons/svg/8/8784.svg"} width={20} height={20}/>
+                        {4}
                     </div>
                 </div>
             </li>

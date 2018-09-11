@@ -4,22 +4,43 @@ import {connect} from "react-redux";
 import TimeAgo from "javascript-time-ago";
 // Load locale-specific relative date/time formatting rules.
 import en from 'javascript-time-ago/locale/en'
-class SaveIndicatorP extends React.Component{
+
+class SaveIndicatorP extends React.Component {
     constructor(props) {
         super(props);
         TimeAgo.locale(en);
         this.timeAgo = new TimeAgo('en-US');
     }
 
+    formatDate(date) {
+        let monthNames = [
+            "January", "February", "March",
+            "April", "May", "June", "July",
+            "August", "September", "October",
+            "November", "December"
+        ];
+
+        let day = date.getDate();
+        let monthIndex = date.getMonth();
+        let year = date.getFullYear();
+
+        return day + ' ' + monthNames[monthIndex] + ' ' + year;
+    }
+
+
     render() {
-        if(this.props.status === "dirty") {
+        if (this.props.status === "dirty") {
             this.props.editText("Saving...");
             this.props.setStatus("done");
             this.props.save(this.props.state);
 
         }
+        else {
+            this.props.editText("Saved " + this.timeAgo.format(this.props.lastUpdated))
+        }
         return (
-            <div data-toggle="tooltip" title={this.timeAgo.format(this.props.lastUpdated)}>{this.props.text}</div>
+            <div data-toggle="tooltip"
+                 title={"Last edit was on " + this.formatDate(new Date(this.props.lastUpdated))}>{this.props.text}</div>
         );
     }
 
@@ -31,7 +52,7 @@ function formatSaveText(text, lastUpdated) {
 
 }
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
     return {
         status: state.saveIndicator.status,
         text: state.saveIndicator.text,
@@ -40,11 +61,17 @@ function mapStateToProps(state){
     };
 }
 
-function mapDispatchToProps(dispatch){
+function mapDispatchToProps(dispatch) {
     return {
-        editText: (text)=>{dispatch(editSaveIndicatorText(text))},
-        save: (state)=>{dispatch(saveLabels(state))},
-        setStatus: (status)=>{dispatch(setSaveStatus(status))}
+        editText: (text) => {
+            dispatch(editSaveIndicatorText(text))
+        },
+        save: (state) => {
+            dispatch(saveLabels(state))
+        },
+        setStatus: (status) => {
+            dispatch(setSaveStatus(status))
+        }
     }
 }
 

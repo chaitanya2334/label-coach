@@ -6,7 +6,8 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.0-14",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
-    "react-scripts": "1.1.4"
+    "react-scripts": "1.1.4",
+    "semantic-ui": "^2.3.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -42,6 +43,7 @@
     "react-grid-layout": "^0.16.6",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",
+    "react-svg": "^6.0.9",
     "react-time-ago": "^3.0.2",
     "redux": "^4.0.0",
     "redux-thunk": "^2.3.0",

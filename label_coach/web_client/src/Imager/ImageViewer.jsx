@@ -48,7 +48,7 @@ class ImageViewerP extends React.Component {
     render() {
 
         return (
-            <div>
+            <div className={"image-viewer"}>
                 <div className={"title"}>{this.props.title}</div>
                 <SaveIndicator/>
                 <div className="ocd-div" ref={node => {

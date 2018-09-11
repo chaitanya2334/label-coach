@@ -21,7 +21,7 @@ export default class CollectionBrowserP extends React.Component {
     render() {
         return (
             <div className={"container-fluid remove-left-padding remove-right-padding"}>
-                <nav className={"navbar sticky-top navbar-light bg-light remove-left-padding"}>
+                <nav className={"navbar navbar-dark bg-dark navbar-slim"}>
                     <Link to="/content">
                         <div className={"navbar-brand"}>
                             <Logo/>
@@ -32,7 +32,7 @@ export default class CollectionBrowserP extends React.Component {
 
                 <div className={"row justify-content-center"}>
                     <div className={"col-lg-8 align-self-top"}>
-                        <CollectionGrid className={"layout"} isDraggable={false} isResizable={false} items={50}/>
+                        <CollectionGrid className={"layout"} isDraggable={false} isResizable={false}/>
                     </div>
                 </div>
             </div>

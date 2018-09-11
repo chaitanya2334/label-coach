@@ -25,12 +25,12 @@ class LabelTaskerP extends React.Component {
     }
 
     render() {
-        if(this.props.images.length === 0){
+        if (this.props.images.length === 0) {
             this.props.fetchImages();
         }
         return (
-            <div className={"container-fluid"}>
-                <nav className={"navbar row sticky-top navbar-dark bg-dark navbar-slim"}>
+            <div>
+                <nav className={"navbar navbar-dark bg-dark navbar-slim"}>
                     <Link to="/content">
                         <div className={"navbar-brand"}>
                             <Logo/>
@@ -38,21 +38,21 @@ class LabelTaskerP extends React.Component {
                     </Link>
                     <UserControl/>
                 </nav>
-
-                <div className={"row"}>
-                    <div className={"col-lg-2 hack-sm-2 remove-left-padding"}>
-                        <SideBarP itemType="images">
-                            <ImageContainer/>
-                        </SideBarP>
-                    </div>
-                    <div className={"col-lg-8 hack-grow-8 align-self-top"}>
-                        <ToolBar/>
-                        <ImageViewer/>
-                    </div>
-                    <div className={"col-lg-2 remove-right-padding"}>
-                        <SideBarP itemType="labels">
-                            <LabelContainer/>
-                        </SideBarP>
+                <div className={"container-fluid"}>
+                    <div className={"row"}>
+                        <div className={"col-lg-2 hack-sm-2 remove-left-padding"}>
+                            <SideBarP itemType="images">
+                                <ImageContainer/>
+                            </SideBarP>
+                        </div>
+                        <div className={"col-lg-8 hack-grow-8 align-self-top"}>
+                            <ImageViewer/>
+                        </div>
+                        <div className={"col-lg-2 remove-right-padding"}>
+                            <SideBarP itemType="labels">
+                                <LabelContainer/>
+                            </SideBarP>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -63,15 +63,17 @@ class LabelTaskerP extends React.Component {
 
 // ---------- Container ----------
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
     return {
         images: state.images
     };
 }
 
-function mapDispatchToProps(dispatch, ownProps){
+function mapDispatchToProps(dispatch, ownProps) {
     return {
-        fetchImages: ()=>{dispatch(fetchImages(ownProps.match.params.id))}
+        fetchImages: () => {
+            dispatch(fetchImages(ownProps.match.params.id))
+        }
     };
 }
 

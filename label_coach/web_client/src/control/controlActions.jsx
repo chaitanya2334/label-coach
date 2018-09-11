@@ -262,7 +262,7 @@ export function saveLabels(state) {
     return (dispatch) => {
         dispatch(editSaveIndicatorText("Saving ..."));
         dispatch(postLabels(state, (response) => {
-            dispatch(editSaveIndicatorText("Saved"));
+            dispatch(editSaveIndicatorText("Saved just now"));
             dispatch(setLastUpdated(new Date(response.updated.$date)));
         }));
     }
