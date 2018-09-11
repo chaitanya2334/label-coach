@@ -23,11 +23,47 @@
     border-bottom: 1px solid #d9d9d9;
 }
 
-.card{
-    border: none;
+.btns{
+
+}
+
+.lbl-dot{
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    border-radius: 50%;
+}
+
+.lbl-text{
+    margin: 6px;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+}
+.lbl-text>p{
+    font-size: 1.5rem;
+    margin-bottom: 0!important;
+    line-height: 1;
+}
+.lbl-card{
+    position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border-radius: .25rem;
 }
 
 .card-header{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
     padding : 0.5rem 0.25rem !important;
     cursor:pointer;
 }
@@ -48,4 +84,16 @@
 
 .icon-size{
     font-size: 22px;
+}
+
+.icon-button{
+    color: rgba(0,0,0,1)!important;
+    width: 36px!important;
+    height: 36px!important;
+    opacity: 0.54;
+}
+
+.icon-button:hover{
+
+    opacity: 1!important;
 }

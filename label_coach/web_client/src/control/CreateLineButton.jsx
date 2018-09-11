@@ -5,6 +5,8 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faPen, faTimes} from '@fortawesome/free-solid-svg-icons'
 import {addAnnotation, cancelAnnotation, postLabels, toggleLabelButton} from "./controlActions";
 import "../styles/CreateLineButton.css"
+import IconButton from '@material-ui/core/IconButton';
+
 
 
 class CreateLineButtonP extends React.Component {
@@ -29,9 +31,10 @@ class CreateLineButtonP extends React.Component {
         let activeClass = this.props.active ? "active" : "";
         let faType = this.props.buttonState ? faPen : faTimes;
         return (
-            <div className={"create_button active" }>
-                <button type="button" className={"btn btn-primary"} onClick={this.onClick}><FontAwesomeIcon
-                    icon={faType}/></button>
+            <div className={"create_button active"} onClick={this.onClick}>
+                <IconButton className={"icon-button"} aria-label="Delete">
+                    <FontAwesomeIcon icon={faType}/>
+                </IconButton>
             </div>
         );
     }

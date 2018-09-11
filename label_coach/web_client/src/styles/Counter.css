@@ -1,4 +1,9 @@
 .counter {
-    font-size: 9px;
+    font-size: 1rem;
+    font-weight: 200;
+    font-family: Roboto, RobotoDraft, Helvetica, Arial, sans-serif;
+    letter-spacing: .3px;
+    color: #5f6368;
+    margin-left: 4px;
 }
 
