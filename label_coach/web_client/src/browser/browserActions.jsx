@@ -8,7 +8,7 @@ function populateFolders(folders) {
     }
 }
 
-function updateFolderThumbnails(folderId, thumbnails){
+function updateFolderThumbnails(folderId, thumbnails) {
     return {
         type: 'UPDATE_FOLDER_THUMBNAILS',
         folderId: folderId,
@@ -16,9 +16,29 @@ function updateFolderThumbnails(folderId, thumbnails){
     }
 }
 
-export function selectCollection(id, history){
-    return (dispatch)=>{
+export function selectCollection(id, history) {
+    return (dispatch) => {
         history.push("/tasker/" + id);
+    }
+}
+
+export function findCollection() {
+    return function (dispatch) {
+        return restRequest({
+                               url: "/collection/",
+                               method: "GET",
+                               data: {
+                                   limit: 1,
+                               }
+                           }).then(collections=>{
+                               if(collections.length > 0){
+                                   let id = collections[0]._id;
+                                   dispatch(fetchFolders(id));
+                               }else{
+                                   console.error("No collection found!!!!");
+                               }
+
+        })
     }
 }
 

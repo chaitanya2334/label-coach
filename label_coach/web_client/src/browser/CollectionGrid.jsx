@@ -5,7 +5,7 @@ import {connect} from "react-redux";
 import Thumbnail from "../control/Thumbnail";
 import "../styles/CollectionGrid.css"
 import Collection from "./Collection";
-import {fetchFolders} from "./browserActions";
+import {findCollection} from "./browserActions";
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -13,7 +13,7 @@ class CollectionGridP extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.props.fetchFolders("5b7c7bca3a42672d1b00d601")
+        this.props.findCollection();
     }
 
     generateDOM() {
@@ -54,8 +54,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        fetchFolders: (id) => {
-            dispatch(fetchFolders(id))
+        findCollection: (id) => {
+            dispatch(findCollection(id))
         }
     };
 }
