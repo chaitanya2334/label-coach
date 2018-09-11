@@ -20,8 +20,8 @@ export default class CollectionBrowserP extends React.Component {
 
     render() {
         return (
-            <div className={"container-fluid remove-left-padding remove-right-padding"}>
-                <nav className={"navbar sticky-top navbar-light bg-light remove-left-padding"}>
+             <div className={"container-fluid"}>
+                <nav className={"navbar row sticky-top navbar-dark bg-dark navbar-slim"}>
                     <Link to="/content">
                         <div className={"navbar-brand"}>
                             <Logo/>
@@ -30,11 +30,13 @@ export default class CollectionBrowserP extends React.Component {
                     <UserControl/>
                 </nav>
 
-                <div className={"row justify-content-center"}>
-                    <div className={"col-lg-8 align-self-top"}>
+                <div className={"row"}>
+                    <div className={"col-lg-8 offset-lg-2"}>
                         <CollectionGrid className={"layout"} isDraggable={false} isResizable={false} items={50}/>
                     </div>
                 </div>
+
+
             </div>
         );
     }

@@ -17,6 +17,7 @@ class CollectionP extends React.Component {
             isHovered: false
         };
         this.props.getThumbnails(4);
+        console.log(this.state);
     }
 
     getThumbnails(n) {
@@ -48,23 +49,28 @@ class CollectionP extends React.Component {
         let widthClass = this.props.fixedWidth ? "fixed-width" : "";
 
         return (
-            <li className={"tn-card " + hoverClass + " " + widthClass + " mdc-elevation-transition "}
+
+            <div className="card"
                 onClick={this.props.onSelect}
                 onMouseEnter={this.handleHover}
                 onMouseLeave={this.handleHover}>
+
                 <ReactGridLayout className="layout" autoSize={true} isDraggable={false} isResizable={false}
                                  rowHeight={50} responsive={false} margin={[2, 2]}>
                     {this.getThumbnails(4)}
                 </ReactGridLayout>
-                <div className={"co-text"}>
-                    <div className={"co-title"}>
-                        {this.props.title}
-                    </div>
-                    <div className={"co-subtitle"}>
-                        4 labels
-                    </div>
+
+                <div className="card-body">
+                    <h5 className="card-title text-center">{this.props.title}</h5>
+                    <ul className="list-group list-group-flush">
+                        <li className="list-group-item remove-all-padding text-center">Items: 4</li>
+                        <li className="list-group-item remove-all-padding text-center">Annotators: 2</li>
+                        <li className="list-group-item remove-all-padding text-center">Labels: 3</li>
+                    </ul>
                 </div>
-            </li>
+
+            </div>
+
         );
     }
 

@@ -13,7 +13,7 @@ class CollectionGridP extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.props.fetchFolders("5b7c7bca3a42672d1b00d601")
+        this.props.fetchFolders("5b7d6a7f484d91fe658cf3b8")
     }
 
     generateDOM() {
@@ -30,11 +30,10 @@ class CollectionGridP extends React.PureComponent {
 
     render() {
         return (
-            <ReactGridLayout className="layout" autoSize={true}
-                             {...this.props}
-            >
-                {this.generateDOM()}
-            </ReactGridLayout>
+                <div className="grid_layout">
+                    {this.generateDOM()}
+                </div>
+
         );
     }
 }
