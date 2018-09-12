@@ -25,7 +25,7 @@ pip install -r requirements-dev.txt
 
 ### Step 2: Install `label_coach` plugin
 
-####Install all python dependencies. 
+#### Install all python dependencies. 
 
 ##### Linux Distributions
 For conda environments use environment.yml in the root directory `label-coach` 
@@ -34,6 +34,8 @@ conda env create -n label-coach -f environment.yml
 # then activate the conda virtual environment
 source activate label-coach
 ```
+Make sure you have installed openslide-python. Follow installation instructions for openslide and openslide-python installation here : https://openslide.org/download/
+
 
 ##### OSX
 For conda environments use environment.yml in the root directory `label-coach` 

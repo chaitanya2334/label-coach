@@ -8,8 +8,8 @@
     height: auto;
 }
 
-.fixed-width{
-    width: 208px!important;
+.fixed-width {
+    width: 208px !important;
 }
 
 .tn-card {
@@ -20,33 +20,60 @@
     display: inline-block;
     margin: 0.5rem;
     position: relative;
-    border: rgba(0, 0, 0, 0.3) 1px solid;
     padding: 5px 5px;
 }
 
-.tn-text{
-width: 130px;
-text-overflow: ellipsis;
+.tn-text {
+    width: 160px;
+}
 
-  /* Required for text-overflow to do anything */
-  white-space: nowrap;
-  overflow: hidden;
+.tn-icon{
+    margin: 0.3rem;
+    opacity: 0.8;
+    padding-bottom: 2px;
+}
 
+.line-clamp {
+
+    text-overflow: ellipsis;
+
+    /* Required for text-overflow to do anything */
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .tn-title {
-    font-size: 0.7rem;
     font-weight: 700;
-
-
+    margin-bottom: 0.2rem;
+    font-family: 'Hind Vadodara', Sans-Serif;
+    font-size: 16px;
+    text-align: left;
 }
 
 .tn-subtitle {
-    font-size: 0.7rem;
-    font-weight: 300;
+    font-family: 'Arimo', Serif;
+    font-size: 12px;
+    font-weight: 100;
+    text-align: left;
+    opacity: 0.6;
 }
 
 .tn-card.active {
     border: #4D9DE0 1px solid;
 }
+
+.tn-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tn-stats {
+    flex-grow: 0;
+    line-height: 0;
+    opacity: 0.6;
+    font-weight: 100;
+}
+
+
 

@@ -69,7 +69,7 @@ class ImageResource(Resource):
             self.user = self.getCurrentUser()
             folder = folderModel.load(folderId, level=AccessType.READ, user=self.getCurrentUser())
             files = folderModel.fileList(doc=folder, user=self.getCurrentUser(), data=False, includeMetadata=True,
-                                         mimeFilter=['application/octet-stream', 'image/png'])
+                                         mimeFilter=['application/octet-stream', 'image/png', 'image/jpeg'])
             ret_files = []
             for filename, file in files:
                 filename = os.path.splitext(filename)[0]

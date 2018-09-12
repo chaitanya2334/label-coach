@@ -6,6 +6,7 @@ import {faDrawPolygon, faTimes} from '@fortawesome/free-solid-svg-icons'
 
 import {connect} from "react-redux";
 import {addAnnotation, cancelAnnotation, postLabels, toggleLabelButton} from "./controlActions";
+import IconButton from "@material-ui/core/IconButton";
 
 fontawesome.library.add(faDrawPolygon);
 
@@ -31,9 +32,10 @@ class CreatePolyButtonP extends React.Component {
         let activeClass = this.props.active ? "active" : "";
         let faType = this.props.buttonState ? "draw-polygon" : faTimes;
         return (
-            <div className={"create_button active" }>
-                <button type="button" className={"btn btn-primary"} onClick={this.onClick}><FontAwesomeIcon
-                    icon={faType}/></button>
+            <div className={"create_button active"} onClick={this.onClick}>
+                <IconButton className={"icon-button"} aria-label="Delete">
+                    <FontAwesomeIcon icon={faType}/>
+                </IconButton>
             </div>
         );
     }

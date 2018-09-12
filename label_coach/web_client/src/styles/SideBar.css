@@ -1,48 +1,48 @@
 .sidebar {
     z-index: 940;
-    height: 93%;
+    height: 95%;
     display: flex;
     flex-direction: column;
     position: relative;
     background-color: white;
     box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-    overflow-y: scroll;
-    margin-right: -15px;
-    margin-left: -15px;
-
 }
+
+
+
 .card-header {
     padding: 0.50rem 1.25rem !important;
 }
 
-.sidebar-header{
+.sidebar-header {
     padding-bottom: 16px;
     padding-top: 16px;
     flex-grow: 0;
 }
+
 .card-header a {
     color: darkslategray !important;
 }
 
-.marginTop{
+.marginTop {
     margin-top: 20px;
 }
 
-.sidebar>ul{
+.sidebar > ul {
     list-style: none none;
     padding-left: 0;
 }
 
-.sidebar-content{
+.sidebar-content {
     flex-grow: 2;
 }
 
-.sidebar-footer{
+.sidebar-footer {
     position: relative;
     flex-grow: 0;
 }
 
-.button-group{
+.button-group {
     bottom: 0;
     width: 100%;
     padding-right: 20px;

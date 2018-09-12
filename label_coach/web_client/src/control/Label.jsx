@@ -25,32 +25,35 @@ class LabelP extends React.Component {
         return (
 
 
-            <div className="card">
-                <div  className={"card-header " + this.props.color + " " + activeClass} id={"heading_"+this.props.name}>
-                  <h5 className="mb-0">
-                    <span onClick={this.props.onClick}> <FontAwesomeIcon icon={faType} className="icon-size"/> </span>
-                    <a  onClick={this.props.onClick} data-toggle={collapse} data-target={"#collapse_"+this.props.name} aria-expanded={areaexpand} aria-controls={"#collapse_"+this.props.name}>
-                      {this.props.name}
-                    </a>
+            <div className="lbl-card" onClick={this.props.onClick}>
+                <div className={"card-header " + activeClass}
+                     id={"heading_" + this.props.name}>
+                    <div className={"lbl-text"}>
+                        <div className={"lbl-dot"} style={{backgroundColor: this.props.color}}/>
+                        <p>{this.props.name}</p>
+                        <Counter key={"c_" + this.props.id}
+                                 count={this.props.polygons.length + this.props.lines.length}/>
 
-                            <CreateLineButton active={this.props.active} label={this.props}
-                                              buttonState={this.props.lineButtonState}/>
+                    </div>
 
-                            <CreatePolyButton active={this.props.active} label={this.props}
-                                              buttonState={this.props.polyButtonState}/>
+                    <div className={"btns"}>
+                        <CreateLineButton active={this.props.active} label={this.props}
+                                          buttonState={this.props.lineButtonState}/>
 
-                    <span className={"badge badge-pill badge-secondary float-right"}><Counter key={"c_" + this.props.id} count={this.props.polygons.length + this.props.lines.length}/>
-                        </span>
-                  </h5>
+                        <CreatePolyButton active={this.props.active} label={this.props}
+                                          buttonState={this.props.polyButtonState}/>
+                    </div>
                 </div>
 
-                <div id={"collapse_"+this.props.name} className={"collapse show "+ collapse} aria-labelledby={"heading_"+this.props.name} >
-                  <div className="card-body">
-                    <AnnotationListP key={"ann_" + this.props.id} label_id={this.props.id} polygons={this.props.polygons}
-                                 lines={this.props.lines}
-                                 color={this.props.id} active={this.props.active}/> </div>
+                <div id={"collapse_" + this.props.name} className={"collapse show " + collapse}
+                     aria-labelledby={"heading_" + this.props.name}>
+                    <div className="card-body">
+                        <AnnotationListP key={"ann_" + this.props.id} label_id={this.props.id}
+                                         polygons={this.props.polygons}
+                                         lines={this.props.lines}
+                                         color={this.props.id} active={this.props.active}/></div>
                 </div>
-             </div>
+            </div>
 
 
         )
@@ -59,13 +62,15 @@ class LabelP extends React.Component {
 
 // ---------- Container ----------
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
     return state
 }
 
-function mapDispatchToProps(dispatch, ownProps){
+function mapDispatchToProps(dispatch, ownProps) {
     return {
-        onClick: ()=>{dispatch(toggleLabel(ownProps))}
+        onClick: () => {
+            dispatch(toggleLabel(ownProps))
+        }
     }
 }
 

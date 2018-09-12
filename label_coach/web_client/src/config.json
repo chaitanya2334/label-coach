@@ -3,7 +3,7 @@
     {
       "id": 0,
       "name": "Normal",
-      "color": "#ffffff",
+      "color": "#222034",
       "active": false,
       "line_button": true,
       "poly_button": true,
@@ -13,7 +13,7 @@
     {
       "id": 1,
       "name": "Benign",
-      "color": "#ffffff",
+      "color": "#663931",
       "active": false,
       "line_button": true,
       "poly_button": true,
@@ -23,7 +23,7 @@
     {
       "id": 2,
       "name": "InSitu",
-      "color": "#ffffff",
+      "color": "#37946e",
       "active": false,
       "line_button": true,
       "poly_button": true,
@@ -33,7 +33,7 @@
     {
       "id": 3,
       "name": "Invasive",
-      "color": "#ffffff",
+      "color": "#5b6ee1",
       "active": false,
       "line_button": true,
       "poly_button": true,

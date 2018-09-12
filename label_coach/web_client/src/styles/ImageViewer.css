@@ -47,9 +47,7 @@ html, body, #container, .app {
 
 .ocd-div {
     position: relative;
-    height: 90%;
-    margin-top: 2%;
-
+    height: 80%;
 }
 
 
@@ -133,5 +131,6 @@ ul.ocd-toolbar > li {
     font-size: 32px;
 }
 
-
-
+.image-viewer{
+    margin-top: 1%;
+}

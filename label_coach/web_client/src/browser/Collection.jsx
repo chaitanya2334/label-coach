@@ -28,7 +28,7 @@ class CollectionP extends React.Component {
         for (let i = 0; i < n; i++) {
             let path = "";
             if (this.props.thumbnails.length > i) {
-                path = "api/v1/image/" + this.props.thumbnails[i].id + "_files/8/0_0.jpeg";
+                path = "api/v1/image/dzi/" + this.props.thumbnails[i].id + "_files/8/0_0.jpeg";
             }
             ret.push(
                 <div className="thumbnail-container" key={i} data-grid={{x:w*(i%2), y:h * Math.floor(i/2), w: w, h: h}}>
@@ -50,27 +50,39 @@ class CollectionP extends React.Component {
 
         return (
 
-            <div className="card"
+            <li className={"tn-card " + hoverClass + " " + widthClass + " mdc-elevation-transition " }
                 onClick={this.props.onSelect}
                 onMouseEnter={this.handleHover}
                 onMouseLeave={this.handleHover}>
-
-                <ReactGridLayout className="layout" autoSize={true} isDraggable={false} isResizable={false}
+                <div className="l-img-thumbnail">
+                    <ReactGridLayout className="layout" autoSize={true} isDraggable={false} isResizable={false}
                                  rowHeight={50} responsive={false} margin={[2, 2]}>
                     {this.getThumbnails(4)}
-                </ReactGridLayout>
-
-                <div className="card-body">
-                    <h5 className="card-title text-center">{this.props.title}</h5>
-                    <ul className="list-group list-group-flush">
-                        <li className="list-group-item remove-all-padding text-center">Items: 4</li>
-                        <li className="list-group-item remove-all-padding text-center">Annotators: 2</li>
-                        <li className="list-group-item remove-all-padding text-center">Labels: 3</li>
-                    </ul>
+                    </ReactGridLayout>
                 </div>
-
-            </div>
-
+                <div className={"tn-container"}>
+                    <div className={"tn-text"}>
+                        <p className={"tn-title line-clamp"}>
+                            {this.props.title}
+                        </p>
+                        <div className={"tn-subtitle"}>
+                            This is to Annotate burnman images
+                        </div>
+                    </div>
+                    <div className={"tn-stats"}>
+                        <img className={"tn-icon"} src={"https://www.shareicon.net/data/128x128/2015/10/03/111571_people_512x512.png"} width={20} height={20}/>
+                        {2}
+                    </div>
+                    <div className={"tn-stats"}>
+                        <img className={"tn-icon"} src={"https://png.icons8.com/ios/50/000000/opened-folder.png"} width={20} height={20}/>
+                        {7}
+                    </div>
+                    <div className={"tn-stats"}>
+                        <img className={"tn-icon"} src={"https://image.flaticon.com/icons/svg/8/8784.svg"} width={20} height={20}/>
+                        {4}
+                    </div>
+                </div>
+            </li>
         );
     }
 
