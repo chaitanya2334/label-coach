@@ -32,6 +32,8 @@ export function findCollection() {
                                }
                            }).then(collections=>{
                                if(collections.length > 0){
+                                   console.log("collections.length");
+                                   console.log(collections.length);
                                    let id = collections[0]._id;
                                    dispatch(fetchFolders(id));
                                }else{

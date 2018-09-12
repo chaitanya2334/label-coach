@@ -17,6 +17,7 @@ class CollectionP extends React.Component {
             isHovered: false
         };
         this.props.getThumbnails(4);
+        console.log(this.state);
     }
 
     getThumbnails(n) {
@@ -48,20 +49,37 @@ class CollectionP extends React.Component {
         let widthClass = this.props.fixedWidth ? "fixed-width" : "";
 
         return (
-            <li className={"tn-card " + hoverClass + " " + widthClass + " mdc-elevation-transition "}
+
+            <li className={"tn-card " + hoverClass + " " + widthClass + " mdc-elevation-transition " }
                 onClick={this.props.onSelect}
                 onMouseEnter={this.handleHover}
                 onMouseLeave={this.handleHover}>
-                <ReactGridLayout className="layout" autoSize={true} isDraggable={false} isResizable={false}
+                <div className="l-img-thumbnail">
+                    <ReactGridLayout className="layout" autoSize={true} isDraggable={false} isResizable={false}
                                  rowHeight={50} responsive={false} margin={[2, 2]}>
                     {this.getThumbnails(4)}
-                </ReactGridLayout>
-                <div className={"co-text"}>
-                    <div className={"co-title"}>
-                        {this.props.title}
+                    </ReactGridLayout>
+                </div>
+                <div className={"tn-container"}>
+                    <div className={"tn-text"}>
+                        <p className={"tn-title line-clamp"}>
+                            {this.props.title}
+                        </p>
+                        <div className={"tn-subtitle"}>
+                            This is to Annotate burnman images
+                        </div>
                     </div>
-                    <div className={"co-subtitle"}>
-                        4 labels
+                    <div className={"tn-stats"}>
+                        <img className={"tn-icon"} src={"https://www.shareicon.net/data/128x128/2015/10/03/111571_people_512x512.png"} width={20} height={20}/>
+                        {2}
+                    </div>
+                    <div className={"tn-stats"}>
+                        <img className={"tn-icon"} src={"https://png.icons8.com/ios/50/000000/opened-folder.png"} width={20} height={20}/>
+                        {7}
+                    </div>
+                    <div className={"tn-stats"}>
+                        <img className={"tn-icon"} src={"https://image.flaticon.com/icons/svg/8/8784.svg"} width={20} height={20}/>
+                        {4}
                     </div>
                 </div>
             </li>

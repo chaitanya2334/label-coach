@@ -14,6 +14,7 @@ from girder.constants import AccessType
 from girder.models.assetstore import Assetstore
 from girder.models.collection import Collection
 from girder.models.file import File
+from girder.models.user import User
 
 from girder.models.folder import Folder
 from ..bcolors import printOk, printFail, printOk2
@@ -39,7 +40,7 @@ class ImageResource(Resource):
         self.route('GET', ('dzi', ':image_id', ':level', ':tfile'), self.tile)
 
     def load_slides(self, image_id):
-        file = File().load(image_id, level=AccessType.READ, user=self.getCurrentUser())
+        file = File().load(image_id, level=AccessType.READ, user=self.user)
         assetstore = Assetstore().load(file['assetstoreId'])
         slides, associated_images, slide_properties, slide_mpp = \
             load_slide(os.path.join(assetstore['root'], file['path']))
@@ -65,6 +66,7 @@ class ImageResource(Resource):
 
         try:
             folderModel = Folder()
+            self.user = self.getCurrentUser()
             folder = folderModel.load(folderId, level=AccessType.READ, user=self.getCurrentUser())
             files = folderModel.fileList(doc=folder, user=self.getCurrentUser(), data=False, includeMetadata=True,
                                          mimeFilter=['application/octet-stream', 'image/png', 'image/jpeg'])
@@ -91,6 +93,9 @@ class ImageResource(Resource):
         printOk('params is ' + image_id)
 
         try:
+            printOk(self.getCurrentToken())
+            printOk(self.getCurrentUser())
+
             slides = self.load_slides(image_id)
 
             resp = slides['slide'].get_dzi('jpeg')
@@ -127,6 +132,7 @@ class ImageResource(Resource):
     @rest.rawResponse
     def tile(self, image_id, level, tfile):
         resp = ""
+        printOk("Tile called!")
         try:
             image_id = re.search(r'(.*)_files', image_id).group(1)
             slides = self.load_slides(image_id)
