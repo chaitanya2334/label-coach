@@ -39,7 +39,7 @@ class ImageResource(Resource):
         self.route('GET', ('dzi', ':image_id', ':level', ':tfile'), self.tile)
 
     def load_slides(self, image_id):
-        file = File().load(image_id, level=AccessType.READ, user=self.getCurrentUser())
+        file = File().load(image_id, level=AccessType.READ, user=self.user)
         assetstore = Assetstore().load(file['assetstoreId'])
         slides, associated_images, slide_properties, slide_mpp = \
             load_slide(os.path.join(assetstore['root'], file['path']))
@@ -65,6 +65,7 @@ class ImageResource(Resource):
 
         try:
             folderModel = Folder()
+            self.user = self.getCurrentUser()
             folder = folderModel.load(folderId, level=AccessType.READ, user=self.getCurrentUser())
             files = folderModel.fileList(doc=folder, user=self.getCurrentUser(), data=False, includeMetadata=True,
                                          mimeFilter=['application/octet-stream', 'image/png', 'image/jpeg'])
