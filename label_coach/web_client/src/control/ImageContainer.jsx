@@ -16,7 +16,8 @@ class ImageContainerP extends React.Component {
             this.props.images.forEach((image, i) => {
                 rows.push(
                     <Thumbnail key={image.id} id={image.id} active={image.active} title={image.title}
-                                imageId={image.dbId} mimeType={image.mimeType} labelFileId={image.labelFileId}/>
+                               folderId={image.folderId} imageId={image.dbId} mimeType={image.mimeType}
+                               labelFileId={image.labelFileId}/>
                 );
             });
         }

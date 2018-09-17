@@ -74,7 +74,7 @@ function mapDispatchToProps(dispatch, ownProps) {
             if (ownProps.labelFileId) {
                 dispatch(fetchLabels(ownProps.labelFileId));
             } else {
-                dispatch(createLabelFile(ownProps.title + ".json", ownProps.id));
+                dispatch(createLabelFile(ownProps.title + ".json", ownProps.folderId, ownProps.id));
             }
         },
     }

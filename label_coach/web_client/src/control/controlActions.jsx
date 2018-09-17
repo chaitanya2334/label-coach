@@ -94,6 +94,13 @@ export function replaceLabels(labels) {
     }
 }
 
+export function setCurrentFolder(id){
+    return{
+        type: 'SET_CURRENT_FOLDER',
+        id: id
+    }
+}
+
 export function fetchImages(id) {
     return function (dispatch) {
 
@@ -152,13 +159,14 @@ export function addLabelId(image_id, label_id) {
     }
 }
 
-export function createLabelFile(fileName, imageId) {
+export function createLabelFile(fileName, folderId, imageId) {
     return function (dispatch) {
         return restRequest({
                                url: "/label/create",
                                method: 'GET',
                                data: {
-                                   file_name: fileName
+                                   file_name: fileName,
+                                   folder_id: folderId,
                                }
                            })
             .then(response => {
