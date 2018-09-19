@@ -1,6 +1,4 @@
 const webpack = require('webpack');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports = function (config, info) {
     config.plugins.push(new webpack.EnvironmentPlugin({
@@ -19,8 +17,6 @@ module.exports = function (config, info) {
             {test: /\.json$/, use: "json-loader"}
         ]
     };
-
-    config.devtool = 'inline-source-map';
 
     config.resolve = {
         extensions: ['.js', '.jsx'],

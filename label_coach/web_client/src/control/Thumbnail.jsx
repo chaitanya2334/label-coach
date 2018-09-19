@@ -14,7 +14,11 @@ class ThumbnailP extends React.Component {
     }
 
     getThumbnailPath() {
-        return "api/v1/image/dzi/" + this.props.imageId + "_files/10/0_0.jpeg";
+        if (this.props.mimeType === "image/jpeg" || this.props.mimeType === "image/png") {
+            return "api/v1/image/" + this.props.imageId + "?image_id=" + this.props.imageId;
+        }else{
+            return "api/v1/image/dzi/" + this.props.imageId + "_files/10/0_0.jpeg";
+        }
     }
 
     handleHover() {
@@ -70,7 +74,7 @@ function mapDispatchToProps(dispatch, ownProps) {
             if (ownProps.labelFileId) {
                 dispatch(fetchLabels(ownProps.labelFileId));
             } else {
-                dispatch(createLabelFile(ownProps.title + ".json", ownProps.id));
+                dispatch(createLabelFile(ownProps.title + ".json", ownProps.folderId, ownProps.id));
             }
         },
     }

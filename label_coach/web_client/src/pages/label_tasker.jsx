@@ -13,7 +13,7 @@ import ToolBar from "../control/ToolBar";
 import ImageViewer from "../Imager/ImageViewer";
 import {LabelContainer} from "../control/LabelContainer";
 import thunk from "redux-thunk";
-import {fetchImages, fetchLabels, postLabels} from "../control/controlActions";
+import {fetchImages, fetchLabels, postLabels, setCurrentFolder} from "../control/controlActions";
 import {Link} from "react-router-dom";
 import CollectionBrowserP from "./collection_browser";
 import UserControl from "../control/UserControl";
@@ -25,9 +25,11 @@ class LabelTaskerP extends React.Component {
     }
 
     render() {
-        if (this.props.images.length === 0) {
+        if(this.props.currentFolderId !== this.props.match.params.id){
             this.props.fetchImages();
         }
+
+
         return (
             <div>
                 <nav className={"navbar navbar-dark bg-dark navbar-slim"}>
@@ -65,13 +67,15 @@ class LabelTaskerP extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        images: state.images
+        images: state.images,
+        currentFolderId: state.currentFolder.id
     };
 }
 
 function mapDispatchToProps(dispatch, ownProps) {
     return {
         fetchImages: () => {
+            dispatch(setCurrentFolder(ownProps.match.params.id));
             dispatch(fetchImages(ownProps.match.params.id))
         }
     };

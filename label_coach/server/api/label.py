@@ -92,18 +92,24 @@ class LabelResource(Resource):
         except:
             printFail(traceback.print_exc)
 
+    def find_config(self, folder_id):
+        folder = Folder().load(folder_id, user=self.getCurrentUser())
+        for file in Folder().fileList(folder, self.getCurrentUser(), data=False):
+            if file['name'] == "config.json":
+                return file
+
     @access.public
     @autoDescribeRoute(
         Description('Create a new label file if it doesnt exist')
             .param('file_name', 'label file name'))
     @rest.rawResponse
-    def createLabelFile(self, file_name):
+    def createLabelFile(self, file_name, folder_id):
         try:
             file = list(File().find({'name': file_name}).limit(1))
             print(file)
             if not file:
                 file = self.createNewFile(file_name)
-                config_file = list(File().find({'name': "config.json"}).limit(1))
+                config_file = self.find_config(folder_id)
                 if not config_file:
                     printFail("No config file found")
                     return errorMessage("No config file found")

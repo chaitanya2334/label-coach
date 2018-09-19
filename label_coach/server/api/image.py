@@ -117,7 +117,7 @@ class ImageResource(Resource):
         printOk('params is ' + image_id)
 
         try:
-            file = File().load(image_id, level=AccessType.READ, user=self.getCurrentUser())
+            file = File().load(image_id, level=AccessType.READ, user=self.user)
             cherrypy.response.headers["Content-Type"] = "application/png"
             return File().download(file)
 

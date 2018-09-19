@@ -38,6 +38,17 @@ export function imageReducer(image, action) {
     }
 }
 
+export function currentFolder(currentFolder={}, action) {
+    switch (action.type) {
+        case 'SET_CURRENT_FOLDER':
+            return produce(currentFolder, draftState=>{
+                draftState.id = action.id;
+            });
+        default:
+            return currentFolder;
+    }
+}
+
 export function images(images = [], action) {
     switch (action.type) {
         case 'POPULATE_IMAGES':
