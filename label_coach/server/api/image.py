@@ -14,6 +14,7 @@ from girder.constants import AccessType
 from girder.models.assetstore import Assetstore
 from girder.models.collection import Collection
 from girder.models.file import File
+from girder.models.user import User
 
 from girder.models.folder import Folder
 from ..bcolors import printOk, printFail, printOk2
@@ -92,6 +93,9 @@ class ImageResource(Resource):
         printOk('params is ' + image_id)
 
         try:
+            printOk(self.getCurrentToken())
+            printOk(self.getCurrentUser())
+
             slides = self.load_slides(image_id)
 
             resp = slides['slide'].get_dzi('jpeg')
@@ -128,6 +132,7 @@ class ImageResource(Resource):
     @rest.rawResponse
     def tile(self, image_id, level, tfile):
         resp = ""
+        printOk("Tile called!")
         try:
             image_id = re.search(r'(.*)_files', image_id).group(1)
             slides = self.load_slides(image_id)
