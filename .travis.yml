@@ -34,14 +34,7 @@ before_install:
   - nvm install v8
   - nvm use v8
   - git submodule update --init --recursive
-  - cd ./girder
-  - pip install -r requirements-dev.txt
-  - pip install girder-client
-  - cd ..
 
-  - npm config set python `which python`
-  - cd ./label_coach/
-  - npm install -g npm
 
 install:
   - if [[ $TRAVIS_PYTHON_VERSION == 2* ]] ; then PY=2 ; fi
@@ -49,6 +42,13 @@ install:
   - CONDA_DIR="$HOME/build/env/conda${PY}"
   - export PATH="$CONDA_DIR/bin:$PATH"
   - source activate label-coach
+  - cd ./girder
+  - pip install -r requirements-dev.txt
+  - pip install girder-client
+  - cd ..
+  - npm config set python `which python`
+  - cd ./label_coach/
+  - npm install -g npm
   - npm install
 
 
