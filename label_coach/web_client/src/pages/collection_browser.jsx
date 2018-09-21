@@ -20,6 +20,7 @@ export default class CollectionBrowserP extends React.Component {
 
     render() {
         return (
+
              <div className={"container-fluid"}>
                 <nav className={"navbar row sticky-top navbar-dark bg-dark navbar-slim"}>
 

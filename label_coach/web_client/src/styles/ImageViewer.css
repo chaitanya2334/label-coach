@@ -127,6 +127,8 @@ ul.ocd-toolbar > li {
 }
 
 .title{
+    position: fixed;
+    top: 44px;
     font-weight: 600;
     font-size: 32px;
 }
@@ -134,3 +136,5 @@ ul.ocd-toolbar > li {
 .image-viewer{
     margin-top: 1%;
 }
+
+

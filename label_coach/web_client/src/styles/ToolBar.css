@@ -1,16 +1,18 @@
 .toolbar{
-  position: absolute !important;
-  left: 25% !important;
-  top: 5% !important;
-  z-index: 200 !important;
-  }
-
-.toolbar button{
-font-size: 1.75rem;
+    margin-left: auto;
+    margin-right: auto;
 }
+
+.btn-toolbar{
+    justify-content: center !important;
+    position: relative;
+}
+
 
 .toolbar button:hover{
-color: white;
-background-color: gray;
+    background-color: gray;
 }
 
+.save-indicator{
+    color:gray;
+}
