@@ -27,7 +27,6 @@ class SaveIndicatorP extends React.Component {
         return day + ' ' + monthNames[monthIndex] + ' ' + year;
     }
 
-
     render() {
         if (this.props.status === "dirty") {
             this.props.editText("Saving...");
@@ -39,7 +38,7 @@ class SaveIndicatorP extends React.Component {
             this.props.editText("Saved " + this.timeAgo.format(this.props.lastUpdated))
         }
         return (
-            <div data-toggle="tooltip"
+            <div id="save-indicator" data-toggle="tooltip"
                  title={"Last edit was on " + this.formatDate(new Date(this.props.lastUpdated))}>{this.props.text}</div>
         );
     }
