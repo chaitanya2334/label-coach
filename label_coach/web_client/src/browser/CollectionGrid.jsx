@@ -30,11 +30,10 @@ class CollectionGridP extends React.PureComponent {
 
     render() {
         return (
-            <ReactGridLayout className="layout" autoSize={true}
-                             {...this.props}
-            >
-                {this.generateDOM()}
-            </ReactGridLayout>
+                <ul className="grid_layout">
+                    {this.generateDOM()}
+                </ul>
+
         );
     }
 }

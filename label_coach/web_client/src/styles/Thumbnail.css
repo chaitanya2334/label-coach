@@ -30,6 +30,7 @@
 .tn-icon{
     margin: 0.3rem;
     opacity: 0.8;
+    padding-bottom: 2px;
 }
 
 .line-clamp {

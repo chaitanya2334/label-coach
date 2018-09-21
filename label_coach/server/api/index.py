@@ -23,7 +23,7 @@ class IndexAPIHandler(Resource):
         self.cp_config = {'tools.staticdir.on': True,
                           'tools.staticdir.index': 'index.html'}
         self.route('GET', (), self.index)
-        print("This is index")
+        print("*********************************************************************This is index")
 
     @access.public
     @autoDescribeRoute(

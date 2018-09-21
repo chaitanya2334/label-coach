@@ -1,13 +1,13 @@
 @media all and (min-width: 480px) {
 
-  #login_logo{
+  #register_logo{
   margin-left: auto;
   margin: auto;
     width: 50%;
     text-align: center;
   }
 
-  #Login {
+  #Register {
     margin-top:10%;
     color: #5d5d5d;
 	background: #f2f2f2;
@@ -18,7 +18,7 @@
 
   }
 
-  #Login form {
+  #register form {
     margin: 0 auto;
     max-width: 320px;
   }

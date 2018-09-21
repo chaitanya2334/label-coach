@@ -1,3 +1,22 @@
+.card{
+    width: 15rem;
+    float: left;
+    cursor: pointer;
+    margin: 2%;
+}
+
+.card-title{
+    padding: 0px 0px !important;
+}
+
+.float_center{
+    float: center !important;
+}
+
+.list-group-item {
+    padding: 0px 2px;
+}
+
 .thumbnail-container {
     margin: 0 auto;
     overflow: hidden;

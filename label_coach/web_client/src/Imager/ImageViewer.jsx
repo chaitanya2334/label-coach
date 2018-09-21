@@ -1,5 +1,6 @@
 import React from 'react';
 import '../styles/ImageViewer.css';
+import {getCurrentToken} from "girder/auth";
 import OpenSeadragon from 'openseadragon'
 import './overlay/osdSvgOverlay'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
