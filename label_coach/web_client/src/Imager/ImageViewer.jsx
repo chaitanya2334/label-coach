@@ -14,6 +14,9 @@ import connect from "react-redux/es/connect/connect";
 import {lockAnnotation, setSaveStatus, updateAnnotation} from "../control/controlActions";
 import Polygon from "./overlay/polygon";
 import Line from "./overlay/line";
+import ToolBar from "../control/ToolBar";
+import SaveIndicator from "../control/SaveIndicator";
+import Divider from "@material-ui/core/Divider";
 
 // helper function to load image using promises
 function loadImage(src) {
@@ -50,6 +53,11 @@ class ImageViewerP extends React.Component {
         return (
             <div className={"image-viewer"}>
                 <div className={"title"}>{this.props.title}</div>
+                <SaveIndicator/>
+                <Divider/>
+                <ToolBar/>
+                <Divider/>
+                <div className={"gap1em"}/>
                 <div className="ocd-div" ref={node => {
                     this.el = node;
                 }}>

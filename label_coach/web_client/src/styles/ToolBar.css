@@ -1,18 +1,23 @@
-.toolbar{
+.toolbar {
     margin-left: auto;
     margin-right: auto;
+    display: flex;
+    flex-direction: row;
 }
 
-.btn-toolbar{
-    justify-content: center !important;
-    position: relative;
+.toolbar button:focus {
+    outline: 0;
 }
 
-
-.toolbar button:hover{
-    background-color: gray;
+.btn-small{
+    min-width: auto!important;
 }
 
-.save-indicator{
-    color:gray;
+.save-indicator {
+    color: gray;
+}
+
+.vertical-divider{
+    height: auto!important;
+    width: 1px;
 }

@@ -87,6 +87,10 @@ ul.ocd-toolbar > li {
     position: relative;
 }
 
+.gap1em{
+    margin-bottom: 1em;
+}
+
 .ocd-toolbar a {
     width: 18px;
     height: 18px;
@@ -127,8 +131,6 @@ ul.ocd-toolbar > li {
 }
 
 .title{
-    position: fixed;
-    top: 44px;
     font-weight: 600;
     font-size: 32px;
 }

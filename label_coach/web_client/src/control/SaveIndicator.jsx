@@ -12,7 +12,7 @@ class SaveIndicatorP extends React.Component {
         this.timeAgo = new TimeAgo('en-US');
     }
 
-    formatDate(date) {
+    static formatDate(date) {
         let monthNames = [
             "January", "February", "March",
             "April", "May", "June", "July",
@@ -38,8 +38,8 @@ class SaveIndicatorP extends React.Component {
             this.props.editText("Saved " + this.timeAgo.format(this.props.lastUpdated))
         }
         return (
-            <div id="save-indicator" data-toggle="tooltip"
-                 title={"Last edit was on " + this.formatDate(new Date(this.props.lastUpdated))}>{this.props.text}</div>
+            <div id="save-indicator" data-toggle="tooltip" className={"save-indicator"}
+                 title={"Last edit was on " + SaveIndicatorP.formatDate(new Date(this.props.lastUpdated))}>{this.props.text}</div>
         );
     }
 
