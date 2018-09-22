@@ -42,7 +42,8 @@ class LabelTaskerP extends React.Component {
                 </nav>
                 <div className={"container-fluid"}>
                     <div className={"row"}>
-                        <div className={"col-lg-2 hack-sm-2 remove-left-padding"}>
+                        <div className={"col-lg-2 hack-sm-2 remove-left-padding"}
+                             style={{display: this.props.thumbnailBarVisibility ? 'block' : 'none' }}>
                             <SideBarP itemType="images">
                                 <ImageContainer/>
                             </SideBarP>
@@ -51,7 +52,8 @@ class LabelTaskerP extends React.Component {
 
                             <ImageViewer/>
                         </div>
-                        <div className={"col-lg-2 remove-right-padding"}>
+                        <div className={"col-lg-2 remove-right-padding"}
+                             style={{display: this.props.labelBarVisibility ? 'block' : 'none' }}>
                             <SideBarP itemType="labels">
                                 <LabelContainer/>
                             </SideBarP>
@@ -69,7 +71,9 @@ class LabelTaskerP extends React.Component {
 function mapStateToProps(state) {
     return {
         images: state.images,
-        currentFolderId: state.currentFolder.id
+        currentFolderId: state.currentFolder.id,
+        thumbnailBarVisibility: state.thumbnailBarVisibility,
+        labelBarVisibility: state.labelBarVisibility
     };
 }
 

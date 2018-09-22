@@ -1,5 +1,27 @@
 import {restRequest} from "girder/rest";
 
+
+export function setHeader(state) {
+    return {
+        type: "SET_HEADER",
+        state: state,
+    }
+}
+
+export function setLabelBarVisibility(state) {
+    return {
+        type: "SET_LABEL_BAR_VIS",
+        state: state,
+    }
+}
+
+export function setThumbnailBarVisibility(state) {
+    return {
+        type: "SET_THUMBNAIL_BAR_VIS",
+        state: state,
+    }
+}
+
 export function addAnnotation(ann_type, label_id) {
     return {
         type: 'ADD_ANN',
@@ -65,6 +87,7 @@ export function toggleCollapse(label) {
         label_id: label.id,
     }
 }
+
 export function toggleExpand(label) {
     return {
         type: 'TOGGLE_EXPAND',
@@ -94,8 +117,8 @@ export function replaceLabels(labels) {
     }
 }
 
-export function setCurrentFolder(id){
-    return{
+export function setCurrentFolder(id) {
+    return {
         type: 'SET_CURRENT_FOLDER',
         id: id
     }

@@ -37,17 +37,30 @@ html, body, #container, .app {
 }
 
 .ocd-div, .ocd, .openseadragon {
-    width: 100%;
-    height: 100%;
+    flex-grow: 1;
+    display: flex;
     background-color: white;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     border-radius: 2px;
 }
 
+.openseadragon-container{
+    display: flex;
+    position: relative!important;
+    height: auto!important;
+}
+
+.openseadragon-canvas{
+    display: flex;
+
+}
+
 .ocd-div {
+    display: flex;
     position: relative;
-    height: 80%;
+    flex-grow: 1;
+    flex-shrink: 1;
 }
 
 
@@ -137,6 +150,18 @@ ul.ocd-toolbar > li {
 
 .image-viewer{
     margin-top: 1%;
+    display: flex;
+    height: 92%;
+    justify-content: flex-start;
+    flex-direction: column;
 }
+
+.iv-header{
+    flex-grow: 0;
+    flex-shrink: 0;
+    display:flex;
+    flex-direction: column;
+}
+
 
 

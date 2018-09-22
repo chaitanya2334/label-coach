@@ -1,6 +1,41 @@
 import produce from "immer";
 
-export function saveIndicator(saveIndicator={}, action){
+export function showHeader(showHeader = true, action) {
+    switch (action.type) {
+        case "SET_HEADER":
+            return produce(showHeader, draftState => {
+                return action.state;
+            });
+        default:
+            return showHeader;
+    }
+}
+
+export function thumbnailBarVisibility(thumbnailBarVisibility = false, action) {
+    switch (action.type) {
+        case 'SET_THUMBNAIL_BAR_VIS':
+            return produce(thumbnailBarVisibility, draftState => {
+                return action.state;
+            });
+        default:
+            return thumbnailBarVisibility;
+    }
+}
+
+
+export function labelBarVisibility(labelBarVisibility = false, action) {
+    switch (action.type) {
+        case 'SET_LABEL_BAR_VIS':
+            return produce(labelBarVisibility, draftState => {
+                return action.state;
+            });
+        default:
+            return labelBarVisibility;
+    }
+}
+
+
+export function saveIndicator(saveIndicator = {}, action) {
     switch (action.type) {
         case 'EDIT_SAVE_INDICATOR_TEXT':
             return produce(saveIndicator, draftState => {
@@ -38,10 +73,10 @@ export function imageReducer(image, action) {
     }
 }
 
-export function currentFolder(currentFolder={}, action) {
+export function currentFolder(currentFolder = {}, action) {
     switch (action.type) {
         case 'SET_CURRENT_FOLDER':
-            return produce(currentFolder, draftState=>{
+            return produce(currentFolder, draftState => {
                 draftState.id = action.id;
             });
         default:

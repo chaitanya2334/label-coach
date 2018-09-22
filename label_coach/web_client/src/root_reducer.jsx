@@ -1,9 +1,21 @@
 import {combineReducers} from "redux";
-import {currentFolder, images, labels, saveIndicator, searchImages, searchLabels} from "./control/controlReducers";
+import {
+    currentFolder,
+    images,
+    labelBarVisibility,
+    labels,
+    saveIndicator,
+    searchImages,
+    searchLabels, showHeader,
+    thumbnailBarVisibility
+} from "./control/controlReducers";
 import {authentication} from "./login/loginReducer";
 import {folders} from "./browser/browserReducers";
 
 export default combineReducers({
+                                   showHeader,
+                                   labelBarVisibility,
+                                   thumbnailBarVisibility,
                                    saveIndicator,
                                    authentication,
                                    folders,

@@ -52,12 +52,15 @@ class ImageViewerP extends React.Component {
 
         return (
             <div className={"image-viewer"}>
-                <div className={"title"}>{this.props.title}</div>
-                <SaveIndicator/>
+                <div className={"iv-header"} style={{display: this.props.showHeader ? "flex": "none"}}>
+                    <div className={"title"}>{this.props.title}</div>
+                    <SaveIndicator/>
+                </div>
                 <Divider/>
                 <ToolBar/>
                 <Divider/>
                 <div className={"gap1em"}/>
+
                 <div className="ocd-div" ref={node => {
                     this.el = node;
                 }}>
@@ -336,6 +339,7 @@ function mapStateToProps(state) {
         polygons = polygons.concat(newPolygons);
     }
     return {
+        showHeader: state.showHeader,
         title: title,
         mimeType: mimeType,
         dbId: dbId,

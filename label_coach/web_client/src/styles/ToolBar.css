@@ -1,8 +1,17 @@
 .toolbar {
-    margin-left: auto;
-    margin-right: auto;
     display: flex;
     flex-direction: row;
+}
+
+.full-toolbar{
+    display: flex;
+    flex-grow: 0;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.full-toolbar button:focus{
+    outline: 0;
 }
 
 .toolbar button:focus {
@@ -16,6 +25,9 @@
 
 .btn-small{
     min-width: auto!important;
+    min-height: auto!important;
+    padding-top: 4px!important;
+    padding-bottom: 4px!important;
 }
 
 .save-indicator {
