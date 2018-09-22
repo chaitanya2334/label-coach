@@ -9,6 +9,7 @@ import BrushIcon from "@material-ui/icons/Brush";
 import {OverlayTrigger, Popover} from "react-bootstrap";
 import {BrushLabelContainer} from "./BrushLabelContainer";
 import Button from "@material-ui/core/Button";
+import ToggleButton from "@material-ui/lab/ToggleButton";
 
 
 class CreateBrushButtonP extends React.Component {
@@ -55,7 +56,7 @@ class CreateBrushButtonP extends React.Component {
                 rootClose
                 placement="bottom"
                 overlay={brush_settings}>
-                <Button id="home" className="btn-small" size="small"><BrushIcon/></Button>
+                <ToggleButton id="home" className="btn-small" size="small"><BrushIcon/></ToggleButton>
             </OverlayTrigger>
             /* <div className={"create_button active"} onClick={this.onClick}>
              <IconButton className={"icon-button"} aria-label="Delete">

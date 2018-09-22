@@ -9,6 +9,11 @@
     outline: 0;
 }
 
+.text-btn {
+    font-weight: 600!important;
+
+}
+
 .btn-small{
     min-width: auto!important;
 }
