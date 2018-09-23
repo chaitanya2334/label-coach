@@ -22,6 +22,7 @@ import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import {addAnnotation, setHeader, selectRightBar, setThumbnailBarVisibility} from "./controlActions";
 import SvgIcon from "@material-ui/core/SvgIcon";
+import BrushIcon from "../../../node_modules/@material-ui/icons/Brush";
 
 class ToolBarP extends React.Component {
     constructor(props) {
@@ -30,7 +31,7 @@ class ToolBarP extends React.Component {
             alignment: []
         };
         this.handleMovement = this.handleMovement.bind(this);
-        this.handleDrawTools = this.handleDrawTools.bind(this);
+        this.handleDrawTool = this.handleDrawTool.bind(this);
         this.handleSidebars = this.handleSidebars.bind(this);
         this.toggleHeader = this.toggleHeader.bind(this);
     }
@@ -39,8 +40,9 @@ class ToolBarP extends React.Component {
         this.setState({movement})
     }
 
-    handleDrawTools(event, drawTools) {
-        this.setState({drawTools})
+    handleDrawTool(event, drawTool) {
+        this.props.selectRightBar(drawTool);
+        this.setState({drawTool})
     }
 
     handleSidebars(event, sidebars) {
@@ -68,7 +70,18 @@ class ToolBarP extends React.Component {
     }
 
     render() {
-        const {movement, drawTools, sidebars} = this.state;
+        let {movement, drawTool, sidebars} = this.state;
+        // HAX <--- TODO remove
+        if (this.props.rightBar !== "labels"){
+            // remove "review" toggle as somebody else is using the rightbar
+            if(sidebars) {
+                sidebars = sidebars.filter(e => e !== 'review');
+            }
+        }else if (this.props.rightBar === "labels"){
+            // remove any of the draw tool toggles as "review" is using the rightbar
+            drawTool = null;
+        }
+
         let arrow;
         if (this.props.showHeader) {
             arrow = <KeyboardArrowUpIcon/>
@@ -86,8 +99,8 @@ class ToolBarP extends React.Component {
                     </ToggleButtonGroup>
                     <Divider className={"vertical-divider"}/>
 
-                    <ToggleButtonGroup exclusive value={drawTools} justified="true" onChange={this.handleDrawTools}>
-                        <CreateBrushButton/>
+                    <ToggleButtonGroup exclusive value={drawTool} justified="true" onChange={this.handleDrawTool}>
+                        <ToggleButton id="brush" value="brush" className="btn-small" size="small"><BrushIcon/></ToggleButton>
                         <ToggleButton value="clear" id="erazer" size="small">
                             <SvgIcon>
                                 <path d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4.008 4.008 0 0
@@ -118,7 +131,8 @@ class ToolBarP extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        showHeader: state.showHeader
+        showHeader: state.showHeader,
+        rightBar: state.rightBar,
     };
 }
 

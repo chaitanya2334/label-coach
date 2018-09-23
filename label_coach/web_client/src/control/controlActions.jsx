@@ -1,5 +1,11 @@
 import {restRequest} from "girder/rest";
 
+export function setBrushSize(value){
+    return{
+        type: "SET_BRUSH_SIZE",
+        value: value
+    }
+}
 
 export function setHeader(state) {
     return {
@@ -74,6 +80,14 @@ export function toggleLabelButton(label_id, button_type) {
     };
 }
 
+export function selectLabel(label){
+    return{
+        type: "SELECT_LABEL",
+        label_id: label.id
+    }
+}
+
+// toggle label doesnt turn off other labels
 export function toggleLabel(label) {
     return {
         type: 'TOGGLE_LABEL',

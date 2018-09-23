@@ -13,9 +13,9 @@ export default class SideBarP extends React.Component {
     render() {
         return (
 
-            <div className={"sidebar "}>
+            <div className={"sidebar"}>
                 <SearchBar id={this.props.itemType}/>
-                    {this.props.children}
+                {this.props.children}
             </div>
         )
     }

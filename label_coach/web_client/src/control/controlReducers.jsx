@@ -1,5 +1,16 @@
 import produce from "immer";
 
+export function brushSize(brushSize = 10, action) {
+    switch (action.type) {
+        case "SET_BRUSH_SIZE":
+            return produce(brushSize, draftState => {
+                return action.value;
+            });
+        default:
+            return brushSize;
+    }
+}
+
 export function showHeader(showHeader = true, action) {
     switch (action.type) {
         case "SET_HEADER":
@@ -183,6 +194,14 @@ export function labels(labels = [], action) {
                 draftState[action.label_id] = labelReducer(draftState[action.label_id], action)
             });
 
+        case "SELECT_LABEL":
+            return produce(labels, (draftState) => {
+                for (let label of draftState) {
+                    label.active = false;
+                }
+                draftState[action.label_id] = labelReducer(draftState[action.label_id], action)
+            });
+
         default:
             return labels;
 
@@ -260,6 +279,10 @@ export function labelReducer(label, action) {
 
         case 'TOGGLE_LABEL':
             newLabel.active = !newLabel.active;
+            return newLabel;
+
+        case "SELECT_LABEL":
+            newLabel.active = true;
             return newLabel;
 
         case 'TOGGLE_COLLAPSE':

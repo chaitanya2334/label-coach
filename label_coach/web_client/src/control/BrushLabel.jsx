@@ -1,13 +1,11 @@
 import * as React from "react";
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faAngleDown, faAngleUp} from '@fortawesome/free-solid-svg-icons'
 import {connect} from "react-redux";
-import AnnotationListP from "./AnnotationList";
-import Counter from "./Counter";
 import "../styles/BrushLabel.css"
-import {toggleLabel} from "./controlActions";
-import CreateLineButton from "./CreateLineButton";
-import CreatePolyButton from "./CreatePolyButton";
+import {selectLabel} from "./controlActions";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import Divider from "@material-ui/core/Divider";
 
 class BrushLabelP extends React.Component {
     constructor(props) {
@@ -19,15 +17,15 @@ class BrushLabelP extends React.Component {
     }
 
     render() {
-        let activeClass = this.props.active ? "active" : "";
-
-
         return (
-            <span className={"dot " + activeClass}
-                  id={"brush_" + this.props.name}
-                  onClick={this.props.onClick}
-                  style={{backgroundColor: this.props.color}}>
-            </span>
+            <ListItem button divider selected={this.props.active} onClick={this.props.selectLabel}>
+                <ListItemIcon>
+                    <div className={"dot"} id={"brush_" + this.props.name} style={{backgroundColor: this.props.color}}/>
+                </ListItemIcon>
+                <ListItemText primary={this.props.name}/>
+            </ListItem>
+
+
         )
     }
 }
@@ -40,8 +38,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch, ownProps) {
     return {
-        onClick: () => {
-            dispatch(toggleLabel(ownProps))
+        selectLabel: () => {
+            dispatch(selectLabel(ownProps))
         }
     }
 }

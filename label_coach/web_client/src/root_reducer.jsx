@@ -1,5 +1,6 @@
 import {combineReducers} from "redux";
 import {
+    brushSize,
     currentFolder,
     images,
     labels, rightBar,
@@ -12,6 +13,7 @@ import {authentication} from "./login/loginReducer";
 import {folders} from "./browser/browserReducers";
 
 export default combineReducers({
+                                   brushSize,
                                    showHeader,
                                    rightBar,
                                    thumbnailBarVisibility,

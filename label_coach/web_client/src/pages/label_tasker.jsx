@@ -18,6 +18,7 @@ import {Link} from "react-router-dom";
 import CollectionBrowserP from "./collection_browser";
 import UserControl from "../control/UserControl";
 import {withRouter} from "react-router";
+import {BrushContainer} from "../control/BrushContainer";
 
 class LabelTaskerP extends React.Component {
     constructor(props) {
