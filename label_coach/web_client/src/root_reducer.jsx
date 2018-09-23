@@ -2,8 +2,7 @@ import {combineReducers} from "redux";
 import {
     currentFolder,
     images,
-    labelBarVisibility,
-    labels,
+    labels, rightBar,
     saveIndicator,
     searchImages,
     searchLabels, showHeader,
@@ -14,7 +13,7 @@ import {folders} from "./browser/browserReducers";
 
 export default combineReducers({
                                    showHeader,
-                                   labelBarVisibility,
+                                   rightBar,
                                    thumbnailBarVisibility,
                                    saveIndicator,
                                    authentication,

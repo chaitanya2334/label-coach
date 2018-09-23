@@ -25,8 +25,38 @@ class LabelTaskerP extends React.Component {
     }
 
     render() {
-        if(this.props.currentFolderId !== this.props.match.params.id){
+        if (this.props.currentFolderId !== this.props.match.params.id) {
             this.props.fetchImages();
+        }
+        let rightBar, leftBar;
+        switch (this.props.rightBar) {
+            case "labels":
+                rightBar =
+                    <SideBarP itemType="labels">
+                        <LabelContainer/>
+                    </SideBarP>;
+
+                break;
+            case "brush":
+                rightBar =
+                    <SideBarP itemType="brush">
+                        <BrushContainer/>
+                    </SideBarP>;
+                break;
+            case "polygon":
+                rightBar =
+                    <SideBarP itemType="polygon">
+                        <LabelSelectorContainer/>
+                    </SideBarP>;
+                break;
+            case "line":
+                rightBar =
+                    <SideBarP itemType="paintbrush">
+                        <LabelSelectorContainer/>
+                    </SideBarP>;
+                break;
+            default:
+                rightBar = null;
         }
 
 
@@ -43,20 +73,16 @@ class LabelTaskerP extends React.Component {
                 <div className={"container-fluid"}>
                     <div className={"row"}>
                         <div className={"col-lg-2 hack-sm-2 remove-left-padding"}
-                             style={{display: this.props.thumbnailBarVisibility ? 'block' : 'none' }}>
+                             style={{display: this.props.thumbnailBarVisibility ? 'block' : 'none'}}>
                             <SideBarP itemType="images">
                                 <ImageContainer/>
                             </SideBarP>
                         </div>
                         <div className={"col-lg-8 hack-grow-8 align-self-top"}>
-
                             <ImageViewer/>
                         </div>
-                        <div className={"col-lg-2 remove-right-padding"}
-                             style={{display: this.props.labelBarVisibility ? 'block' : 'none' }}>
-                            <SideBarP itemType="labels">
-                                <LabelContainer/>
-                            </SideBarP>
+                        <div className={"col-lg-2 remove-right-padding"} style={{display: rightBar ? 'block' : 'none'}}>
+                            {rightBar}
                         </div>
                     </div>
                 </div>
@@ -73,7 +99,7 @@ function mapStateToProps(state) {
         images: state.images,
         currentFolderId: state.currentFolder.id,
         thumbnailBarVisibility: state.thumbnailBarVisibility,
-        labelBarVisibility: state.labelBarVisibility
+        rightBar: state.rightBar
     };
 }
 

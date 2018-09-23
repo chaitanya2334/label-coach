@@ -23,14 +23,14 @@ export function thumbnailBarVisibility(thumbnailBarVisibility = false, action) {
 }
 
 
-export function labelBarVisibility(labelBarVisibility = false, action) {
+export function rightBar(rightBar = "", action) {
     switch (action.type) {
-        case 'SET_LABEL_BAR_VIS':
-            return produce(labelBarVisibility, draftState => {
-                return action.state;
+        case 'SELECT_RIGHT_BAR':
+            return produce(rightBar, draftState => {
+                return action.value;
             });
         default:
-            return labelBarVisibility;
+            return rightBar;
     }
 }
 
@@ -220,28 +220,37 @@ export function labelReducer(label, action) {
     let newLabel = Object.assign({}, label);
     switch (action.type) {
         case 'ADD_ANN':
-            if (action.ann_type === "polygon") {
-                newLabel.polygons.push(annotationReducer({id: label.polygons.length}, action));
-            } else {
-                newLabel.lines.push(annotationReducer({id: label.lines.length}, action));
+            switch (action.ann_type) {
+                case "polygon":
+                    newLabel.polygons.push(annotationReducer({id: label.polygons.length}, action));
+                    break;
+                case "line":
+                    newLabel.lines.push(annotationReducer({id: label.lines.length}, action));
+                    break;
             }
             return newLabel;
 
         case 'LOCK_ANN':
         case 'UNLOCK_ANN':
         case 'UPDATE_ANN':
-            if (action.ann_type === "polygon") {
-                newLabel.polygons[action.item_id] = annotationReducer(newLabel.polygons[action.item_id], action);
-            } else {
-                newLabel.lines[action.item_id] = annotationReducer(newLabel.lines[action.item_id], action);
+            switch (action.ann_type) {
+                case "polygon":
+                    newLabel.polygons[action.item_id] = annotationReducer(newLabel.polygons[action.item_id], action);
+                    break;
+                case "line":
+                    newLabel.lines[action.item_id] = annotationReducer(newLabel.lines[action.item_id], action);
+                    break;
             }
             return newLabel;
 
         case 'CANCEL_ANN':
-            if (action.ann_type === "polygon") {
-                newLabel.polygons.pop();
-            } else {
-                newLabel.lines.pop();
+            switch (action.ann_type) {
+                case "polygon":
+                    newLabel.polygons.pop();
+                    break;
+                case "line":
+                    newLabel.lines.pop();
+                    break;
             }
             return newLabel;
 

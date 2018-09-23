@@ -18,37 +18,11 @@ class CreateBrushButtonP extends React.Component {
         this.onClick = this.onClick.bind(this);
     }
 
-
-    onClick() {
-        if (this.props.buttonState) {
-            // trigger Create
-            console.log('trigger create');
-            //this.props.addLine();
-        } else {
-            // trigger Cancel
-            console.log('trigger cancel');
-            //this.props.cancelLine();
-        }
-        console.log('toggle');
-        //this.props.toggleText();
-    }
-
     render() {
-        let activeClass = this.props.active ? "active" : "";
-        let faType = this.props.buttonState ? faBrush : faTimes;
         let brush_settings = (
             <Popover id="brush_settings_popover">
                 <BrushLabelContainer/>
             </Popover>
-
-            /*
-             <div id="brush_settings_popover" role="tooltip" class="fade in popover bottom" style="display: block; top: 84px; left: 649.312px;">
-             <div class="arrow" style="left: 50%;"></div>
-             <div class="popover-content">
-             <strong>This is the brush settings</strong> Check this info.
-             </div>
-             </div>
-             */
         );
         return (
             <OverlayTrigger
@@ -58,11 +32,7 @@ class CreateBrushButtonP extends React.Component {
                 overlay={brush_settings}>
                 <ToggleButton id="home" className="btn-small" size="small"><BrushIcon/></ToggleButton>
             </OverlayTrigger>
-            /* <div className={"create_button active"} onClick={this.onClick}>
-             <IconButton className={"icon-button"} aria-label="Delete">
-             <FontAwesomeIcon icon={faType}/>
-             </IconButton>
-             </div>*/
+
         );
     }
 

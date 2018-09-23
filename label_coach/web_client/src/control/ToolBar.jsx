@@ -20,7 +20,8 @@ import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
-import {addAnnotation, setHeader, setLabelBarVisibility, setThumbnailBarVisibility} from "./controlActions";
+import {addAnnotation, setHeader, selectRightBar, setThumbnailBarVisibility} from "./controlActions";
+import SvgIcon from "@material-ui/core/SvgIcon";
 
 class ToolBarP extends React.Component {
     constructor(props) {
@@ -43,13 +44,13 @@ class ToolBarP extends React.Component {
     }
 
     handleSidebars(event, sidebars) {
-        let labelBarVis = false;
+        let rightBar = "";
         let thumbnailBarVis = false;
         if (sidebars !== null) {
             for (let sidebar of sidebars) {
                 switch (sidebar) {
                     case "review":
-                        labelBarVis = true;
+                        rightBar = "labels";
                         break;
                     case "thumbnail":
                         thumbnailBarVis = true;
@@ -57,7 +58,7 @@ class ToolBarP extends React.Component {
                 }
             }
         }
-        this.props.setLabelBar(labelBarVis);
+        this.props.selectRightBar(rightBar);
         this.props.setThumbnailBar(thumbnailBarVis);
         this.setState({sidebars});
     }
@@ -78,24 +79,27 @@ class ToolBarP extends React.Component {
             <div className={"full-toolbar"}>
                 <div className="toolbar">
                     <ToggleButtonGroup value={movement} onChange={this.handleMovement}>
-                        <ToggleButton value="zoom-map" id="full-page"
-                                      size="small"><ZoomOutMapIcon/></ToggleButton>
-                        <ToggleButton value="zoom-in" id="zoom-in"
-                                      size="small"><ZoomInIcon/></ToggleButton>
-                        <ToggleButton value="zoom-out" id="zoom-out"
-                                      size="small"><ZoomOutIcon/></ToggleButton>
+                        <ToggleButton value="zoom-map" id="full-page" size="small"><ZoomOutMapIcon/></ToggleButton>
+                        <ToggleButton value="zoom-in" id="zoom-in" size="small"><ZoomInIcon/></ToggleButton>
+                        <ToggleButton value="zoom-out" id="zoom-out" size="small"><ZoomOutIcon/></ToggleButton>
                         <ToggleButton value="home" id="home" size="small"><HomeIcon/></ToggleButton>
                     </ToggleButtonGroup>
                     <Divider className={"vertical-divider"}/>
+
                     <ToggleButtonGroup exclusive value={drawTools} justified="true" onChange={this.handleDrawTools}>
                         <CreateBrushButton/>
-                        <ToggleButton value="clear" id="erazer"
-                                      size="small"><ClearIcon/></ToggleButton>
+                        <ToggleButton value="clear" id="erazer" size="small">
+                            <SvgIcon>
+                                <path d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4.008 4.008 0 0
+                                    1-5.66 0L2.81 17c-.78-.79-.78-2.05 0-2.84l10.6-10.6c.79-.78 2.05-.78 2.83
+                                    0M4.22 15.58l3.54 3.53c.78.79 2.04.79 2.83 0l3.53-3.53-4.95-4.95-4.95 4.95z"/>
+                            </SvgIcon>
+                        </ToggleButton>
                     </ToggleButtonGroup>
                     <Divider className={"vertical-divider"}/>
+
                     <ToggleButtonGroup value={sidebars} onChange={this.handleSidebars}>
-                        <ToggleButton value="thumbnail" id="thumbnail" size="small"
-                                      className="text-btn">Thumbnail</ToggleButton>
+                        <ToggleButton value="thumbnail" id="thumbnail" size="small" className="text-btn">Thumbnail</ToggleButton>
                         <ToggleButton value="review" id="review" size="small" className="text-btn">Review</ToggleButton>
                     </ToggleButtonGroup>
 
@@ -123,8 +127,8 @@ function mapDispatchToProps(dispatch) {
         setThumbnailBar: (state) => {
             dispatch(setThumbnailBarVisibility(state));
         },
-        setLabelBar: (state) => {
-            dispatch(setLabelBarVisibility(state));
+        selectRightBar: (value) => {
+            dispatch(selectRightBar(value));
         },
         setHeader: (state) => {
             dispatch(setHeader(state));

@@ -76,12 +76,12 @@ class ImageViewerP extends React.Component {
     initSeaDragon() {
         this.viewer = new OpenSeadragon({
                                             id: this.id,
-                                            visibilityRatio: 1.0,
-                                            constrainDuringPan: false,
-                                            defaultZoomLevel: 1,
+                                            visibilityRatio: 1,
+                                            constrainDuringPan: true,
+                                            defaultZoomLevel: 0,
                                             zoomPerClick: 1,
-                                            minZoomLevel: 1,
-                                            maxZoomLevel: 10,
+                                            minZoomLevel: 0,
+                                            maxZoomLevel: 40,
                                             zoomInButton: 'zoom-in',
                                             zoomOutButton: 'zoom-out',
                                             homeButton: 'reset',
@@ -101,7 +101,6 @@ class ImageViewerP extends React.Component {
         let onZoom = this.onZoom.bind(this);
         this.viewer.addHandler('canvas-click', onClick);
         this.viewer.addHandler('canvas-drag', (event) => {
-
             event.preventDefaultAction = (this.activePolygon || this.activeLine);
             this.onDrag(event);
         });

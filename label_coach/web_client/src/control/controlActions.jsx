@@ -8,10 +8,10 @@ export function setHeader(state) {
     }
 }
 
-export function setLabelBarVisibility(state) {
+export function selectRightBar(value) {
     return {
-        type: "SET_LABEL_BAR_VIS",
-        state: state,
+        type: "SELECT_RIGHT_BAR",
+        value: value,
     }
 }
 
