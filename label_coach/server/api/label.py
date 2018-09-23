@@ -55,11 +55,13 @@ class LabelResource(Resource):
         uploadModel.handleChunk(upload, chunk, filter=True, user=self.getCurrentUser())
         return upload
 
-    def createNewFile(self, file_name):
+    def createNewFile(self, folder, file_name):
         parent_folder = self.get_root_folder()
+        printOk(parent_folder)
+        printOk2(self.getCurrentUser())
         item = Item().createItem(file_name,
                                  creator=self.getCurrentUser(),
-                                 folder=parent_folder,
+                                 folder=folder,
                                  description='label file',
                                  reuseExisting=False)
 
@@ -94,27 +96,28 @@ class LabelResource(Resource):
 
     def find_config(self, folder_id):
         folder = Folder().load(folder_id, user=self.getCurrentUser())
-        for file in Folder().fileList(folder, self.getCurrentUser(), data=False):
+        for file_path, file in Folder().fileList(folder, self.getCurrentUser(), data=False):
+            printOk(file)
             if file['name'] == "config.json":
                 return file
 
     @access.public
     @autoDescribeRoute(
         Description('Create a new label file if it doesnt exist')
-            .param('file_name', 'label file name'))
+            .param('file_name', 'label file name').param('folder_id', 'the parent folder id'))
     @rest.rawResponse
     def createLabelFile(self, file_name, folder_id):
         try:
             file = list(File().find({'name': file_name}).limit(1))
-            print(file)
+            folder = Folder().load(folder_id, user=self.getCurrentUser())
+            printOk(file)
             if not file:
-                file = self.createNewFile(file_name)
+                file = self.createNewFile(folder, file_name)
                 config_file = self.find_config(folder_id)
                 if not config_file:
                     printFail("No config file found")
                     return errorMessage("No config file found")
                 else:
-                    config_file = config_file[0]
                     printOk(config_file)
                     res = self.copy(config_file, file)
                     printOk(res['fileId'])

@@ -90,7 +90,6 @@ class ImageResource(Resource):
     @rest.rawResponse
     def dzi(self, image_id):
         printOk('getDzi() was called!')
-        printOk('params is ' + image_id)
 
         try:
             printOk(self.getCurrentToken())
@@ -132,7 +131,6 @@ class ImageResource(Resource):
     @rest.rawResponse
     def tile(self, image_id, level, tfile):
         resp = ""
-        printOk("Tile called!")
         try:
             image_id = re.search(r'(.*)_files', image_id).group(1)
             slides = self.load_slides(image_id)
