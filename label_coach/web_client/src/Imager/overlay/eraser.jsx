@@ -120,6 +120,6 @@ export default class Eraser extends Shape {
     }
 
     delete() {
-
+        this.mask.remove();
     }
 }
