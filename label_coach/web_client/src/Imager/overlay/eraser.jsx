@@ -2,7 +2,7 @@ import Shape from "./shape";
 import * as d3 from "d3";
 import OpenSeadragon from "openseadragon";
 
-export default class Brush extends Shape {
+export default class Eraser extends Shape {
     constructor(overlay, viewer, label, brushSize, zoom) {
         super(overlay, viewer);
         this.R = 0.0015 * brushSize;
@@ -15,31 +15,32 @@ export default class Brush extends Shape {
         this.paths = [];
         this.paths.push([]);
         this.d3paths = [];
-        this.d3paths.push(d3.select(this.overlay.node())
-                            .append("path")
-                            .attr("stroke", this.label.color)
-                            .attr("fill", "transparent")
-                            .attr('id', this.label.id.toString() + "_" + "0")
-                            .attr('stroke-width', this.r * 2 * (1 / this.zoom))
-                            .attr("stroke-linecap", "round")
-                            .attr("opacity", 1)
-                            .attr("mask", "url(#eraser_" + this.label.id + ")"));
+        this.mask = d3.select(this.overlay.svg())
+                      .append("mask")
+                      .attr("id", "eraser_" + this.label.id);
+        this.mask.append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("fill", "white");
 
-        this.filter = d3.select(this.overlay.svg())
-                        .append('filter')
-                        .attr("id", "constantOpacity")
-                        .append("feComponentTransfer")
-                        .append("feFuncA")
-                        .attr("type", "table")
-                        .attr("tableValues", "0 .2 .2");
-        d3.select(this.overlay.node())
-          .attr("filter", "url(#constantOpacity)");
+        this.d3paths.push(this.mask
+                              .append("path")
+                              .attr("stroke", "black")
+                              .attr("fill", "transparent")
+                              .attr('id', this.label.id.toString() + "_" + "0")
+                              .attr('stroke-width', this.r * 2 * (1 / this.zoom))
+                              .attr("stroke-linecap", "round")
+                              .attr("opacity", 1))
+        ;
+
     }
 
     onMouseMove(vpPoint) {
         if (this.label && this.isCursor) {
             this.cursor
-                .attr("fill", this.label.color)
+                .attr("fill", "#ffffff")
                 .attr("cx", vpPoint.x)
                 .attr("cy", vpPoint.y);
             document.body.style.cursor = "crosshair";
@@ -57,15 +58,14 @@ export default class Brush extends Shape {
 
     onMouseDragEnd() {
         this.paths.push([]);
-        this.d3paths.push(d3.select(this.overlay.node())
-                            .append("path")
-                            .attr("stroke", this.label.color)
-                            .attr("fill", "transparent")
-                            .attr('id', this.label.id.toString() + "_" + this.d3paths.length.toString())
-                            .attr('stroke-width', this.r * 2 * (1 / this.zoom))
-                            .attr("stroke-linecap", "round")
-                            .attr("opacity", 1)
-                            .attr("mask", "url(#eraser_" + this.label.id + ")"));
+        this.d3paths.push(this.mask
+                              .append("path")
+                              .attr("stroke", "black")
+                              .attr("fill", "transparent")
+                              .attr('id', this.label.id.toString() + "_" + this.d3paths.length.toString())
+                              .attr('stroke-width', this.r * 2 * (1 / this.zoom))
+                              .attr("stroke-linecap", "round")
+                              .attr("opacity", 1));
     }
 
     onMouseDrag(vpPoint) {
@@ -120,8 +120,6 @@ export default class Brush extends Shape {
     }
 
     delete() {
-        if (this.cursor) {
-            this.cursor.remove();
-        }
+
     }
 }

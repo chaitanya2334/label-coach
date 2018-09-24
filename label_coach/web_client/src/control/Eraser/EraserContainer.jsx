@@ -1,14 +1,13 @@
 import * as React from "react";
-import "../styles/BrushContainer.css"
 import {connect} from "react-redux";
-import BrushLabel from "./BrushLabel";
-import SizeControl from "./SizeControl";
 import Divider from "@material-ui/core/Divider";
 import List from "@material-ui/core/List";
 import ListSubheader from "@material-ui/core/ListSubheader";
+import SizeControl from "../SizeControl";
+import "../../styles/EraserContainer.css";
+import EraserLabel from "./EraserLabel";
 
-
-export class BrushContainerP extends React.Component {
+export class EraserContainerP extends React.Component {
     constructor(props) {
         super(props);
 
@@ -19,19 +18,19 @@ export class BrushContainerP extends React.Component {
         if (this.props.labels.length > 0) {
             this.props.labels.forEach((label, i) => {
                 rows.push(
-                    <BrushLabel key={label.id} id={label.id} name={label.name} color={label.color}
+                    <EraserLabel key={label.id} id={label.id} name={label.name} color={label.color}
                                 active={label.active}/>
                 );
             });
         }
         return (
             <div className="brush-container">
-                <List component="nav" subheader={<ListSubheader component="div">Select Label to Annotate</ListSubheader>}>
+                <List component="nav" subheader={<ListSubheader component="div">Select Label to Erase</ListSubheader>}>
                     {rows}
                 </List>
                 <div className={"flex-end"}>
                     <Divider/>
-                    <SizeControl className="flex-center" type="brush"/>
+                    <SizeControl className="flex-center" type="eraser"/>
                 </div>
             </div>
         );
@@ -55,7 +54,7 @@ function mapDispatchToProps(dispatch) {
     return {};
 }
 
-export const BrushContainer = connect(
+export const EraserContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(BrushContainerP);
+)(EraserContainerP);

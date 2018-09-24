@@ -12,6 +12,7 @@ import ToolBar from "../control/ToolBar";
 import SaveIndicator from "../control/SaveIndicator";
 import Divider from "@material-ui/core/Divider";
 import Brush from "./overlay/brush";
+import Eraser from "./overlay/eraser";
 
 // helper function to load image using promises
 function loadImage(src) {
@@ -289,12 +290,23 @@ class ImageViewerP extends React.Component {
         if (this.activeBrush) {
             this.activeBrush.delete();
         }
+
+        if(this.activeEraser){
+            this.activeEraser.delete();
+        }
+
         this.activePolygon = null;
         this.activeBrush = null;
+        this.activeEraser = null;
 
-        if (this.props.activeTool === "brush" && this.props.activeLabel) {
+        if (this.props.activeTool === "eraser" && this.props.activeLabel) {
             this.activeBrush =
-                new Brush(this.svgOverlay, this.viewer, this.props.activeLabel, this.props.brushRadius, this.zoom);
+                new Eraser(this.svgOverlay, this.viewer, this.props.activeLabel, this.props.toolRadius, this.zoom);
+        }
+
+        if (this.props.activeTool === "brush" && this.props.activeLabel){
+            this.activeBrush =
+                new Brush(this.svgOverlay, this.viewer, this.props.activeLabel, this.props.toolRadius, this.zoom);
         }
 
         //create polygons from props
@@ -401,20 +413,26 @@ function getActiveLabel(labels) {
     return null;
 }
 
+function getToolRadius(tools, activeTool){
+    if(activeTool!== ""){
+        return tools[activeTool].size || 10;
+    }
+}
+
 function mapStateToProps(state) {
 
 
     let {dbId, mimeType, title} = getActiveImageInfo(state.images);
     let {lines, polygons} = mapLabelsToAnns(state.labels);
     let activeLabel = getActiveLabel(state.labels);
-
+    let toolRadius = getToolRadius(state.tools, state.rightBar);
     return {
         showHeader: state.showHeader,
         title: title,
         mimeType: mimeType,
         dbId: dbId,
         activeLabel: activeLabel,
-        brushRadius: state.brushSize,
+        toolRadius: toolRadius,
         activeTool: state.rightBar,
         polygons: polygons,
         lines: lines

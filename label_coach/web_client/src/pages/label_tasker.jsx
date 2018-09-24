@@ -19,6 +19,7 @@ import CollectionBrowserP from "./collection_browser";
 import UserControl from "../control/UserControl";
 import {withRouter} from "react-router";
 import {BrushContainer} from "../control/BrushContainer";
+import {EraserContainer} from "../control/Eraser/EraserContainer";
 
 class LabelTaskerP extends React.Component {
     constructor(props) {
@@ -44,10 +45,10 @@ class LabelTaskerP extends React.Component {
                         <BrushContainer/>
                     </SideBarP>;
                 break;
-            case "polygon":
+            case "eraser":
                 rightBar =
-                    <SideBarP itemType="polygon">
-                        <LabelSelectorContainer/>
+                    <SideBarP itemType="eraser">
+                        <EraserContainer/>
                     </SideBarP>;
                 break;
             case "line":

@@ -1,19 +1,18 @@
 import {combineReducers} from "redux";
 import {
-    brushSize,
     currentFolder,
     images,
     labels, rightBar,
     saveIndicator,
     searchImages,
     searchLabels, showHeader,
-    thumbnailBarVisibility
+    thumbnailBarVisibility, tools
 } from "./control/controlReducers";
 import {authentication} from "./login/loginReducer";
 import {folders} from "./browser/browserReducers";
 
 export default combineReducers({
-                                   brushSize,
+                                   tools,
                                    showHeader,
                                    rightBar,
                                    thumbnailBarVisibility,

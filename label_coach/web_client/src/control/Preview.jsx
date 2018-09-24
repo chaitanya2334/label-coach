@@ -1,7 +1,7 @@
 import * as React from "react";
-import "../styles/BrushPreview.css"
+import "../styles/Preview.css"
 
-export default class BrushPreviewP extends React.Component {
+export default class PreviewP extends React.Component {
     constructor(props) {
         super(props);
 

@@ -1,13 +1,29 @@
 import produce from "immer";
 
-export function brushSize(brushSize = 10, action) {
+export function tools(tools = {
+    "brush": {},
+    "eraser": {},
+    "line": {},
+    "polygon": {}
+}, action) {
     switch (action.type) {
-        case "SET_BRUSH_SIZE":
-            return produce(brushSize, draftState => {
-                return action.value;
+        case "SET_SIZE":
+            return produce(tools, draftState => {
+                draftState[action.toolType] = toolReducer(draftState[action.toolType], action);
             });
         default:
-            return brushSize;
+            return tools;
+    }
+}
+
+export function toolReducer(tool = {}, action) {
+    switch (action.type) {
+        case "SET_SIZE":
+            return produce(tool, draftState => {
+                draftState["size"] = action.value;
+            });
+        default:
+            return tool;
     }
 }
 

@@ -1,9 +1,10 @@
 import {restRequest} from "girder/rest";
 
-export function setBrushSize(value){
+export function setSize(toolType, value){
     return{
-        type: "SET_BRUSH_SIZE",
-        value: value
+        type: "SET_SIZE",
+        value: value,
+        toolType: toolType
     }
 }
 

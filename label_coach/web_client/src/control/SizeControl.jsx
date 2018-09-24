@@ -2,32 +2,32 @@ import * as React from "react";
 
 import {connect} from "react-redux";
 
-import "../styles/BrushSizeControl.css"
+import "../styles/SizeControl.css"
 import 'react-input-range/lib/css/index.css';
 import Slider from "@material-ui/lab/Slider";
 import Typography from "@material-ui/core/Typography";
-import {setBrushSize} from "./controlActions";
-import BrushPreviewP from "./BrushPreview";
+import PreviewP from "./Preview";
 import Divider from "@material-ui/core/Divider";
+import {setSize} from "./controlActions";
 
 
-class BrushSizesP extends React.Component {
+class SizeControlP extends React.Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
     }
 
     handleChange(event, value) {
-        this.props.setBrushSize(value);
+        this.props.setSize(value);
     }
 
     render() {
         return (
             <div>
-                <Typography id="label" className={"bsh-size-label"}>Brush Size: {Math.floor(this.props.brushSize)} units</Typography>
-                <Slider value={this.props.brushSize} min={1} max={50} aria-labelledby="label" onChange={this.handleChange}/>
+                <Typography id="label" className={"bsh-size-label"}>{this.props.type} Size: {Math.floor(this.props.size)} units</Typography>
+                <Slider value={this.props.size} min={1} max={50} aria-labelledby="label" onChange={this.handleChange}/>
                 <Divider/>
-                <BrushPreviewP size={this.props.brushSize} color={this.props.labelColor}/>
+                <PreviewP size={this.props.size} color={this.props.labelColor}/>
             </div>
 
         );
@@ -45,24 +45,24 @@ function getActiveColor(labels) {
     return "#ffffff";
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, ownProps) {
     return {
-        brushSize: state.brushSize,
+        size: state.tools[ownProps.type].size || 10,
         labelColor: getActiveColor(state.labels)
     }
 }
 
 function mapDispatchToProps(dispatch, ownProps) {
     return {
-        setBrushSize: (value) => {
-            dispatch(setBrushSize(value))
+        setSize: (value) => {
+            dispatch(setSize(ownProps.type, value))
         }
     }
 }
 
-const BrushSizeControl = connect(
+const SizeControl = connect(
     mapStateToProps,
     mapDispatchToProps
-)(BrushSizesP);
+)(SizeControlP);
 
-export default BrushSizeControl;
+export default SizeControl;

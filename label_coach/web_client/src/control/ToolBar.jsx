@@ -101,7 +101,7 @@ class ToolBarP extends React.Component {
 
                     <ToggleButtonGroup exclusive value={drawTool} justified="true" onChange={this.handleDrawTool}>
                         <ToggleButton id="brush" value="brush" className="btn-small" size="small"><BrushIcon/></ToggleButton>
-                        <ToggleButton value="clear" id="erazer" size="small">
+                        <ToggleButton value="eraser" id="erazer" size="small">
                             <SvgIcon>
                                 <path d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4.008 4.008 0 0
                                     1-5.66 0L2.81 17c-.78-.79-.78-2.05 0-2.84l10.6-10.6c.79-.78 2.05-.78 2.83
