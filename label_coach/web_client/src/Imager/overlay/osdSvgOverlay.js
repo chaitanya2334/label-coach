@@ -68,6 +68,10 @@
             return this._node;
         },
 
+        svg: function(){
+            return this._svg;
+        },
+
         // ----------
         resize: function() {
             if (this._containerWidth !== this._viewer.container.clientWidth) {

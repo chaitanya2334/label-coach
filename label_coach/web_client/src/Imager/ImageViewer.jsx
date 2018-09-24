@@ -2,14 +2,8 @@ import React from 'react';
 import '../styles/ImageViewer.css';
 import {getCurrentToken} from "girder/auth";
 import OpenSeadragon from 'openseadragon'
-import './overlay/osdSvgOverlay'
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {
-    faExpand,
-    faHome,
-    faSearchMinus,
-    faSearchPlus
-} from '@fortawesome/free-solid-svg-icons'
+import './overlay/osdSvgOverlay';
+import './overlay/osdCanvasOverlay';
 import connect from "react-redux/es/connect/connect";
 import {lockAnnotation, setSaveStatus, updateAnnotation} from "../control/controlActions";
 import Polygon from "./overlay/polygon";
@@ -17,6 +11,7 @@ import Line from "./overlay/line";
 import ToolBar from "../control/ToolBar";
 import SaveIndicator from "../control/SaveIndicator";
 import Divider from "@material-ui/core/Divider";
+import Brush from "./overlay/brush";
 
 // helper function to load image using promises
 function loadImage(src) {
@@ -52,7 +47,7 @@ class ImageViewerP extends React.Component {
 
         return (
             <div className={"image-viewer"}>
-                <div className={"iv-header"} style={{display: this.props.showHeader ? "flex": "none"}}>
+                <div className={"iv-header"} style={{display: this.props.showHeader ? "flex" : "none"}}>
                     <div className={"title"}>{this.props.title}</div>
                     <SaveIndicator/>
                 </div>
@@ -96,7 +91,9 @@ class ImageViewerP extends React.Component {
 
     onViewerReady() {
 
-        this.overlay = this.viewer.svgOverlay();
+        this.svgOverlay = this.viewer.svgOverlay();
+        this.canvasOverlay = this.viewer.canvasOverlay();
+
         let onClick = this.onClick.bind(this);
         let onZoom = this.onZoom.bind(this);
         this.viewer.addHandler('canvas-click', onClick);
@@ -104,6 +101,19 @@ class ImageViewerP extends React.Component {
             event.preventDefaultAction = (this.activePolygon || this.activeLine);
             this.onDrag(event);
         });
+
+        this.viewer.addHandler('canvas-exit', (event) => {
+            this.onCanvasExit(event);
+        });
+
+        this.viewer.addHandler('canvas-enter', (event) => {
+            this.onCanvasEnter(event);
+        });
+
+        this.viewer.addHandler('canvas-drag-end', (event) => {
+            this.onDragEnd(event);
+        });
+
         this.viewer.addHandler('zoom', onZoom);
         this.moveTracker = new OpenSeadragon.MouseTracker({
                                                               element: this.viewer.container,
@@ -122,6 +132,20 @@ class ImageViewerP extends React.Component {
             this.activePolygon.end();
             this.props.lockPolygon(this.activePolygon.label_id, this.activePolygon.poly_id);
             this.activePolygon = null;
+        }
+    }
+
+    onCanvasEnter(event) {
+
+        if (this.activeBrush) {
+            this.activeBrush.onEnter();
+        }
+    }
+
+    onCanvasExit(event) {
+
+        if (this.activeBrush) {
+            this.activeBrush.onExit();
         }
     }
 
@@ -148,6 +172,10 @@ class ImageViewerP extends React.Component {
             }
         }
 
+        if (this.activeBrush) {
+            this.activeBrush.onMouseMove(viewportPoint);
+        }
+
     }
 
     open_slide(url, mpp) {
@@ -161,6 +189,8 @@ class ImageViewerP extends React.Component {
     setPan(value) {
         this.pan = value;
     }
+
+
 
     onDrag(event) {
         // The canvas-click event gives us a position in web coordinates.
@@ -182,6 +212,16 @@ class ImageViewerP extends React.Component {
             }
         }
 
+        if (this.activeBrush) {
+            this.activeBrush.onMouseDrag(viewportPoint);
+        }
+
+    }
+
+    onDragEnd(event){
+        if (this.activeBrush){
+            this.activeBrush.onMouseDragEnd();
+        }
     }
 
     onClick(event) {
@@ -246,11 +286,20 @@ class ImageViewerP extends React.Component {
         }
         this.lines = [];
         this.polygons = [];
+        if (this.activeBrush) {
+            this.activeBrush.delete();
+        }
         this.activePolygon = null;
+        this.activeBrush = null;
+
+        if (this.props.activeTool === "brush" && this.props.activeLabel) {
+            this.activeBrush =
+                new Brush(this.svgOverlay, this.viewer, this.props.activeLabel, this.props.brushRadius, this.zoom);
+        }
 
         //create polygons from props
         for (let polygon of this.props.polygons) {
-            let polyObj = new Polygon(this.overlay, this.viewer, polygon.label_id, polygon.poly_id, this.zoom);
+            let polyObj = new Polygon(this.svgOverlay, this.viewer, polygon.label_id, polygon.poly_id, this.zoom);
             polyObj.addImagePoints(polygon.points);
             this.polygons.push(polyObj);
             if (polygon.drawState !== "read-only") {
@@ -262,7 +311,7 @@ class ImageViewerP extends React.Component {
         }
         this.activeLine = null;
         for (let line of this.props.lines) {
-            let lineObj = new Line(this.overlay, this.viewer, line.label_id, line.line_id, this.zoom);
+            let lineObj = new Line(this.svgOverlay, this.viewer, line.label_id, line.line_id, this.zoom);
             lineObj.addImagePoints(line.points);
             this.lines.push(lineObj);
             if (line.drawState !== "read-only") {
@@ -305,23 +354,10 @@ class ImageViewerP extends React.Component {
 }
 
 // ---------- Container ----------
-
-function mapStateToProps(state) {
+function mapLabelsToAnns(labels) {
     let polygons = [];
     let lines = [];
-    let dbId = "";
-    let mimeType = "";
-    let title = "Untitled";
-    for (let image of state.images) {
-        if (image.active) {
-            title = image.title;
-            mimeType = image.mimeType;
-            dbId = image.dbId;
-            break;
-        }
-    }
-
-    for (let label of state.labels) {
+    for (let label of labels) {
         let newPolygons = label.polygons.map((poly) => {
             let newPoly = Object.assign({}, poly);
             newPoly.label_id = label.id;
@@ -337,11 +373,49 @@ function mapStateToProps(state) {
         lines = lines.concat(newLines);
         polygons = polygons.concat(newPolygons);
     }
+    return {lines, polygons};
+}
+
+function getActiveImageInfo(images) {
+    let dbId = "";
+    let mimeType = "";
+    let title = "Untitled";
+
+    for (let image of images) {
+        if (image.active) {
+            title = image.title;
+            mimeType = image.mimeType;
+            dbId = image.dbId;
+            break;
+        }
+    }
+    return {dbId, mimeType, title}
+}
+
+function getActiveLabel(labels) {
+    for (let label of labels) {
+        if (label.active) {
+            return label;
+        }
+    }
+    return null;
+}
+
+function mapStateToProps(state) {
+
+
+    let {dbId, mimeType, title} = getActiveImageInfo(state.images);
+    let {lines, polygons} = mapLabelsToAnns(state.labels);
+    let activeLabel = getActiveLabel(state.labels);
+
     return {
         showHeader: state.showHeader,
         title: title,
         mimeType: mimeType,
         dbId: dbId,
+        activeLabel: activeLabel,
+        brushRadius: state.brushSize,
+        activeTool: state.rightBar,
         polygons: polygons,
         lines: lines
     };
