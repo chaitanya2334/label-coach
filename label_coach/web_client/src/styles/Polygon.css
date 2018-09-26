@@ -1,14 +1,16 @@
-.transparent{
-    fill: transparent;
+.transparent {
+    fill: white;
+    opacity: 0.4;
     stroke: #0A7EbE;
+
 }
 
-.accept:hover{
+.accept:hover {
     opacity: 1;
     fill: transparent;
     cursor: pointer;
 }
 
-.accept{
+.accept {
     stroke: green;
 }

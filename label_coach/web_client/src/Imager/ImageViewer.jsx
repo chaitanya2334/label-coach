@@ -414,7 +414,7 @@ function getActiveLabel(labels) {
 }
 
 function getToolRadius(tools, activeTool){
-    if(activeTool!== ""){
+    if(activeTool!== "" && tools[activeTool]){
         return tools[activeTool].size || 10;
     }
 }
