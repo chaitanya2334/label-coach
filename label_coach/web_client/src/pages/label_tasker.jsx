@@ -20,6 +20,7 @@ import UserControl from "../control/UserControl";
 import {withRouter} from "react-router";
 import {BrushContainer} from "../control/BrushContainer";
 import {EraserContainer} from "../control/Eraser/EraserContainer";
+import {LabelSelectorContainer} from "../control/LabelSelectorContainer";
 
 class LabelTaskerP extends React.Component {
     constructor(props) {
@@ -53,7 +54,13 @@ class LabelTaskerP extends React.Component {
                 break;
             case "line":
                 rightBar =
-                    <SideBarP itemType="paintbrush">
+                    <SideBarP itemType="line">
+                        <LabelSelectorContainer/>
+                    </SideBarP>;
+                break;
+            case "poly":
+                rightBar =
+                    <SideBarP itemType="poly">
                         <LabelSelectorContainer/>
                     </SideBarP>;
                 break;

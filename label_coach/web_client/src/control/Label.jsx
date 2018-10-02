@@ -35,23 +35,18 @@ class LabelP extends React.Component {
                                  count={this.props.polygons.length + this.props.lines.length}/>
 
                     </div>
-
-                    <div className={"btns"}>
-                        <CreateLineButton active={this.props.active} label={this.props}
-                                          buttonState={this.props.lineButtonState}/>
-
-                        <CreatePolyButton active={this.props.active} label={this.props}
-                                          buttonState={this.props.polyButtonState}/>
-                    </div>
                 </div>
 
                 <div id={"collapse_" + this.props.name} className={"collapse show " + collapse}
                      aria-labelledby={"heading_" + this.props.name}>
                     <div className="card-body">
-                        <AnnotationListP key={"ann_" + this.props.id} label_id={this.props.id}
+                        <AnnotationListP key={"ann_" + this.props.id}
+                                         label_id={this.props.id}
                                          polygons={this.props.polygons}
                                          lines={this.props.lines}
-                                         color={this.props.id} active={this.props.active}/></div>
+                                         color={this.props.id}
+                                         active={this.props.active}/>
+                    </div>
                 </div>
             </div>
 

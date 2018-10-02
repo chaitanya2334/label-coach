@@ -6,6 +6,7 @@ export default class Brush extends Shape {
     constructor(overlay, viewer, label, brushSize, zoom) {
         super(overlay, viewer);
         this.R = 0.0015 * brushSize;
+
         this.r = this.R;
         this.points = [];
         this.label = label;
@@ -15,24 +16,25 @@ export default class Brush extends Shape {
         this.paths = [];
         this.paths.push([]);
         this.d3paths = [];
-        this.d3paths.push(d3.select(this.overlay.node())
-                            .append("path")
-                            .attr("stroke", this.label.color)
-                            .attr("fill", "transparent")
-                            .attr('id', this.label.id.toString() + "_" + "0")
-                            .attr('stroke-width', this.r * 2 * (1 / this.zoom))
-                            .attr("stroke-linecap", "round")
-                            .attr("opacity", 1)
-                            .attr("mask", "url(#eraser_" + this.label.id + ")"));
+        this.minDist = (this.r * (1 / this.zoom))/2;
+        this.mainPath = d3.select(this.overlay.getNode(0))
+                          .append("path")
+                          .attr("stroke", this.label.color)
+                          .attr("stroke-alignment", "inner")
+                          .attr("fill", "none")
+                          .attr('id', "MAIN" + "_" + "0")
+                          .attr('stroke-width', this.r * 2 * (1 / this.zoom))
+                          .attr("stroke-linecap", "round")
+                          .attr("opacity", 1)
+                          .attr("mask", "url(#eraser_" + this.label.id + ")");
 
         this.filter = d3.select(this.overlay.svg())
                         .append('filter')
                         .attr("id", "constantOpacity")
-                        .append("feComponentTransfer")
-                        .append("feFuncA")
-                        .attr("type", "table")
-                        .attr("tableValues", "0 .2 .2");
-        d3.select(this.overlay.node())
+                        .append("feColorMatrix")
+                        .attr("type", "matrix")
+                        .attr("values", "1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.3 0");
+        d3.select(this.overlay.svg())
           .attr("filter", "url(#constantOpacity)");
     }
 
@@ -57,30 +59,30 @@ export default class Brush extends Shape {
 
     onMouseDragEnd() {
         this.paths.push([]);
-        this.d3paths.push(d3.select(this.overlay.node())
-                            .append("path")
-                            .attr("stroke", this.label.color)
-                            .attr("fill", "transparent")
-                            .attr('id', this.label.id.toString() + "_" + this.d3paths.length.toString())
-                            .attr('stroke-width', this.r * 2 * (1 / this.zoom))
-                            .attr("stroke-linecap", "round")
-                            .attr("opacity", 1)
-                            .attr("mask", "url(#eraser_" + this.label.id + ")"));
+        //this.cursor = this.createCursor();
     }
 
     onMouseDrag(vpPoint) {
+        this.cursor
+                .attr("fill", this.label.color)
+                .attr("cx", vpPoint.x)
+                .attr("cy", vpPoint.y);
         this.appendDot(vpPoint);
+    }
+
+    createCursor() {
+        return d3.select(this.overlay.getNode(1))
+                 .append("circle")
+                 .attr('class', 'dot')
+                 .attr('id', 'c' + this.id)
+                 .attr("r", this.r * (1 / this.zoom));
     }
 
     onEnter() {
         // TODO need a better way to check if cursor is removed. It bugs out otherwise
         if (!this.isCursor) {
             this.isCursor = true;
-            this.cursor = d3.select(this.overlay.node())
-                            .append("circle")
-                            .attr('class', 'dot')
-                            .attr('id', 'c' + this.id)
-                            .attr("r", this.r * (1 / this.zoom));
+            this.cursor = this.createCursor();
         }
 
     }
@@ -94,34 +96,57 @@ export default class Brush extends Shape {
         }
     }
 
+    static dist(p1, p2) {
+        return Math.pow(Math.pow((p1.x - p2.x), 2) + Math.pow((p1.y - p2.y), 2), 0.5)
+    }
+
     appendDot(vpPoint) {
-        this.paths[this.paths.length - 1].push(vpPoint);
-        this.draw(d3.curveCardinalOpen);
+        let path = this.paths[this.paths.length - 1];
+
+        let prevPoint = path[path.length - 1];
+        if (prevPoint === undefined || Brush.dist(prevPoint, vpPoint) >= this.minDist) {
+            this.paths[this.paths.length - 1].push(vpPoint);
+            this.draw(d3.curveCardinalOpen);
+        }
+
+    }
+
+    polyToPath() {
+
+    }
+
+    pathToPoly() {
+
     }
 
     draw(curveType) {
-
+        let line = d3.line()
+                     .x(d => {
+                         return d[0]
+                     })
+                     .y(d => {
+                         return d[1]
+                     })
+                     .curve(curveType);
+        let lines = [];
         for (let i in this.paths) {
             let points = [];
             for (let dot of this.paths[i]) {
                 points.push([dot.x, dot.y]);
             }
-            this.d3paths[i].datum(points)
-                           .attr('d', d3.line()
-                                        .curve(curveType));
+            lines.push(line(points))
         }
+        this.mainPath.attr('d', lines.join(" "))
+
     }
 
-    static midPointBtw(p1, p2) {
-        return {
-            x: p1.x + (p2.x - p1.x) / 2,
-            y: p1.y + (p2.y - p1.y) / 2
-        };
-    }
 
     delete() {
         if (this.cursor) {
             this.cursor.remove();
+            this.mainPath.remove();
+            this.filter.remove();
+
         }
     }
 }

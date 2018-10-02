@@ -1,6 +1,6 @@
 // OpenSeadragon SVG Overlay plugin 0.0.5
 
-(function() {
+(function () {
 
     var $ = window.OpenSeadragon;
 
@@ -14,7 +14,7 @@
     var svgNS = 'http://www.w3.org/2000/svg';
 
     // ----------
-    $.Viewer.prototype.svgOverlay = function() {
+    $.Viewer.prototype.svgOverlay = function () {
         if (this._svgOverlayInfo) {
             return this._svgOverlayInfo;
         }
@@ -24,7 +24,7 @@
     };
 
     // ----------
-    var Overlay = function(viewer) {
+    var Overlay = function (viewer) {
         var self = this;
 
         this._viewer = viewer;
@@ -39,22 +39,23 @@
         this._svg.style.height = '100%';
         this._viewer.canvas.appendChild(this._svg);
 
-        this._node = document.createElementNS(svgNS, 'g');
-        this._svg.appendChild(this._node);
+        this.nodes = [];
+        this.createNode();
+        this.createNode();
 
-        this._viewer.addHandler('animation', function() {
+        this._viewer.addHandler('animation', function () {
             self.resize();
         });
 
-        this._viewer.addHandler('open', function() {
+        this._viewer.addHandler('open', function () {
             self.resize();
         });
 
-        this._viewer.addHandler('rotate', function(evt) {
+        this._viewer.addHandler('rotate', function (evt) {
             self.resize();
         });
 
-        this._viewer.addHandler('resize', function() {
+        this._viewer.addHandler('resize', function () {
             self.resize();
         });
 
@@ -64,16 +65,25 @@
     // ----------
     Overlay.prototype = {
         // ----------
-        node: function() {
-            return this._node;
+        node: function(){
+
+        },
+        createNode: function () {
+            let _node = document.createElementNS(svgNS, 'g');
+            this._svg.appendChild(_node);
+            this.nodes.push(_node);
+            return _node;
+        },
+        getNode: function (i) {
+            return this.nodes[i];
         },
 
-        svg: function(){
+        svg: function () {
             return this._svg;
         },
 
         // ----------
-        resize: function() {
+        resize: function () {
             if (this._containerWidth !== this._viewer.container.clientWidth) {
                 this._containerWidth = this._viewer.container.clientWidth;
                 this._svg.setAttribute('width', this._containerWidth);
@@ -87,21 +97,25 @@
             var p = this._viewer.viewport.pixelFromPoint(new $.Point(0, 0), true);
             var zoom = this._viewer.viewport.getZoom(true);
             var rotation = this._viewer.viewport.getRotation();
-            // TODO: Expose an accessor for _containerInnerSize in the OSD API so we don't have to use the private variable.
+            // TODO: Expose an accessor for _containerInnerSize in the OSD API so we don't have to use the private
+            // variable.
             var scale = this._viewer.viewport._containerInnerSize.x * zoom;
+            this.nodes.forEach((v, i) => {
+                                   v.setAttribute('transform',
+                                                  'translate(' + p.x + ',' + p.y + ') scale(' + scale + ') rotate(' + rotation + ')');
+                               }
+            )
 
-            this._node.setAttribute('transform',
-                'translate(' + p.x + ',' + p.y + ') scale(' + scale + ') rotate(' + rotation + ')');
         },
 
         // ----------
-        onClick: function(node, handler) {
+        onClick: function (node, handler) {
             // TODO: Fast click for mobile browsers
 
             new $.MouseTracker({
-                element: node,
-                clickHandler: handler
-            }).setTracking(true);
+                                   element: node,
+                                   clickHandler: handler
+                               }).setTracking(true);
         }
     };
 

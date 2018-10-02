@@ -40,7 +40,6 @@ export default class Eraser extends Shape {
     onMouseMove(vpPoint) {
         if (this.label && this.isCursor) {
             this.cursor
-                .attr("fill", "#ffffff")
                 .attr("cx", vpPoint.x)
                 .attr("cy", vpPoint.y);
             document.body.style.cursor = "crosshair";

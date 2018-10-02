@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import {
-    faDrawSquare,
+    faDrawPolygon,
 
 } from '@fortawesome/free-solid-svg-icons'
 import {connect} from "react-redux";
@@ -13,7 +13,7 @@ import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import ZoomOutMapIcon from "@material-ui/icons/ZoomOutMap";
 import HomeIcon from "@material-ui/icons/Home";
-import ClearIcon from "@material-ui/icons/Clear";
+import CreateIcon from "@material-ui/icons/Create";
 import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
@@ -23,6 +23,7 @@ import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import {addAnnotation, setHeader, selectRightBar, setThumbnailBarVisibility} from "./controlActions";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import BrushIcon from "../../../node_modules/@material-ui/icons/Brush";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 class ToolBarP extends React.Component {
     constructor(props) {
@@ -101,6 +102,8 @@ class ToolBarP extends React.Component {
 
                     <ToggleButtonGroup exclusive value={drawTool} justified="true" onChange={this.handleDrawTool}>
                         <ToggleButton id="brush" value="brush" className="btn-small" size="small"><BrushIcon/></ToggleButton>
+                        <ToggleButton id="line" value="line" className="btn-small" size="small"><CreateIcon/></ToggleButton>
+                        <ToggleButton id="poly" value="poly" className="btn-small" size="large"><FontAwesomeIcon className='icon-medium' icon={faDrawPolygon}/></ToggleButton>
                         <ToggleButton value="eraser" id="erazer" size="small">
                             <SvgIcon>
                                 <path d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4.008 4.008 0 0

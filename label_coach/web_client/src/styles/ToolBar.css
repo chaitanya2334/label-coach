@@ -22,6 +22,9 @@
     font-weight: 600!important;
 
 }
+.icon-medium{
+    font-size: 25px;
+}
 
 .btn-small{
     min-width: auto!important;

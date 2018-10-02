@@ -31,12 +31,16 @@ class ImageContainerP extends React.Component {
 
 // ---------- Container ----------
 
-function getSearchLabels(images, searchTerm){
-    return images.filter(image => image.title.match(searchTerm));
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+function getSearchLabels(images, searchTerm) {
+    return images.filter(image => image.title.match(escapeRegExp(searchTerm)));
 }
 
 function mapStateToProps(state) {
-    return{
+    return {
         images: getSearchLabels(state.images, state.searchImages),
         currentFolder: state.currentFolder
     }

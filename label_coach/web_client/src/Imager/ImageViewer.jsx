@@ -73,7 +73,7 @@ class ImageViewerP extends React.Component {
         this.viewer = new OpenSeadragon({
                                             id: this.id,
                                             visibilityRatio: 1,
-                                            constrainDuringPan: true,
+                                            constrainDuringPan: false,
                                             defaultZoomLevel: 0,
                                             zoomPerClick: 1,
                                             minZoomLevel: 0,
@@ -99,7 +99,7 @@ class ImageViewerP extends React.Component {
         let onZoom = this.onZoom.bind(this);
         this.viewer.addHandler('canvas-click', onClick);
         this.viewer.addHandler('canvas-drag', (event) => {
-            event.preventDefaultAction = (this.activePolygon || this.activeLine);
+            event.preventDefaultAction = (this.activePolygon || this.activeLine || this.activeBrush || this.activeEraser);
             this.onDrag(event);
         });
 
@@ -119,6 +119,7 @@ class ImageViewerP extends React.Component {
         this.moveTracker = new OpenSeadragon.MouseTracker({
                                                               element: this.viewer.container,
                                                               moveHandler: (event) => {
+                                                                  event.preventDefaultAction = true;
                                                                   this.onMove(event);
                                                               }
                                                           });
