@@ -35,6 +35,7 @@ class ImageViewerP extends React.Component {
         this.viewer = null;
         this.activePolygon = null;
         this.polygons = [];
+        this.brushes = [];
         this.lines = [];
         this.zoom = 1;
         this.State = Object.freeze({"Edit": 1, "AddingPoly": 2, "Empty": 3});
@@ -99,7 +100,8 @@ class ImageViewerP extends React.Component {
         let onZoom = this.onZoom.bind(this);
         this.viewer.addHandler('canvas-click', onClick);
         this.viewer.addHandler('canvas-drag', (event) => {
-            event.preventDefaultAction = (this.activePolygon || this.activeLine || this.activeBrush || this.activeEraser);
+            event.preventDefaultAction =
+                (this.activePolygon || this.activeLine || this.activeBrush || this.activeEraser);
             this.onDrag(event);
         });
 
@@ -193,7 +195,6 @@ class ImageViewerP extends React.Component {
     }
 
 
-
     onDrag(event) {
         // The canvas-click event gives us a position in web coordinates.
         let webPoint = event.position;
@@ -215,14 +216,16 @@ class ImageViewerP extends React.Component {
         }
 
         if (this.activeBrush) {
-            this.activeBrush.onMouseDrag(viewportPoint);
+            let isDragSuccessful = this.activeBrush.onMouseDrag(viewportPoint);
         }
 
     }
 
-    onDragEnd(event){
-        if (this.activeBrush){
+    onDragEnd(event) {
+        if (this.activeBrush) {
             this.activeBrush.onMouseDragEnd();
+            this.props.updateBrush(this.activeBrush.label.id, this.activeBrush.getImagePoints());
+
         }
     }
 
@@ -286,15 +289,21 @@ class ImageViewerP extends React.Component {
         for (let line of this.lines) {
             line.delete();
         }
+
+        for (let brush of this.brushes) {
+            brush.delete();
+        }
         this.lines = [];
         this.polygons = [];
+        this.brushes = [];
         if (this.activeBrush) {
             this.activeBrush.delete();
         }
 
-        if(this.activeEraser){
+        if (this.activeEraser) {
             this.activeEraser.delete();
         }
+
 
         this.activePolygon = null;
         this.activeBrush = null;
@@ -305,9 +314,15 @@ class ImageViewerP extends React.Component {
                 new Eraser(this.svgOverlay, this.viewer, this.props.activeLabel, this.props.toolRadius, this.zoom);
         }
 
-        if (this.props.activeTool === "brush" && this.props.activeLabel){
-            this.activeBrush =
-                new Brush(this.svgOverlay, this.viewer, this.props.activeLabel, this.props.toolRadius, this.zoom);
+        for (let brush of this.props.brushes) {
+            let brushObj = new Brush(this.svgOverlay, this.viewer, brush.label, this.props.toolRadius, this.zoom);
+            brushObj.addImagePoints(brush.points);
+            this.brushes.push(brushObj);
+            if (brush.drawState !== "read-only") {
+                this.activeBrush = brushObj;
+            } else {
+                brushObj.save();
+            }
         }
 
         //create polygons from props
@@ -370,6 +385,8 @@ class ImageViewerP extends React.Component {
 function mapLabelsToAnns(labels) {
     let polygons = [];
     let lines = [];
+    let brushes = [];
+    let erasers = [];
     for (let label of labels) {
         let newPolygons = label.polygons.map((poly) => {
             let newPoly = Object.assign({}, poly);
@@ -383,10 +400,24 @@ function mapLabelsToAnns(labels) {
             newLine.line_id = line.id;
             return newLine;
         });
+        let newBrushes = label.brushes.map((brush) => {
+            let newBrush = Object.assign({}, brush);
+            newBrush.label = label;
+            newBrush.brush_id = brush.id;
+            return newBrush;
+        });
+        let newErasers = label.erasers.map((eraser) => {
+            let newEraser = Object.assign({}, eraser);
+            newEraser.label = label;
+            newEraser.eraser_id = eraser.id;
+            return newEraser;
+        });
         lines = lines.concat(newLines);
         polygons = polygons.concat(newPolygons);
+        brushes = brushes.concat(newBrushes);
+        erasers = erasers.concat(newErasers);
     }
-    return {lines, polygons};
+    return {lines, polygons, brushes, erasers};
 }
 
 function getActiveImageInfo(images) {
@@ -414,8 +445,8 @@ function getActiveLabel(labels) {
     return null;
 }
 
-function getToolRadius(tools, activeTool){
-    if(activeTool!== "" && tools[activeTool]){
+function getToolRadius(tools, activeTool) {
+    if (activeTool !== "" && tools[activeTool]) {
         return tools[activeTool].size || 10;
     }
 }
@@ -424,7 +455,7 @@ function mapStateToProps(state) {
 
 
     let {dbId, mimeType, title} = getActiveImageInfo(state.images);
-    let {lines, polygons} = mapLabelsToAnns(state.labels);
+    let {lines, polygons, brushes, erasers} = mapLabelsToAnns(state.labels);
     let activeLabel = getActiveLabel(state.labels);
     let toolRadius = getToolRadius(state.tools, state.rightBar);
     return {
@@ -436,7 +467,9 @@ function mapStateToProps(state) {
         toolRadius: toolRadius,
         activeTool: state.rightBar,
         polygons: polygons,
-        lines: lines
+        lines: lines,
+        brushes: brushes,
+        erasers: erasers
     };
 }
 
@@ -454,6 +487,13 @@ function mapDispatchToProps(dispatch) {
         },
         lockLine: (label_id, line_id) => {
             dispatch(lockAnnotation("line", label_id, line_id));
+            dispatch(setSaveStatus("dirty"));
+        },
+        updateBrush: (label_id, points) => {
+            dispatch(updateAnnotation("brush", label_id, 0, points));
+        },
+        lockBrush: (label_id) => {
+            dispatch(lockAnnotation("brush", label_id, 0));
             dispatch(setSaveStatus("dirty"));
         }
     };

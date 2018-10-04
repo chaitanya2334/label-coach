@@ -46,6 +46,13 @@ export function lockAnnotation(ann_type, label_id, item_id) {
     }
 }
 
+export function lockAllAnnotations(ann_type){
+    return {
+        type: 'LOCK_ALL_ANN',
+        ann_type: ann_type
+    }
+}
+
 export function unlockAnnotation(ann_type, label_id, item_id) {
     return {
         type: 'UNLOCK_ANN',
@@ -255,6 +262,8 @@ export function fetchLabels(label_id) {
                     color: label.color,
                     polygons: label.polygons,
                     lines: label.lines,
+                    brushes: label.brushes,
+                    erasers: label.erasers,
                 }));
                 dispatch(replaceLabels(labels));
                 dispatch(fetchLabelMeta(label_id, (file) => {
@@ -311,5 +320,12 @@ export function saveLabels(state) {
             dispatch(editSaveIndicatorText("Saved just now"));
             dispatch(setLastUpdated(new Date(response.updated.$date)));
         }));
+    }
+}
+
+export function setOutline(state){
+    return {
+        type: "SET_OUTLINE",
+        state: state,
     }
 }

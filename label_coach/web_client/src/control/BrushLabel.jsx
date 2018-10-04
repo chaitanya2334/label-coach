@@ -1,7 +1,7 @@
 import * as React from "react";
 import {connect} from "react-redux";
 import "../styles/BrushLabel.css"
-import {selectLabel} from "./controlActions";
+import {selectLabel, unlockAnnotation} from "./controlActions";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -39,7 +39,9 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch, ownProps) {
     return {
         selectLabel: () => {
-            dispatch(selectLabel(ownProps))
+
+            dispatch(selectLabel(ownProps));
+            dispatch(unlockAnnotation("brush", ownProps.id, 0));
         }
     }
 }

@@ -14,9 +14,8 @@ export default class Brush extends Shape {
         this.zoom = zoom;
         this.isCursor = false;
         this.paths = [];
-        this.paths.push([]);
-        this.d3paths = [];
-        this.minDist = (this.r * (1 / this.zoom))/2;
+
+        this.minDist = (this.r * (1 / this.zoom)) / 2;
         this.mainPath = d3.select(this.overlay.getNode(0))
                           .append("path")
                           .attr("stroke", this.label.color)
@@ -45,6 +44,9 @@ export default class Brush extends Shape {
                 .attr("cx", vpPoint.x)
                 .attr("cy", vpPoint.y);
             document.body.style.cursor = "crosshair";
+        } else {
+            this.cursor = this.createCursor();
+            this.isCursor = true;
         }
 
     }
@@ -63,11 +65,15 @@ export default class Brush extends Shape {
     }
 
     onMouseDrag(vpPoint) {
-        this.cursor
+        if (this.label && this.isCursor) {
+            this.cursor
                 .attr("fill", this.label.color)
                 .attr("cx", vpPoint.x)
                 .attr("cy", vpPoint.y);
-        this.appendDot(vpPoint);
+            return this.appendDot(vpPoint);
+        }
+
+        return false;
     }
 
     createCursor() {
@@ -84,15 +90,31 @@ export default class Brush extends Shape {
             this.isCursor = true;
             this.cursor = this.createCursor();
         }
+    }
 
+    getImagePoints() {
+        let points = [];
+        for (let i in this.paths) {
+
+            points.push([]);
+            for (let p of this.paths[i]) {
+                points[points.length - 1].push(this.viewer.viewport.viewportToImageCoordinates(p));
+            }
+
+        }
+        return points;
     }
 
 
-    addImagePoints(points) {
-        for (let point of points) {
-            let imgPoint = new OpenSeadragon.Point(parseInt(point.x), parseInt(point.y));
-            let vpPoint = this.viewer.viewport.imageToViewportCoordinates(imgPoint);
-            this.appendDot(vpPoint);
+    addImagePoints(paths) {
+        for (let path of paths) {
+            this.paths.push([]);
+            for (let point of path) {
+                let imgPoint = new OpenSeadragon.Point(parseInt(point.x), parseInt(point.y));
+                let vpPoint = this.viewer.viewport.imageToViewportCoordinates(imgPoint);
+                this.appendDot(vpPoint);
+            }
+
         }
     }
 
@@ -101,21 +123,21 @@ export default class Brush extends Shape {
     }
 
     appendDot(vpPoint) {
+        if (this.paths.length === 0) {
+            this.paths.push([]);
+        }
         let path = this.paths[this.paths.length - 1];
 
         let prevPoint = path[path.length - 1];
         if (prevPoint === undefined || Brush.dist(prevPoint, vpPoint) >= this.minDist) {
             this.paths[this.paths.length - 1].push(vpPoint);
             this.draw(d3.curveCardinalOpen);
+            return true;
         }
-
+        return false;
     }
 
-    polyToPath() {
-
-    }
-
-    pathToPoly() {
+    save() {
 
     }
 
@@ -136,17 +158,21 @@ export default class Brush extends Shape {
             }
             lines.push(line(points))
         }
-        this.mainPath.attr('d', lines.join(" "))
-
+        this.mainPath.attr('d', lines.join(" "));
     }
 
 
     delete() {
         if (this.cursor) {
             this.cursor.remove();
-            this.mainPath.remove();
-            this.filter.remove();
-
         }
+        if (this.mainPath) {
+            this.mainPath.remove();
+        }
+        if (this.filter) {
+            this.filter.remove();
+        }
+        d3.select(this.overlay.svg()).selectAll('filter').remove();
+        this.paths = [];
     }
 }

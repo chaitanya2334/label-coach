@@ -10,6 +10,7 @@ Requirements
 2. mongodb
 3. npm 5.6+
 4. python 3.6
+5. Cairo 1.15 (for canvas)
 
 ### Step 1: Install girder
 

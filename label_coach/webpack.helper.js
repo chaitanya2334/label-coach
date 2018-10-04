@@ -4,6 +4,9 @@ module.exports = function (config, info) {
     config.plugins.push(new webpack.EnvironmentPlugin({
                                                           GA_KEY: ''
                                                       }));
+    config.plugins.push(new webpack.ProvidePlugin({
+                                                      'window.Buffer': 'buffer'
+                                                  }));
 
     config.module = {
         rules: [
