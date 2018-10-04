@@ -207,7 +207,8 @@ export function labels(labels = [], action) {
                                        id: index,
                                        drawState: "read-only",
                                        text: brush.text,
-                                       points: brush.points
+                                       points: brush.points,
+                                       brush_radius: brush.brush_radius
                                    })),
                                    erasers: label.erasers.map((eraser, index) => ({
                                        id: index,
@@ -226,13 +227,6 @@ export function labels(labels = [], action) {
             case 'TOGGLE_BUTTON':
             case 'TOGGLE_LABEL':
 
-                // TODO: undo hack. Here i am resetting all label's draw state,
-                // and then unlocking a specific label's brush drawState.
-                if (action.ann_type === "brush" && action.type === "UNLOCK_ANN") {
-                    for (let label of draft) {
-                        label.brushes[0].drawState = "read-only";
-                    }
-                }
                 draft[action.label_id] = labelReducer(draft[action.label_id], action);
                 return draft;
 
@@ -266,6 +260,9 @@ export function annotationReducer(ann, action) {
                 draft.text = action.ann_type + draft.id;
                 draft.points = [];
                 draft.drawState = "create";
+                for (let key in action.args){
+                    draft[key] = action.args[key];
+                }
                 return draft;
 
             case 'LOCK_ANN':
@@ -279,6 +276,9 @@ export function annotationReducer(ann, action) {
             case 'UPDATE_ANN':
                 if (draft.drawState === "edit" || draft.drawState === "create") {
                     draft.points = action.points;
+                    for (let key in action.args){
+                        draft[key] = action.args[key];
+                    }
                 }
                 return draft;
         }
@@ -308,6 +308,9 @@ export function labelReducer(label, action) {
                         break;
                     case "line":
                         draft.lines.push(annotationReducer({id: label.lines.length}, action));
+                        break;
+                    case "brush":
+                        draft.brushes.push(annotationReducer({id:label.brushes.length}, action));
                         break;
                 }
                 return draft;

@@ -3,17 +3,16 @@ import * as d3 from "d3";
 import OpenSeadragon from "openseadragon";
 
 export default class Brush extends Shape {
-    constructor(overlay, viewer, label, brushSize, zoom) {
+    constructor(overlay, viewer, label, id, brushSize, zoom) {
         super(overlay, viewer);
-        this.R = 0.0015 * brushSize;
-
-        this.r = this.R;
-        this.points = [];
+        this.R = 0.0015;
+        this.brushSize = brushSize;
+        this.r = this.R * this.brushSize;
         this.label = label;
-        this.id = 0;
+        this.id = id;
         this.zoom = zoom;
         this.isCursor = false;
-        this.paths = [];
+        this.points = [];
 
         this.minDist = (this.r * (1 / this.zoom)) / 2;
         this.mainPath = d3.select(this.overlay.getNode(0))
@@ -21,7 +20,7 @@ export default class Brush extends Shape {
                           .attr("stroke", this.label.color)
                           .attr("stroke-alignment", "inner")
                           .attr("fill", "none")
-                          .attr('id', "MAIN" + "_" + "0")
+                          .attr('id', "MAIN" + "_" + this.id)
                           .attr('stroke-width', this.r * 2 * (1 / this.zoom))
                           .attr("stroke-linecap", "round")
                           .attr("opacity", 1)
@@ -60,7 +59,6 @@ export default class Brush extends Shape {
     }
 
     onMouseDragEnd() {
-        this.paths.push([]);
         //this.cursor = this.createCursor();
     }
 
@@ -94,28 +92,20 @@ export default class Brush extends Shape {
 
     getImagePoints() {
         let points = [];
-        for (let i in this.paths) {
-
-            points.push([]);
-            for (let p of this.paths[i]) {
-                points[points.length - 1].push(this.viewer.viewport.viewportToImageCoordinates(p));
-            }
-
+        for (let p of this.points) {
+            points.push(this.viewer.viewport.viewportToImageCoordinates(p));
         }
         return points;
     }
 
 
-    addImagePoints(paths) {
-        for (let path of paths) {
-            this.paths.push([]);
-            for (let point of path) {
-                let imgPoint = new OpenSeadragon.Point(parseInt(point.x), parseInt(point.y));
-                let vpPoint = this.viewer.viewport.imageToViewportCoordinates(imgPoint);
-                this.appendDot(vpPoint);
-            }
-
+    addImagePoints(points) {
+        for (let point of points) {
+            let imgPoint = new OpenSeadragon.Point(parseInt(point.x), parseInt(point.y));
+            let vpPoint = this.viewer.viewport.imageToViewportCoordinates(imgPoint);
+            this.appendDot(vpPoint);
         }
+
     }
 
     static dist(p1, p2) {
@@ -123,22 +113,13 @@ export default class Brush extends Shape {
     }
 
     appendDot(vpPoint) {
-        if (this.paths.length === 0) {
-            this.paths.push([]);
-        }
-        let path = this.paths[this.paths.length - 1];
-
-        let prevPoint = path[path.length - 1];
+        let prevPoint = this.points[this.points.length - 1];
         if (prevPoint === undefined || Brush.dist(prevPoint, vpPoint) >= this.minDist) {
-            this.paths[this.paths.length - 1].push(vpPoint);
+            this.points.push(vpPoint);
             this.draw(d3.curveCardinalOpen);
             return true;
         }
         return false;
-    }
-
-    save() {
-
     }
 
     draw(curveType) {
@@ -150,15 +131,17 @@ export default class Brush extends Shape {
                          return d[1]
                      })
                      .curve(curveType);
-        let lines = [];
-        for (let i in this.paths) {
-            let points = [];
-            for (let dot of this.paths[i]) {
-                points.push([dot.x, dot.y]);
-            }
-            lines.push(line(points))
+        let points = [];
+        for (let dot of this.points) {
+            points.push([dot.x, dot.y]);
         }
-        this.mainPath.attr('d', lines.join(" "));
+        this.mainPath.attr('d', line(points));
+    }
+
+    setBrushSize(brushSize){
+        this.brushSize = brushSize;
+        this.r = this.R * this.brushSize;
+        this.mainPath.attr('stroke-width', this.r * 2 * (1 / this.zoom))
     }
 
 
@@ -172,7 +155,9 @@ export default class Brush extends Shape {
         if (this.filter) {
             this.filter.remove();
         }
-        d3.select(this.overlay.svg()).selectAll('filter').remove();
+        d3.select(this.overlay.svg())
+          .selectAll('filter')
+          .remove();
         this.paths = [];
     }
 }

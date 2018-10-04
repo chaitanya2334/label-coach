@@ -39,9 +39,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch, ownProps) {
     return {
         selectLabel: () => {
-
             dispatch(selectLabel(ownProps));
-            dispatch(unlockAnnotation("brush", ownProps.id, 0));
         }
     }
 }

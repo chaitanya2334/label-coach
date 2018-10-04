@@ -5,7 +5,13 @@ import OpenSeadragon from 'openseadragon'
 import './overlay/osdSvgOverlay';
 import './overlay/osdCanvasOverlay';
 import connect from "react-redux/es/connect/connect";
-import {lockAnnotation, setSaveStatus, updateAnnotation} from "../control/controlActions";
+import {
+    addAnnotation,
+    lockAnnotation,
+    setSaveStatus,
+    unlockAnnotation,
+    updateAnnotation
+} from "../control/controlActions";
 import Polygon from "./overlay/polygon";
 import Line from "./overlay/line";
 import ToolBar from "../control/ToolBar";
@@ -224,8 +230,10 @@ class ImageViewerP extends React.Component {
     onDragEnd(event) {
         if (this.activeBrush) {
             this.activeBrush.onMouseDragEnd();
-            this.props.updateBrush(this.activeBrush.label.id, this.activeBrush.getImagePoints());
-
+            this.props.addNewBrush(this.activeBrush.label.id, this.activeBrush.id, this.activeBrush.brushSize,
+                                   this.activeBrush.getImagePoints());
+            this.brushes.push(this.activeBrush);
+            this.activeBrush = null;
         }
     }
 
@@ -264,6 +272,7 @@ class ImageViewerP extends React.Component {
                         break;
                 }
             }
+
             // Show the results.
             console.log(webPoint.toString(), viewportPoint.toString(), imagePoint.toString());
         }
@@ -314,15 +323,17 @@ class ImageViewerP extends React.Component {
                 new Eraser(this.svgOverlay, this.viewer, this.props.activeLabel, this.props.toolRadius, this.zoom);
         }
 
+        if (this.props.activeTool === "brush" && this.props.activeLabel) {
+            this.activeBrush =
+                new Brush(this.svgOverlay, this.viewer, this.props.activeLabel,
+                          this.props.activeLabel.brushes.length, this.props.toolRadius, this.zoom);
+        }
+
         for (let brush of this.props.brushes) {
-            let brushObj = new Brush(this.svgOverlay, this.viewer, brush.label, this.props.toolRadius, this.zoom);
+            let brushObj = new Brush(this.svgOverlay, this.viewer, brush.label, brush.id, brush.brush_radius,
+                                     this.zoom);
             brushObj.addImagePoints(brush.points);
             this.brushes.push(brushObj);
-            if (brush.drawState !== "read-only") {
-                this.activeBrush = brushObj;
-            } else {
-                brushObj.save();
-            }
         }
 
         //create polygons from props
@@ -403,7 +414,7 @@ function mapLabelsToAnns(labels) {
         let newBrushes = label.brushes.map((brush) => {
             let newBrush = Object.assign({}, brush);
             newBrush.label = label;
-            newBrush.brush_id = brush.id;
+            newBrush.id = brush.id;
             return newBrush;
         });
         let newErasers = label.erasers.map((eraser) => {
@@ -489,11 +500,10 @@ function mapDispatchToProps(dispatch) {
             dispatch(lockAnnotation("line", label_id, line_id));
             dispatch(setSaveStatus("dirty"));
         },
-        updateBrush: (label_id, points) => {
-            dispatch(updateAnnotation("brush", label_id, 0, points));
-        },
-        lockBrush: (label_id) => {
-            dispatch(lockAnnotation("brush", label_id, 0));
+        addNewBrush: (label_id, brush_id, brush_radius, points) => {
+            dispatch(addAnnotation("brush", label_id, {"brush_radius": brush_radius}));
+            dispatch(updateAnnotation("brush", label_id, brush_id, points, {"brush_radius": brush_radius}));
+            dispatch(lockAnnotation("brush", label_id, brush_id));
             dispatch(setSaveStatus("dirty"));
         }
     };

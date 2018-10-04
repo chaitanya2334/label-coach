@@ -29,11 +29,12 @@ export function setThumbnailBarVisibility(state) {
     }
 }
 
-export function addAnnotation(ann_type, label_id) {
+export function addAnnotation(ann_type, label_id, args={}) {
     return {
         type: 'ADD_ANN',
         ann_type: ann_type,
         label_id: label_id,
+        args: args,
     }
 }
 
@@ -62,13 +63,14 @@ export function unlockAnnotation(ann_type, label_id, item_id) {
     }
 }
 
-export function updateAnnotation(ann_type, label_id, item_id, points) {
+export function updateAnnotation(ann_type, label_id, item_id, points, args={}) {
     return {
         type: 'UPDATE_ANN',
         ann_type: ann_type,
         label_id: label_id,
         item_id: item_id,
-        points: points
+        points: points,
+        args: args,
     }
 }
 

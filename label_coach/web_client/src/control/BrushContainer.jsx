@@ -25,7 +25,7 @@ export class BrushContainerP extends React.Component {
             this.props.labels.forEach((label, i) => {
                 rows.push(
                     <BrushLabel key={label.id} id={label.id} name={label.name} color={label.color}
-                                active={label.active}/>
+                                active={label.active} brushes={label.brushes}/>
                 );
             });
         }
