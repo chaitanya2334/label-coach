@@ -43,6 +43,7 @@ class ImageViewerP extends React.Component {
         this.polygons = [];
         this.brushes = [];
         this.lines = [];
+        this.erasers = [];
         this.zoom = 1;
         this.State = Object.freeze({"Edit": 1, "AddingPoly": 2, "Empty": 3});
         this.drawState = this.State.Empty;
@@ -150,12 +151,18 @@ class ImageViewerP extends React.Component {
         if (this.activeBrush) {
             this.activeBrush.onEnter();
         }
+        if (this.activeEraser) {
+            this.activeEraser.onEnter();
+        }
     }
 
     onCanvasExit(event) {
 
         if (this.activeBrush) {
             this.activeBrush.onExit();
+        }
+        if (this.activeEraser) {
+            this.activeEraser.onExit();
         }
     }
 
@@ -184,6 +191,10 @@ class ImageViewerP extends React.Component {
 
         if (this.activeBrush) {
             this.activeBrush.onMouseMove(viewportPoint);
+        }
+
+        if (this.activeEraser) {
+            this.activeEraser.onMouseMove(viewportPoint);
         }
 
     }
@@ -225,15 +236,26 @@ class ImageViewerP extends React.Component {
             let isDragSuccessful = this.activeBrush.onMouseDrag(viewportPoint);
         }
 
+        if (this.activeEraser) {
+            let isDragSuccessful = this.activeEraser.onMouseDrag(viewportPoint);
+        }
+
     }
 
     onDragEnd(event) {
         if (this.activeBrush) {
             this.activeBrush.onMouseDragEnd();
-            this.props.addNewBrush(this.activeBrush.label.id, this.activeBrush.id, this.activeBrush.brushSize,
-                                   this.activeBrush.getImagePoints());
+            this.props.addNewStroke("brush", this.activeBrush.label.id, this.activeBrush.id, this.activeBrush.brushSize,
+                                    this.activeBrush.getImagePoints());
             this.brushes.push(this.activeBrush);
             this.activeBrush = null;
+        }
+        if (this.activeEraser) {
+            this.activeEraser.onMouseDragEnd();
+            this.props.addNewStroke("eraser", this.activeEraser.label.id, this.activeEraser.id, this.activeEraser.size,
+                                    this.activeEraser.getImagePoints());
+            this.erasers.push(this.activeEraser);
+            this.activeEraser = null;
         }
     }
 
@@ -289,44 +311,54 @@ class ImageViewerP extends React.Component {
         }
     }
 
-    updateOverlay() {
-        // delete all polygons
-        for (let polygon of this.polygons) {
-            polygon.delete();
+    deleteAllAnnotations() {
+        let annotations = [this.polygons, this.lines, this.brushes];
+        for (let annList of annotations) {
+            for (let ann of annList) {
+                ann.delete();
+            }
         }
-
-        for (let line of this.lines) {
-            line.delete();
-        }
-
-        for (let brush of this.brushes) {
-            brush.delete();
-        }
+        annotations = [];
         this.lines = [];
         this.polygons = [];
         this.brushes = [];
-        if (this.activeBrush) {
-            this.activeBrush.delete();
+        // delete active brushes.
+        let strokes = [this.activeBrush, this.activeEraser];
+        for (let stroke of strokes) {
+            if (stroke) {
+                stroke.delete();
+            }
         }
-
-        if (this.activeEraser) {
-            this.activeEraser.delete();
-        }
-
 
         this.activePolygon = null;
         this.activeBrush = null;
         this.activeEraser = null;
+        this.activeLine = null;
+    }
+
+
+    updateOverlay() {
+
+        this.deleteAllAnnotations();
 
         if (this.props.activeTool === "eraser" && this.props.activeLabel) {
-            this.activeBrush =
-                new Eraser(this.svgOverlay, this.viewer, this.props.activeLabel, this.props.toolRadius, this.zoom);
+            this.activeEraser =
+                new Eraser(this.svgOverlay, this.viewer, this.props.activeLabel,
+                           this.props.activeLabel.erasers.length, this.props.toolRadius, this.zoom);
         }
 
         if (this.props.activeTool === "brush" && this.props.activeLabel) {
             this.activeBrush =
                 new Brush(this.svgOverlay, this.viewer, this.props.activeLabel,
                           this.props.activeLabel.brushes.length, this.props.toolRadius, this.zoom);
+        }
+
+        for (let eraser of this.props.erasers) {
+            let eraserObj =
+                new Eraser(this.svgOverlay, this.viewer, eraser.label, eraser.id,
+                           this.props.toolRadius, this.zoom);
+            eraserObj.addImagePoints(eraser.points);
+            this.erasers.push(eraserObj);
         }
 
         for (let brush of this.props.brushes) {
@@ -348,7 +380,7 @@ class ImageViewerP extends React.Component {
                 polyObj.save();
             }
         }
-        this.activeLine = null;
+
         for (let line of this.props.lines) {
             let lineObj = new Line(this.svgOverlay, this.viewer, line.label_id, line.line_id, this.zoom);
             lineObj.addImagePoints(line.points);
@@ -500,10 +532,10 @@ function mapDispatchToProps(dispatch) {
             dispatch(lockAnnotation("line", label_id, line_id));
             dispatch(setSaveStatus("dirty"));
         },
-        addNewBrush: (label_id, brush_id, brush_radius, points) => {
-            dispatch(addAnnotation("brush", label_id, {"brush_radius": brush_radius}));
-            dispatch(updateAnnotation("brush", label_id, brush_id, points, {"brush_radius": brush_radius}));
-            dispatch(lockAnnotation("brush", label_id, brush_id));
+        addNewStroke: (ann_type, label_id, brush_id, brush_radius, points) => {
+            dispatch(addAnnotation(ann_type, label_id, {"brush_radius": brush_radius}));
+            dispatch(updateAnnotation(ann_type, label_id, brush_id, points, {"brush_radius": brush_radius}));
+            dispatch(lockAnnotation(ann_type, label_id, brush_id));
             dispatch(setSaveStatus("dirty"));
         }
     };

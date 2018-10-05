@@ -260,7 +260,7 @@ export function annotationReducer(ann, action) {
                 draft.text = action.ann_type + draft.id;
                 draft.points = [];
                 draft.drawState = "create";
-                for (let key in action.args){
+                for (let key in action.args) {
                     draft[key] = action.args[key];
                 }
                 return draft;
@@ -276,7 +276,7 @@ export function annotationReducer(ann, action) {
             case 'UPDATE_ANN':
                 if (draft.drawState === "edit" || draft.drawState === "create") {
                     draft.points = action.points;
-                    for (let key in action.args){
+                    for (let key in action.args) {
                         draft[key] = action.args[key];
                     }
                 }
@@ -285,7 +285,7 @@ export function annotationReducer(ann, action) {
     });
 }
 
-function getToolContainer(toolName){
+function getToolContainer(toolName) {
     switch (toolName) {
         case "line":
             return "lines";
@@ -310,7 +310,10 @@ export function labelReducer(label, action) {
                         draft.lines.push(annotationReducer({id: label.lines.length}, action));
                         break;
                     case "brush":
-                        draft.brushes.push(annotationReducer({id:label.brushes.length}, action));
+                        draft.brushes.push(annotationReducer({id: label.brushes.length}, action));
+                        break;
+                    case "eraser":
+                        draft.erasers.push(annotationReducer({id: label.erasers.length}, action));
                         break;
                 }
                 return draft;
@@ -320,22 +323,22 @@ export function labelReducer(label, action) {
                 subAction.type = "LOCK_ANN";
                 switch (action.ann_type) {
                     case "line":
-                        for(let line of draft.lines){
+                        for (let line of draft.lines) {
                             draft.lines[line.id] = annotationReducer(draft.lines[line.id], subAction);
                         }
                         return draft;
                     case "polygon":
-                        for(let polygon of draft.polygons){
+                        for (let polygon of draft.polygons) {
                             draft.polygons[polygon.id] = annotationReducer(draft.polygons[polygon.id], subAction);
                         }
                         return draft;
                     case "brush":
-                        for(let brush of draft.brushes){
+                        for (let brush of draft.brushes) {
                             draft.brushes[brush.id] = annotationReducer(draft.brushes[brush.id], subAction);
                         }
                         return draft;
                     case "eraser":
-                        for(let eraser of draft.erasers){
+                        for (let eraser of draft.erasers) {
                             draft.erasers[eraser.id] = annotationReducer(draft.erasers[eraser.id], subAction);
                         }
                         return draft;
@@ -356,6 +359,9 @@ export function labelReducer(label, action) {
                         break;
                     case "brush":
                         draft.brushes[action.item_id] = annotationReducer(draft.brushes[action.item_id], action);
+                        break;
+                    case "eraser":
+                        draft.erasers[action.item_id] = annotationReducer(draft.erasers[action.item_id], action);
                         break;
                 }
                 return draft;

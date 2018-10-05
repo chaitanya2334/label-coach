@@ -10,14 +10,7 @@
       "lines": [],
       "polygons": [],
       "brushes": [],
-      "erasers": [
-        {
-          "id": 0,
-          "drawState": "read-only",
-          "text": "the-only-eraser",
-          "points": []
-        }
-      ]
+      "erasers": []
     },
     {
       "id": 1,
@@ -29,14 +22,7 @@
       "lines": [],
       "polygons": [],
       "brushes": [],
-      "erasers": [
-        {
-          "id": 0,
-          "drawState": "read-only",
-          "text": "the-only-eraser",
-          "points": []
-        }
-      ]
+      "erasers": []
     },
     {
       "id": 2,
@@ -48,14 +34,7 @@
       "lines": [],
       "polygons": [],
       "brushes": [],
-      "erasers": [
-        {
-          "id": 0,
-          "drawState": "read-only",
-          "text": "the-only-eraser",
-          "points": []
-        }
-      ]
+      "erasers": []
     },
     {
       "id": 3,
@@ -67,14 +46,7 @@
       "lines": [],
       "polygons": [],
       "brushes": [],
-      "erasers": [
-        {
-          "id": 0,
-          "drawState": "read-only",
-          "text": "the-only-eraser",
-          "points": []
-        }
-      ]
+      "erasers": []
     }
   ]
 }

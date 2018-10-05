@@ -1,50 +1,46 @@
-import Shape from "./shape";
 import * as d3 from "d3";
 import OpenSeadragon from "openseadragon";
+import Stroke from "./stroke";
 
-export default class Eraser extends Shape {
-    constructor(overlay, viewer, label, brushSize, zoom) {
-        super(overlay, viewer);
-        this.R = 0.0015 * brushSize;
-        this.r = this.R;
-        this.points = [];
-        this.label = label;
-        this.id = 0;
-        this.zoom = zoom;
-        this.isCursor = false;
-        this.paths = [];
-        this.paths.push([]);
-        this.d3paths = [];
-        this.mask = d3.select(this.overlay.svg())
-                      .append("mask")
-                      .attr("id", "eraser_" + this.label.id);
-        this.mask.append("rect")
-            .attr("x", 0)
-            .attr("y", 0)
-            .attr("width", "100%")
-            .attr("height", "100%")
-            .attr("fill", "white");
+export default class Eraser extends Stroke {
+    constructor(overlay, viewer, label, id, size, zoom) {
+        super(overlay, viewer, label, id, size, zoom);
 
-        this.d3paths.push(this.mask
-                              .append("path")
-                              .attr("stroke", "black")
-                              .attr("fill", "transparent")
-                              .attr('id', this.label.id.toString() + "_" + "0")
-                              .attr('stroke-width', this.r * 2 * (1 / this.zoom))
-                              .attr("stroke-linecap", "round")
-                              .attr("opacity", 1))
-        ;
 
     }
 
-    onMouseMove(vpPoint) {
-        if (this.label && this.isCursor) {
-            this.cursor
-                .attr("cx", vpPoint.x)
-                .attr("cy", vpPoint.y);
-            document.body.style.cursor = "crosshair";
+    createPath() {
+        this.mask = d3.select(this.overlay.svg())
+                      .select('mask#eraser_' + this.label.id);
+        if (this.mask._groups[0][0] == null) {
+            this.mask = d3.select(this.overlay.svg())
+                          .append("mask")
+                          .attr("id", "eraser_" + this.label.id);
         }
+        this.rect = this.mask.select('rect');
+        if (this.rect._groups[0][0] == null) {
+            this.mask.append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", "100%")
+                .attr("height", "100%")
+                .attr("fill", "white");
+        }
+        return this.mask
+                   .append("path")
+                   .attr("stroke", "black")
+                   .attr("fill", "transparent")
+                   .attr('id', this.label.id.toString() + "_" + "0")
+                   .attr('stroke-width', this.r * 2 * (1 / this.zoom))
+                   .attr("stroke-linecap", "round")
+                   .attr("opacity", 1);
+    }
 
+    fillCursorColor() {
+        if (this.cursor) {
+            this.cursor.attr('fill', 'white')
+                .attr('stroke', this.label.color);
+        }
     }
 
     onExit() {
@@ -55,70 +51,28 @@ export default class Eraser extends Shape {
         document.body.style.cursor = "auto";
     }
 
-    onMouseDragEnd() {
-        this.paths.push([]);
-        this.d3paths.push(this.mask
-                              .append("path")
-                              .attr("stroke", "black")
-                              .attr("fill", "transparent")
-                              .attr('id', this.label.id.toString() + "_" + this.d3paths.length.toString())
-                              .attr('stroke-width', this.r * 2 * (1 / this.zoom))
-                              .attr("stroke-linecap", "round")
-                              .attr("opacity", 1));
-    }
-
-    onMouseDrag(vpPoint) {
-        this.appendDot(vpPoint);
-    }
-
-    onEnter() {
-        // TODO need a better way to check if cursor is removed. It bugs out otherwise
-        if (!this.isCursor) {
-            this.isCursor = true;
-            this.cursor = d3.select(this.overlay.node())
-                            .append("circle")
-                            .attr('class', 'dot')
-                            .attr('id', 'c' + this.id)
-                            .attr("r", this.r * (1 / this.zoom));
-        }
-
-    }
-
-
-    addImagePoints(points) {
-        for (let point of points) {
-            let imgPoint = new OpenSeadragon.Point(parseInt(point.x), parseInt(point.y));
-            let vpPoint = this.viewer.viewport.imageToViewportCoordinates(imgPoint);
-            this.appendDot(vpPoint);
-        }
-    }
-
-    appendDot(vpPoint) {
-        this.paths[this.paths.length - 1].push(vpPoint);
-        this.draw(d3.curveCardinalOpen);
-    }
-
-    draw(curveType) {
-
-        for (let i in this.paths) {
-            let points = [];
-            for (let dot of this.paths[i]) {
-                points.push([dot.x, dot.y]);
-            }
-            this.d3paths[i].datum(points)
-                           .attr('d', d3.line()
-                                        .curve(curveType));
-        }
-    }
-
-    static midPointBtw(p1, p2) {
-        return {
-            x: p1.x + (p2.x - p1.x) / 2,
-            y: p1.y + (p2.y - p1.y) / 2
-        };
+    createCursor() {
+        return d3.select(this.overlay.getNode(1))
+                 .append("circle")
+                 .attr('fill', 'white')
+                 .attr('stroke', this.label.color)
+                 .attr('stroke-width', this.R)
+                 .attr('class', 'dot')
+                 .attr('id', 'c' + this.id)
+                 .attr("r", this.r * (1 / this.zoom));
     }
 
     delete() {
+        super.delete();
+
+        d3.select(this.overlay.svg())
+          .selectAll('mask')
+          .selectAll('path')
+          .remove();
+        d3.select(this.overlay.svg())
+          .selectAll('mask')
+          .selectAll('rect')
+          .remove();
         this.mask.remove();
     }
 }
