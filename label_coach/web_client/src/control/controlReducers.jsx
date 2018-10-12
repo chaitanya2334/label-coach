@@ -46,7 +46,7 @@ export function showHeader(showHeader = true, action) {
     }
 }
 
-export function thumbnailBarVisibility(thumbnailBarVisibility = false, action) {
+export function thumbnailBarVisibility(thumbnailBarVisibility = true, action) {
     switch (action.type) {
         case 'SET_THUMBNAIL_BAR_VIS':
             return produce(thumbnailBarVisibility, draftState => {

@@ -1,0 +1,40 @@
+{
+  "labels": [
+    {
+      "id": 0,
+      "name": "Full thickness burn",
+      "color": "#FF0000",
+      "active": false,
+      "line_button": true,
+      "poly_button": true,
+      "lines": [],
+      "polygons": [],
+      "brushes": [],
+      "erasers": []
+    },
+    {
+      "id": 1,
+      "name": "Deep partial thickness burn",
+      "color": "#9400D3",
+      "active": false,
+      "line_button": true,
+      "poly_button": true,
+      "lines": [],
+      "polygons": [],
+      "brushes": [],
+      "erasers": []
+    },
+    {
+      "id": 2,
+      "name": "Superficial partial thickness burn",
+      "color": "#0000ff",
+      "active": false,
+      "line_button": true,
+      "poly_button": true,
+      "lines": [],
+      "polygons": [],
+      "brushes": [],
+      "erasers": []
+    }
+  ]
+}
