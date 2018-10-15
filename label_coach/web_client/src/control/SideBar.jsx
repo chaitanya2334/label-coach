@@ -11,10 +11,35 @@ export default class SideBarP extends React.Component {
     }
 
     render() {
+    console.log(this.props);
+        let content;
+        switch (this.props.itemType) {
+            case "images":
+                content = <SearchBar id={this.props.itemType}/>;
+                break;
+            case "labels":
+                content = <div className={"p-3 mb-2 bg-secondary text-white"}>Labels Overview</div>;
+                break;
+            case "brush":
+                content = <div className={"p-3 mb-2 bg-secondary text-white"}>Brush Tool</div>;
+                break;
+            case "eraser":
+                content = <div className={"p-3 mb-2 bg-secondary text-white"}>Eraser Tool</div>;
+                break;
+            case "line":
+                content = <div className={"p-3 mb-2 bg-secondary text-white"}>Line Tool</div>;
+                break;
+            case "poly":
+                content = <div className={"p-3 mb-2 bg-secondary text-white"}>Polygon Tool</div>;
+                break;
+            default:
+                content = null;
+        }
+
         return (
 
             <div className={"sidebar"}>
-                <SearchBar id={this.props.itemType}/>
+                {content}
                 {this.props.children}
             </div>
         )
