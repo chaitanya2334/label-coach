@@ -5,7 +5,7 @@ import List from "@material-ui/core/List";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import SizeControl from "../SizeControl";
 import "../../styles/EraserContainer.css";
-import EraserLabel from "./EraserLabel";
+import LabelSelector from "../LabelSelector";
 
 export class EraserContainerP extends React.Component {
     constructor(props) {
@@ -18,7 +18,7 @@ export class EraserContainerP extends React.Component {
         if (this.props.labels.length > 0) {
             this.props.labels.forEach((label, i) => {
                 rows.push(
-                    <EraserLabel key={label.id} id={label.id} name={label.name} color={label.color}
+                    <LabelSelector key={label.id} id={label.id} name={label.name} color={label.color}
                                 active={label.active}/>
                 );
             });

@@ -1,7 +1,7 @@
 import * as React from "react";
-import "../styles/LabelContainer.css"
+import "../../styles/LabelContainer.css"
 import {connect} from "react-redux";
-import Label from "./Label";
+import Label from "../Label";
 
 
 export class LabelContainerP extends React.Component {

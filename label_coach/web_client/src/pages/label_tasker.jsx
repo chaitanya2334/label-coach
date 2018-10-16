@@ -8,19 +8,19 @@ import {faUser, faRobot} from '@fortawesome/free-solid-svg-icons'
 
 import Logo from "../logo";
 import SideBarP from "../control/SideBar";
-import ImageContainer from "../control/ImageContainer";
+import ImageContainer from "../control/sidebarContainers/ImageContainer";
 import ToolBar from "../control/ToolBar";
 import ImageViewer from "../Imager/ImageViewer";
-import {LabelContainer} from "../control/LabelContainer";
+import {LabelContainer} from "../control/sidebarContainers/LabelContainer";
 import thunk from "redux-thunk";
 import {fetchImages, fetchLabels, postLabels, setCurrentFolder} from "../control/controlActions";
 import {Link} from "react-router-dom";
 import CollectionBrowserP from "./collection_browser";
 import UserControl from "../control/UserControl";
 import {withRouter} from "react-router";
-import {BrushContainer} from "../control/BrushContainer";
-import {EraserContainer} from "../control/Eraser/EraserContainer";
-import {LabelSelectorContainer} from "../control/LabelSelectorContainer";
+import {BrushContainer} from "../control/sidebarContainers/BrushContainer";
+import {EraserContainer} from "../control/sidebarContainers/EraserContainer";
+import {LabelSelectorContainer} from "../control/sidebarContainers/LabelSelectorContainer";
 
 class LabelTaskerP extends React.Component {
     constructor(props) {
@@ -55,13 +55,13 @@ class LabelTaskerP extends React.Component {
             case "line":
                 rightBar =
                     <SideBarP itemType="line">
-                        <LabelSelectorContainer/>
+                        <LabelSelectorContainer labelType="line"/>
                     </SideBarP>;
                 break;
             case "poly":
                 rightBar =
                     <SideBarP itemType="poly">
-                        <LabelSelectorContainer/>
+                        <LabelSelectorContainer labelType="poly"/>
                     </SideBarP>;
                 break;
             default:

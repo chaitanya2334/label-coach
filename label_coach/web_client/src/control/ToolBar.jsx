@@ -5,9 +5,6 @@ import {
 
 } from '@fortawesome/free-solid-svg-icons'
 import {connect} from "react-redux";
-import {ButtonToolbar} from 'react-bootstrap';
-
-import CreateBrushButton from "./CreateBrushButton";
 import "../styles/ToolBar.css";
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
@@ -28,7 +25,6 @@ import SaveIcon from '@material-ui/icons/Save';
 import {lockAllAnnotations, setOutline, setSaveStatus} from "./controlActions";
 
 
-
 class ToolBarP extends React.Component {
     constructor(props) {
         super(props);
@@ -42,12 +38,10 @@ class ToolBarP extends React.Component {
     }
 
     handleMovement(event, movement) {
-        this.setState({movement})
     }
 
     handleDrawTool(event, drawTool) {
         this.props.selectRightBar(drawTool);
-        this.setState({drawTool})
     }
 
     handleSidebars(event, sidebars) {
@@ -67,7 +61,6 @@ class ToolBarP extends React.Component {
         }
         this.props.selectRightBar(rightBar);
         this.props.setThumbnailBar(thumbnailBarVis);
-        this.setState({sidebars});
     }
 
     toggleHeader(event, header) {
@@ -75,17 +68,6 @@ class ToolBarP extends React.Component {
     }
 
     render() {
-        let {movement, drawTool, sidebars} = this.state;
-        // HAX <--- TODO remove
-        if (this.props.rightBar !== "labels"){
-            // remove "review" toggle as somebody else is using the rightbar
-            if(sidebars) {
-                sidebars = sidebars.filter(e => e !== 'review');
-            }
-        }else if (this.props.rightBar === "labels"){
-            // remove any of the draw tool toggles as "review" is using the rightbar
-            drawTool = null;
-        }
 
         let arrow;
         if (this.props.showHeader) {
@@ -96,7 +78,7 @@ class ToolBarP extends React.Component {
         return (
             <div className={"full-toolbar"}>
                 <div className="toolbar">
-                    <ToggleButtonGroup selected value={movement} onChange={this.handleMovement}>
+                    <ToggleButtonGroup onChange={this.handleMovement}>
                         <ToggleButton value="zoom-map" id="full-page" size="small"><ZoomOutMapIcon/></ToggleButton>
                         <ToggleButton value="zoom-in" id="zoom-in" size="small"><ZoomInIcon/></ToggleButton>
                         <ToggleButton value="zoom-out" id="zoom-out" size="small"><ZoomOutIcon/></ToggleButton>
@@ -104,10 +86,13 @@ class ToolBarP extends React.Component {
                     </ToggleButtonGroup>
                     <Divider className={"vertical-divider"}/>
 
-                    <ToggleButtonGroup selected exclusive value={drawTool} justified="true" onChange={this.handleDrawTool}>
-                        <ToggleButton id="brush" value="brush" className="btn-small" size="small"><BrushIcon/></ToggleButton>
-                        <ToggleButton id="line" value="line" className="btn-small" size="small"><CreateIcon/></ToggleButton>
-                        <ToggleButton id="poly" value="poly" className="btn-small" size="large"><FontAwesomeIcon className='icon-medium' icon={faDrawPolygon}/></ToggleButton>
+                    <ToggleButtonGroup exclusive value={this.props.drawTool} justified="true" onChange={this.handleDrawTool}>
+                        <ToggleButton id="brush" value="brush" className="btn-small"
+                                      size="small"><BrushIcon/></ToggleButton>
+                        <ToggleButton id="line" value="line" className="btn-small"
+                                      size="small"><CreateIcon/></ToggleButton>
+                        <ToggleButton id="poly" value="poly" className="btn-small" size="large"><FontAwesomeIcon
+                            className='icon-medium' icon={faDrawPolygon}/></ToggleButton>
                         <ToggleButton value="eraser" id="erazer" size="small">
                             <SvgIcon>
                                 <path d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4.008 4.008 0 0
@@ -118,12 +103,14 @@ class ToolBarP extends React.Component {
                     </ToggleButtonGroup>
                     <Divider className={"vertical-divider"}/>
 
-                    <ToggleButtonGroup selected value={sidebars} onChange={this.handleSidebars}>
-                        <ToggleButton value="thumbnail" id="thumbnail" size="small" className="text-btn">Thumbnail</ToggleButton>
+                    <ToggleButtonGroup value={this.props.overview} onChange={this.handleSidebars}>
+                        <ToggleButton value="thumbnail" id="thumbnail" size="small"
+                                      className="text-btn">Thumbnail</ToggleButton>
                         <ToggleButton value="review" id="review" size="small" className="text-btn">Review</ToggleButton>
                     </ToggleButtonGroup>
 
-                    <ToggleButton value="save" id="save" size="small" onClick={this.props.save}><SaveIcon/> Save</ToggleButton>
+                    <ToggleButton value="save" id="save" size="small"
+                                  onClick={this.props.save}><SaveIcon/> Save</ToggleButton>
 
                 </div>
                 <Button size={"small"} id="showHeader" className={"btn-small"} onClick={this.toggleHeader}
@@ -139,9 +126,24 @@ class ToolBarP extends React.Component {
 // ---------- Container ----------
 
 function mapStateToProps(state) {
+    let overview = [];
+    let drawTool = null;
+    switch (state.rightBar) {
+        case "labels":
+            overview.push("review");
+            break;
+        default:
+            drawTool = state.rightBar;
+    }
+    if (state.thumbnailBarVisibility){
+        overview.push("thumbnail");
+    }
+
     return {
         showHeader: state.showHeader,
         rightBar: state.rightBar,
+        overview: overview,
+        drawTool: drawTool
     };
 }
 

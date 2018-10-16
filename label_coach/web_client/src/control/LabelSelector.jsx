@@ -7,7 +7,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import Divider from "@material-ui/core/Divider";
 
-class BrushLabelP extends React.Component {
+class LabelSelectorP extends React.Component {
     constructor(props) {
         super(props);
     }
@@ -20,7 +20,8 @@ class BrushLabelP extends React.Component {
         return (
             <ListItem button divider selected={this.props.active} onClick={this.props.selectLabel}>
                 <ListItemIcon>
-                    <div className={"dot"} id={"brush_" + this.props.name} style={{backgroundColor: this.props.color}}/>
+                    <div className={"dot"} id={this.type + "_" + this.props.name}
+                         style={{backgroundColor: this.props.color}}/>
                 </ListItemIcon>
                 <ListItemText primary={this.props.name}/>
             </ListItem>
@@ -44,9 +45,9 @@ function mapDispatchToProps(dispatch, ownProps) {
     }
 }
 
-const BrushLabel = connect(
+const LabelSelector = connect(
     mapStateToProps,
     mapDispatchToProps
-)(BrushLabelP);
+)(LabelSelectorP);
 
-export default BrushLabel;
+export default LabelSelector;

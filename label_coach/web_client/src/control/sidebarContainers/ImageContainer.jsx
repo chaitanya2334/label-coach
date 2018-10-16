@@ -1,7 +1,7 @@
 import * as React from "react";
-import "../styles/ImageContainer.css"
+import "../../styles/ImageContainer.css"
 import {connect} from "react-redux";
-import Thumbnail from "./Thumbnail";
+import Thumbnail from "../Thumbnail";
 
 
 class ImageContainerP extends React.Component {

@@ -1,11 +1,10 @@
 import * as React from "react";
-import "../styles/BrushContainer.css"
+import "../../styles/BrushContainer.css"
 import {connect} from "react-redux";
-import BrushLabel from "./BrushLabel";
-import SizeControl from "./SizeControl";
 import Divider from "@material-ui/core/Divider";
 import List from "@material-ui/core/List";
 import ListSubheader from "@material-ui/core/ListSubheader";
+import LabelSelector from "../LabelSelector";
 
 
 export class LabelSelectorContainerP extends React.Component {
@@ -19,7 +18,7 @@ export class LabelSelectorContainerP extends React.Component {
         if (this.props.labels.length > 0) {
             this.props.labels.forEach((label, i) => {
                 rows.push(
-                    <BrushLabel key={label.id} id={label.id} name={label.name} color={label.color}
+                    <LabelSelector key={label.id} id={label.id} type={this.props.labelType} name={label.name} color={label.color}
                                 active={label.active}/>
                 );
             });
