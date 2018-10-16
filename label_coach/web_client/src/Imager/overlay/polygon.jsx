@@ -6,14 +6,15 @@ import OpenSeadragon from "openseadragon";
 
 
 export default class Polygon extends Shape {
-    constructor(overlay, viewer, label_id, poly_id, zoom) {
+    constructor(overlay, viewer, label, drawState, poly_id, zoom, addPolygon) {
         super(overlay, viewer);
         this.zoom = zoom;
         this.dots = [];
         this.selected = null;
         this.strokeWidth = 0.002;
-        this.d3obj = d3.select(this.overlay.node())
-                       .append("polygon")
+        this.R = 0.002;
+        this.d3obj = d3.select(this.overlay.getNode(0))
+                       .append("polyline")
                        .attr('class', 'transparent')
                        .attr('id', poly_id)
                        .attr('stroke-width', this.strokeWidth * (1 / this.zoom));
@@ -25,15 +26,69 @@ export default class Polygon extends Shape {
             this.inside = false;
         });
         this.complete = false;
-        this.drawState = "read-only";
-        this.label_id = label_id;
+        this.drawState = drawState;
+        this.label = label;
         this.poly_id = poly_id;
         this.potentialDot = new Dot(this.overlay, this.viewer, this, this.dots.length, null, this.zoom, true);
         this.CLOSE_THRESH = 0.001;
+        this.minDist = 0.001;
+        this.addPolygon = addPolygon;
+        this.color = 'red';
     }
 
     setDrawState(state) {
         this.drawState = state;
+    }
+
+    createCursor() {
+        return d3.select(this.overlay.getNode(1))
+                 .append("circle")
+                 .attr('class', 'dot')
+                 .attr('id', 'c' + this.id)
+                 .attr("r", this.R * (1 / this.zoom));
+    }
+
+    onEnter() {
+        // TODO need a better way to check if cursor is removed. It bugs out otherwise
+        if (!this.isCursor) {
+            this.isCursor = true;
+            this.cursor = this.createCursor();
+        }
+    }
+
+    onExit() {
+        if (this.isCursor) {
+            this.cursor.remove();
+            this.isCursor = false;
+        }
+        document.body.style.cursor = "auto";
+    }
+
+    onMouseMove(vpPoint) {
+        if (this.label && this.isCursor) {
+            this.cursor
+                .attr("fill", this.label.color)
+                .attr("cx", vpPoint.x)
+                .attr("cy", vpPoint.y);
+            document.body.style.cursor = "crosshair";
+        } else {
+            this.cursor = this.createCursor();
+            this.isCursor = true;
+        }
+
+        switch (this.drawState) {
+            case "edit":
+                if (this.selectedDot) {
+                    this.movePotentialPoint(vpPoint);
+                } else {
+                    this.dotOnPerimeter(vpPoint);
+                }
+                break;
+            case "create":
+                this.movePotentialPoint(vpPoint);
+                break;
+        }
+
     }
 
     addImagePoints(points) {
@@ -45,11 +100,48 @@ export default class Polygon extends Shape {
     }
 
     delete() {
+        if (this.cursor) {
+            this.cursor.remove();
+        }
         this.d3obj.remove();
         for (let dot of this.dots) {
             dot.d3obj.remove();
         }
         this.dots = [];
+    }
+
+    isClose(v, w) {
+        function sqr(x) {
+            return x * x
+        }
+
+        return sqr(v.x - w.x) + sqr(v.y - w.y) < this.minDist
+    }
+
+    onSelect(viewportPoint) {
+        switch (this.drawState) {
+            case "create":
+                if (this.dots.length > 0 && this.isClose(viewportPoint, this.dots[0].p)) {
+                    this.appendDot(this.dots[0].p);
+                    this.save();
+                } else {
+                    this.appendDot(viewportPoint);
+                }
+                break;
+
+            case "edit":
+                if (this.selectedDot) {
+                    this.updateDot(viewportPoint);
+                    this.save();
+                    this.props.updatePolygon(this.label_id, this.poly_id,
+                                             this.getImgPoints());
+                } else {
+                    this.selectedDot =
+                        this.insertDot(this.potentialDot,
+                                       this.potentialDotLeftId);
+                }
+                break;
+        }
     }
 
     onDblClick(event) {
@@ -61,7 +153,7 @@ export default class Polygon extends Shape {
 
         // Convert from viewport coordinates to image coordinates.
         let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
-        if(this.drawState === "edit") {
+        if (this.drawState === "edit") {
             if (this.selected) {
                 this.save();
             } else {
@@ -72,7 +164,15 @@ export default class Polygon extends Shape {
     }
 
     appendDot(vpPoint) {
-        this.dots.push(new Dot(this.overlay, this.viewer, this, this.dots.length, vpPoint, this.zoom, true));
+        let isFirst = (this.dots.length === 0);
+        this.dots.push(new Dot(this.overlay,
+                               this.viewer,
+                               this,
+                               this.dots.length,
+                               vpPoint,
+                               this.zoom,
+                               true,
+                               isFirst));
         this.updatePolygon();
     }
 
@@ -119,16 +219,17 @@ export default class Polygon extends Shape {
         this.selected = false;
         this.selectedDot = false;
         this.updatePolygon();
+        this.addPolygon(this.label.id, this.poly_id, this.getImgPoints());
     }
 
     onZoom(event) {
         for (let dot of this.dots) {
             dot.onZoom(event);
         }
-        if(this.potentialDot) {
+        if (this.potentialDot) {
             this.potentialDot.onZoom(event);
         }
-        if(this.selectedDot) {
+        if (this.selectedDot) {
             this.selectedDot.onZoom(event);
         }
         this.d3obj.attr('stroke-width', this.strokeWidth * (1 / event.zoom));
@@ -136,11 +237,13 @@ export default class Polygon extends Shape {
     }
 
     closestPoint(polyNode, point) {
-        function sqr(x) {
-            return x * x
-        }
+
 
         function dist2(v, w) {
+            function sqr(x) {
+                return x * x
+            }
+
             return sqr(v.x - w.x) + sqr(v.y - w.y)
         }
 
@@ -214,6 +317,7 @@ export default class Polygon extends Shape {
     updatePolygon(vpPoint) {
         let points = "";
         for (let i = 0; i < this.dots.length; i++) {
+            this.dots[i].setColor(this.color);
             let p = this.dots[i].p;
             points += p.x + ',' + p.y + ' ';
         }
@@ -222,7 +326,6 @@ export default class Polygon extends Shape {
         }
         this.d3obj.attr('points', points);
     }
-
 
 
     isComplete() {

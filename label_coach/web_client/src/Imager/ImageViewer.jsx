@@ -148,6 +148,10 @@ class ImageViewerP extends React.Component {
 
     onCanvasEnter(event) {
 
+        if (this.activePolygon){
+            this.activePolygon.onEnter();
+        }
+
         if (this.activeBrush) {
             this.activeBrush.onEnter();
         }
@@ -157,6 +161,10 @@ class ImageViewerP extends React.Component {
     }
 
     onCanvasExit(event) {
+
+        if (this.activePolygon){
+            this.activePolygon.onExit();
+        }
 
         if (this.activeBrush) {
             this.activeBrush.onExit();
@@ -175,18 +183,7 @@ class ImageViewerP extends React.Component {
         let imageZoom = this.viewer.viewport.viewportToImageZoom(zoom);
 
         if (this.activePolygon) {
-            switch (this.activePolygon.drawState) {
-                case "edit":
-                    if (this.activePolygon.selectedDot) {
-                        this.activePolygon.movePotentialPoint(viewportPoint);
-                    } else {
-                        this.activePolygon.dotOnPerimeter(viewportPoint);
-                    }
-                    break;
-                case "create":
-                    this.activePolygon.movePotentialPoint(viewportPoint);
-                    break;
-            }
+            this.activePolygon.onMouseMove(viewportPoint);
         }
 
         if (this.activeBrush) {
@@ -273,26 +270,7 @@ class ImageViewerP extends React.Component {
             let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
 
             if (this.activePolygon && this.activePolygon.drawState) {
-                switch (this.activePolygon.drawState) {
-                    case "create":
-                        this.activePolygon.appendDot(viewportPoint);
-                        this.props.updatePolygon(this.activePolygon.label_id, this.activePolygon.poly_id,
-                                                 this.activePolygon.getImgPoints());
-                        break;
-
-                    case "edit":
-                        if (this.activePolygon.selectedDot) {
-                            this.activePolygon.updateDot(viewportPoint);
-                            this.activePolygon.save();
-                            this.props.updatePolygon(this.activePolygon.label_id, this.activePolygon.poly_id,
-                                                     this.activePolygon.getImgPoints());
-                        } else {
-                            this.activePolygon.selectedDot =
-                                this.activePolygon.insertDot(this.activePolygon.potentialDot,
-                                                             this.activePolygon.potentialDotLeftId);
-                        }
-                        break;
-                }
+                this.activePolygon.onSelect(viewportPoint);
             }
 
             // Show the results.
@@ -336,22 +314,52 @@ class ImageViewerP extends React.Component {
         this.activeLine = null;
     }
 
+    setActiveTool(activeTool, activeLabel) {
+        switch (activeTool) {
+            case "eraser":
+                this.activeEraser = new Eraser(this.svgOverlay,
+                                               this.viewer,
+                                               activeLabel,
+                                               activeLabel.erasers.length,
+                                               this.props.toolRadius,
+                                               this.zoom);
+                break;
+            case "brush":
+                this.activeBrush = new Brush(this.svgOverlay,
+                                             this.viewer,
+                                             activeLabel,
+                                             activeLabel.brushes.length,
+                                             this.props.toolRadius,
+                                             this.zoom);
+                break;
+            case "line":
+                this.activeLine = new Line(this.svgOverlay,
+                                           this.viewer,
+                                           activeLabel,
+                                           activeLabel.lines.length,  // TODO pass the label datastructure directly
+                                           this.zoom);
+                break;
+            case "poly":
+                let poly_id = activeLabel.polygons.length;
+                this.activePolygon = new Polygon(this.svgOverlay,
+                                              this.viewer,
+                                              activeLabel,
+                                              "create",
+                                              poly_id,  // TODO pass the label datastructure directly
+                                              this.zoom, this.props.addPolygon);
+                break;
+        }
+    }
+
 
     updateOverlay() {
 
         this.deleteAllAnnotations();
 
-        if (this.props.activeTool === "eraser" && this.props.activeLabel) {
-            this.activeEraser =
-                new Eraser(this.svgOverlay, this.viewer, this.props.activeLabel,
-                           this.props.activeLabel.erasers.length, this.props.toolRadius, this.zoom);
+        if(this.props.activeLabel) {
+            this.setActiveTool(this.props.activeTool, this.props.activeLabel);
         }
 
-        if (this.props.activeTool === "brush" && this.props.activeLabel) {
-            this.activeBrush =
-                new Brush(this.svgOverlay, this.viewer, this.props.activeLabel,
-                          this.props.activeLabel.brushes.length, this.props.toolRadius, this.zoom);
-        }
 
         for (let eraser of this.props.erasers) {
             let eraserObj =
@@ -370,27 +378,15 @@ class ImageViewerP extends React.Component {
 
         //create polygons from props
         for (let polygon of this.props.polygons) {
-            let polyObj = new Polygon(this.svgOverlay, this.viewer, polygon.label_id, polygon.poly_id, this.zoom);
+            let polyObj = new Polygon(this.svgOverlay, this.viewer, polygon.label, "read_only", polygon.poly_id, this.zoom, this.props.addPolygon);
             polyObj.addImagePoints(polygon.points);
             this.polygons.push(polyObj);
-            if (polygon.drawState !== "read-only") {
-                this.activePolygon = polyObj;
-                this.activePolygon.setDrawState(polygon.drawState);
-            } else {
-                polyObj.save();
-            }
         }
 
         for (let line of this.props.lines) {
             let lineObj = new Line(this.svgOverlay, this.viewer, line.label_id, line.line_id, this.zoom);
             lineObj.addImagePoints(line.points);
             this.lines.push(lineObj);
-            if (line.drawState !== "read-only") {
-                this.activeLine = lineObj;
-                this.activeLine.setDrawState(line.drawState);
-            } else {
-                lineObj.save();
-            }
         }
 
     }
@@ -518,6 +514,10 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
+        addPolygon: (label_id, poly_id, points) => {
+            dispatch(addAnnotation("polygon", label_id));
+            dispatch(updateAnnotation("polygon", label_id, poly_id, points));
+        },
         updatePolygon: (label_id, poly_id, points) => {
             dispatch(updateAnnotation("polygon", label_id, poly_id, points));
         },

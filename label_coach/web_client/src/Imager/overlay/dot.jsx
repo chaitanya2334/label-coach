@@ -6,7 +6,7 @@ import * as d3 from "d3";
 import clone from "../../utils"
 
 export default class Dot extends Shape {
-    constructor(overlay, viewer, parent, id, vpPoint, zoom, visible) {
+    constructor(overlay, viewer, parent, id, vpPoint, zoom, visible = true, setRingColor = false, onHover = false) {
         super(overlay, viewer);
         this.visible = visible;
         this.selected = false;
@@ -19,50 +19,61 @@ export default class Dot extends Shape {
         }
         this.R = 0.002;
         this.onHoverR = 0.004;
+        this.setRingColor = setRingColor;
+        this.onHover = onHover;
         this.r = this.R;
         this.draw(this.p, id);
+
     }
 
-    delete(){
-        if(this.d3obj) {
+    delete() {
+        if (this.d3obj) {
             this.d3obj.remove();
         }
     }
 
-    getImgPoint(){
+    getImgPoint() {
         return this.viewer.viewport.viewportToImageCoordinates(this.p);
     }
 
-    updateR(){
-        let r = this.r * (1/this.zoom);
+    updateR() {
+        let r = this.r * (1 / this.zoom);
         this.d3obj.attr('r', r);
     }
 
-    translateDot(tx, ty){
+    translateDot(tx, ty) {
         this.p.x = this.center.x + tx;
         this.p.y = this.center.y + ty;
         console.log(this.center);
         this.update(this.p);
     }
 
-    onZoom(event){
+    onZoom(event) {
         this.zoom = event.zoom;
         this.updateR();
     }
 
-    saveOrigPos(){
+    saveOrigPos() {
         this.center = clone(this.p);
     }
 
+    setColor(color){
+        this.d3obj.attr('fill', color);
+    }
+
     draw(vpPoint, id) {
-        if(this.visible) {
-            this.d3obj = d3.select(this.overlay.node())
+        if (this.visible) {
+            this.d3obj = d3.select(this.overlay.getNode(0))
                            .append("circle")
-                           .attr('class', 'dot')
                            .attr('id', 'c' + id)
                            .attr("cx", vpPoint.x)
                            .attr("cy", vpPoint.y)
                            .attr("r", this.r * (1 / this.zoom));
+
+            if (this.setRingColor) {
+                this.d3obj.attr("stroke", 'red')
+                    .attr("stroke-width", this.r)
+            }
 
             this.d3obj.on('mouseover', (event) => {
                 this.selected = true;
@@ -91,7 +102,7 @@ export default class Dot extends Shape {
         }
     }
 
-    isDblClicked(){
+    isDblClicked() {
         return this.selected;
     }
 
