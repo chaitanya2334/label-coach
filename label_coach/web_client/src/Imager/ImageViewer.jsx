@@ -18,6 +18,7 @@ import SaveIndicator from "../control/SaveIndicator";
 import Divider from "@material-ui/core/Divider";
 import Brush from "./overlay/brush";
 import Eraser from "./overlay/eraser";
+import * as d3 from "d3";
 
 // helper function to load image using promises
 function loadImage(src) {
@@ -315,6 +316,8 @@ class ImageViewerP extends React.Component {
         if (this.activeEraser)
             this.activeEraser.delete();
 
+        d3.select(this.svgOverlay.getNode(0)).select("circle").remove();
+        d3.select(this.svgOverlay.getNode(1)).select("circle").remove();
         this.activePolygon = null;
         this.activeBrush = null;
         this.activeEraser = null;

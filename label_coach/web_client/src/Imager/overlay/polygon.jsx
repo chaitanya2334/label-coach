@@ -33,7 +33,8 @@ export default class Polygon extends Shape {
         this.drawState = drawState;
         this.label = label;
         this.poly_id = poly_id;
-        this.potentialDot = new Dot(this.overlay, this.viewer, this, this.dots.length, null, this.zoom, true);
+
+
         this.CLOSE_THRESH = 0.001;
         this.minDist = 0.001;
         this.addPolygon = addPolygon;
@@ -45,19 +46,11 @@ export default class Polygon extends Shape {
         this.drawState = state;
     }
 
-    onEnter() {
-        // TODO need a better way to check if cursor is removed. It bugs out otherwise
-        if (!this.isCursor) {
-            this.isCursor = true;
-            this.cursor = this.createCursor();
-        }
+    onEnter(){
+
     }
 
     onExit() {
-        if (this.isCursor) {
-            this.cursor.remove();
-            this.isCursor = false;
-        }
         document.body.style.cursor = "auto";
     }
 
@@ -105,6 +98,14 @@ export default class Polygon extends Shape {
         return sqr(v.x - w.x) + sqr(v.y - w.y) < this.minDist
     }
 
+    setState(state){
+        switch (state) {
+            case "edit":
+                this.potentialDot = new Dot(this.overlay, this.viewer, this, this.dots.length, null, this.zoom, true);
+                break;
+        }
+    }
+
     onSelect(viewportPoint) {
         switch (this.drawState) {
             case "create":
@@ -132,14 +133,7 @@ export default class Polygon extends Shape {
     }
 
     onDblClick(event) {
-        // The canvas-click event gives us a position in web coordinates.
-        let webPoint = event.position;
-
-        // Convert that to viewport coordinates, the lingua franca of OpenSeadragon coordinates.
-        let viewportPoint = this.viewer.viewport.pointFromPixel(webPoint);
-
-        // Convert from viewport coordinates to image coordinates.
-        let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
+        let viewportPoint = super.onDblClick(event);
         if (this.drawState === "edit") {
             if (this.selected) {
                 this.save();

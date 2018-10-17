@@ -4,7 +4,7 @@ export default class Shape {
         this.viewer = viewer;
         let onSglClick = this.onClick.bind(this);
         let onDblClick = this.onDblClick.bind(this);
-        this.viewer.addHandler('canvas-click', this.makeDoubleClick(onDblClick, onSglClick, 200));
+        //this.viewer.addHandler('canvas-click', this.makeDoubleClick(onDblClick, onSglClick, 20));
     }
 
     onClick(event){
@@ -16,6 +16,7 @@ export default class Shape {
 
         // Convert from viewport coordinates to image coordinates.
         let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
+        return viewportPoint;
     }
 
     onDblClick(event){
@@ -27,20 +28,21 @@ export default class Shape {
 
         // Convert from viewport coordinates to image coordinates.
         let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
+        return viewportPoint;
     }
 
     makeDoubleClick(doubleClickCallback, singleClickCallback, timeout) {
         let clicks = 0;
-        return function () {
+        return function (event) {
             clicks++;
             if (clicks === 1) {
-                singleClickCallback && singleClickCallback.apply(this, arguments);
                 timeout = setTimeout(function () {
+                    singleClickCallback && singleClickCallback(event);
                     clicks = 0;
                 }, timeout);
             } else {
                 timeout && clearTimeout(timeout);
-                doubleClickCallback && doubleClickCallback.apply(this, arguments);
+                doubleClickCallback && doubleClickCallback(event);
                 clicks = 0;
             }
         };
