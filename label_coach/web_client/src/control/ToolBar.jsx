@@ -89,9 +89,9 @@ class ToolBarP extends React.Component {
                     <ToggleButtonGroup exclusive value={this.props.drawTool} justified="true" onChange={this.handleDrawTool}>
                         <ToggleButton id="brush" value="brush" className="btn-small"
                                       size="small"><BrushIcon/></ToggleButton>
-                        <ToggleButton id="line" value="line" className="btn-small"
+                        <ToggleButton disabled id="line" value="line" className="btn-small"
                                       size="small"><CreateIcon/></ToggleButton>
-                        <ToggleButton id="poly" value="poly" className="btn-small" size="large"><FontAwesomeIcon
+                        <ToggleButton disabled id="poly" value="poly" className="btn-small" size="large"><FontAwesomeIcon
                             className='icon-medium' icon={faDrawPolygon}/></ToggleButton>
                         <ToggleButton value="eraser" id="erazer" size="small">
                             <SvgIcon>
