@@ -3,7 +3,6 @@ import '../styles/ImageViewer.css';
 import {getCurrentToken} from "girder/auth";
 import OpenSeadragon from 'openseadragon'
 import './overlay/osdSvgOverlay';
-import './overlay/osdCanvasOverlay';
 import connect from "react-redux/es/connect/connect";
 import {
     addAnnotation,
@@ -101,7 +100,6 @@ class ImageViewerP extends React.Component {
     onViewerReady() {
 
         this.svgOverlay = this.viewer.svgOverlay();
-        this.canvasOverlay = this.viewer.canvasOverlay();
 
         let onClick = this.onClick.bind(this);
         let onZoom = this.onZoom.bind(this);
@@ -128,11 +126,11 @@ class ImageViewerP extends React.Component {
         this.moveTracker = new OpenSeadragon.MouseTracker({
                                                               element: this.viewer.container,
                                                               moveHandler: (event) => {
-                                                                  event.preventDefaultAction = true;
+                                                                  //event.preventDefaultAction = true;
                                                                   this.onMove(event);
                                                               }
                                                           });
-        this.moveTracker.setTracking(true);
+        //this.moveTracker.setTracking(true);
         let onEsc = this.onEsc.bind(this);
         document.addEventListener("keydown", onEsc, false);
 
@@ -148,7 +146,7 @@ class ImageViewerP extends React.Component {
 
     onCanvasEnter(event) {
 
-        if (this.activePolygon){
+        if (this.activePolygon) {
             this.activePolygon.onEnter();
         }
 
@@ -162,7 +160,7 @@ class ImageViewerP extends React.Component {
 
     onCanvasExit(event) {
 
-        if (this.activePolygon){
+        if (this.activePolygon) {
             this.activePolygon.onExit();
         }
 
@@ -308,6 +306,15 @@ class ImageViewerP extends React.Component {
             }
         }
 
+        if (this.activePolygon)
+            this.activePolygon.delete();
+        if (this.activeLine)
+            this.activeLine.delete();
+        if (this.activeBrush)
+            this.activeBrush.delete();
+        if (this.activeEraser)
+            this.activeEraser.delete();
+
         this.activePolygon = null;
         this.activeBrush = null;
         this.activeEraser = null;
@@ -342,11 +349,11 @@ class ImageViewerP extends React.Component {
             case "poly":
                 let poly_id = activeLabel.polygons.length;
                 this.activePolygon = new Polygon(this.svgOverlay,
-                                              this.viewer,
-                                              activeLabel,
-                                              "create",
-                                              poly_id,  // TODO pass the label datastructure directly
-                                              this.zoom, this.props.addPolygon);
+                                                 this.viewer,
+                                                 activeLabel,
+                                                 "create",
+                                                 poly_id,  // TODO pass the label datastructure directly
+                                                 this.zoom, this.props.addPolygon);
                 break;
         }
     }
@@ -356,7 +363,7 @@ class ImageViewerP extends React.Component {
 
         this.deleteAllAnnotations();
 
-        if(this.props.activeLabel) {
+        if (this.props.activeLabel) {
             this.setActiveTool(this.props.activeTool, this.props.activeLabel);
         }
 
@@ -378,7 +385,8 @@ class ImageViewerP extends React.Component {
 
         //create polygons from props
         for (let polygon of this.props.polygons) {
-            let polyObj = new Polygon(this.svgOverlay, this.viewer, polygon.label, "read_only", polygon.poly_id, this.zoom, this.props.addPolygon);
+            let polyObj = new Polygon(this.svgOverlay, this.viewer, polygon.label, "read_only", polygon.poly_id,
+                                      this.zoom, this.props.addPolygon);
             polyObj.addImagePoints(polygon.points);
             this.polygons.push(polyObj);
         }
@@ -429,7 +437,7 @@ function mapLabelsToAnns(labels) {
     for (let label of labels) {
         let newPolygons = label.polygons.map((poly) => {
             let newPoly = Object.assign({}, poly);
-            newPoly.label_id = label.id;
+            newPoly.label = label;
             newPoly.poly_id = poly.id;
             return newPoly;
         });
@@ -517,6 +525,8 @@ function mapDispatchToProps(dispatch) {
         addPolygon: (label_id, poly_id, points) => {
             dispatch(addAnnotation("polygon", label_id));
             dispatch(updateAnnotation("polygon", label_id, poly_id, points));
+            dispatch(lockAnnotation("polygon", label_id, poly_id));
+            dispatch(setSaveStatus("dirty"));
         },
         updatePolygon: (label_id, poly_id, points) => {
             dispatch(updateAnnotation("polygon", label_id, poly_id, points));

@@ -57,7 +57,7 @@ export default class Dot extends Shape {
         this.center = clone(this.p);
     }
 
-    setColor(color){
+    setColor(color) {
         this.d3obj.attr('fill', color);
     }
 
@@ -65,26 +65,30 @@ export default class Dot extends Shape {
         if (this.visible) {
             this.d3obj = d3.select(this.overlay.getNode(0))
                            .append("circle")
+                           .attr('class', 'dot')
+                           .attr('fill', 'red')
                            .attr('id', 'c' + id)
                            .attr("cx", vpPoint.x)
                            .attr("cy", vpPoint.y)
-                           .attr("r", this.r * (1 / this.zoom));
+                           .attr("r", this.r * (1 / this.zoom))
+                           .on('mouseover', (event) => {
+                               this.selected = true;
+                               this.r = this.onHoverR;
+                               this.updateR()
+                           })
+                           .on('mouseout', (event) => {
+                               this.selected = false;
+                               this.r = this.R;
+                               this.updateR();
+                           })
+                           .on('mousemove', (event) => {
+                               console.log(event);
+                           });
 
             if (this.setRingColor) {
                 this.d3obj.attr("stroke", 'red')
                     .attr("stroke-width", this.r)
             }
-
-            this.d3obj.on('mouseover', (event) => {
-                this.selected = true;
-                this.r = this.onHoverR;
-                this.updateR();
-            });
-            this.d3obj.on('mouseout', (event) => {
-                this.selected = false;
-                this.r = this.R;
-                this.updateR();
-            });
         }
     }
 

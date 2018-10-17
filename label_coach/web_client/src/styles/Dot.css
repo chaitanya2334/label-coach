@@ -2,3 +2,8 @@
 .dot {
     cursor: crosshair;
 }
+
+.dot:hover{
+    size: 20px;
+}
+

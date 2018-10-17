@@ -15,9 +15,13 @@ export default class Polygon extends Shape {
         this.R = 0.002;
         this.d3obj = d3.select(this.overlay.getNode(0))
                        .append("polyline")
+                       .attr('stroke', label.color)
                        .attr('class', 'transparent')
-                       .attr('id', poly_id)
-                       .attr('stroke-width', this.strokeWidth * (1 / this.zoom));
+                       .attr('id', label.id + "_" + poly_id)
+                       .attr('stroke-width', this.strokeWidth * (1 / this.zoom))
+                       .on('mouseover', (event) => {
+                           console.log("asdfwQr_{+R4EDQAzB ,NB HMV");
+                       });
 
         this.d3obj.on('mouseover', (event) => {
             this.inside = true;
@@ -33,19 +37,12 @@ export default class Polygon extends Shape {
         this.CLOSE_THRESH = 0.001;
         this.minDist = 0.001;
         this.addPolygon = addPolygon;
-        this.color = 'red';
+        this.stateToDotColor = {"create": this.label.color, "edit": 'red', "read_only": 'blue'}
+
     }
 
     setDrawState(state) {
         this.drawState = state;
-    }
-
-    createCursor() {
-        return d3.select(this.overlay.getNode(1))
-                 .append("circle")
-                 .attr('class', 'dot')
-                 .attr('id', 'c' + this.id)
-                 .attr("r", this.R * (1 / this.zoom));
     }
 
     onEnter() {
@@ -65,17 +62,7 @@ export default class Polygon extends Shape {
     }
 
     onMouseMove(vpPoint) {
-        if (this.label && this.isCursor) {
-            this.cursor
-                .attr("fill", this.label.color)
-                .attr("cx", vpPoint.x)
-                .attr("cy", vpPoint.y);
-            document.body.style.cursor = "crosshair";
-        } else {
-            this.cursor = this.createCursor();
-            this.isCursor = true;
-        }
-
+        document.body.style.cursor = "crosshair";
         switch (this.drawState) {
             case "edit":
                 if (this.selectedDot) {
@@ -164,7 +151,8 @@ export default class Polygon extends Shape {
     }
 
     appendDot(vpPoint) {
-        let isFirst = (this.dots.length === 0);
+
+        let isFirst = (this.drawState === "create" && this.dots.length === 0);
         this.dots.push(new Dot(this.overlay,
                                this.viewer,
                                this,
@@ -317,7 +305,7 @@ export default class Polygon extends Shape {
     updatePolygon(vpPoint) {
         let points = "";
         for (let i = 0; i < this.dots.length; i++) {
-            this.dots[i].setColor(this.color);
+            this.dots[i].setColor(this.stateToDotColor[this.drawState]);
             let p = this.dots[i].p;
             points += p.x + ',' + p.y + ' ';
         }

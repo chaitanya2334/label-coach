@@ -1,7 +1,6 @@
 .transparent {
     fill: white;
     opacity: 0.4;
-    stroke: #0A7EbE;
 
 }
 
@@ -12,5 +11,4 @@
 }
 
 .accept {
-    stroke: green;
 }
