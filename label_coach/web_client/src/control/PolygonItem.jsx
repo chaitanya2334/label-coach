@@ -2,10 +2,26 @@ import * as React from "react";
 import "../styles/PolygonItem.css";
 import {connect} from "react-redux";
 import {lockAnnotation, setSaveStatus, toggleLabelButton, unlockAnnotation} from "./controlActions";
+import {faEdit} from "@fortawesome/free-solid-svg-icons";
+import Button from "@material-ui/core/Button";
+import Icon from "@material-ui/core/Icon";
+import DeleteIcon from "@material-ui/icons/Delete";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import IconButton from "@material-ui/core/IconButton";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
 
 class PolygonItemP extends React.Component {
     constructor(props) {
         super(props);
+    }
+
+    onEdit(){
+        this.props.editPoly(this.props.label_id, this.props.poly_id);
+    }
+
+    onDelete(){
+        this.props.deletePoly(this.props.label_id, this.props.poly_id);
     }
 
     render() {
@@ -14,20 +30,16 @@ class PolygonItemP extends React.Component {
             subtext += "(" + parseInt(point.x) + ", " + parseInt(point.y) + "), ";
         });
         return (
-            <div className={"poly_item"}>
-                <div className={"row no-gutters align-items-center"}>
-                    <div className={"col-sm-9"}>
-                        <div className={"ann-text"}>{this.props.text}</div>
-                        <div className={"ann-subtext"}>{subtext}</div>
-                    </div>
-                    <div className={"col-sm-3"}>
-                        <PolyButton donePoly={this.props.donePoly} doneCreatePoly={this.props.doneCreatePoly} editPoly={this.props.editPoly}
-                                    label_id={this.props.label_id} poly_id={this.props.poly_id}
-                                    drawState={this.props.drawState}/>
-                    </div>
+            <ListItem button>
+                <ListItemText primary={this.props.text} secondary={subtext}/>
+                <IconButton type="button" onClick={this.onClick}>
+                    <FontAwesomeIcon icon={faEdit}/>
+                </IconButton>
+                <IconButton type="button" onClick={this.onClick}>
+                    <DeleteIcon/>
+                </IconButton>
 
-                </div>
-            </div>
+            </ListItem>
         );
     }
 }
@@ -35,16 +47,7 @@ class PolygonItemP extends React.Component {
 class PolyButton extends React.Component {
     constructor(props) {
         super(props);
-        this.updateText();
         this.onClick = this.onClick.bind(this);
-    }
-
-    updateText() {
-        if (this.props.drawState === "edit" || this.props.drawState === "create") {
-            this.text = "Done";
-        } else {
-            this.text = "Edit";
-        }
     }
 
     onClick() {
@@ -61,10 +64,9 @@ class PolyButton extends React.Component {
     }
 
     render() {
-        this.updateText();
         return (
             <div className={"poly_button"}>
-                <button type="button" className={"btn btn-primary"} onClick={this.onClick}>{this.text}</button>
+
             </div>
         );
     }
@@ -86,7 +88,7 @@ function mapDispatchToProps(dispatch) {
             dispatch(lockAnnotation("polygon", label_id, poly_id));
             dispatch(setSaveStatus("dirty"));
         },
-        doneCreatePoly: (label_id, poly_id) =>{
+        doneCreatePoly: (label_id, poly_id) => {
             dispatch(lockAnnotation("polygon", label_id, poly_id));
             dispatch(setSaveStatus("dirty"));
             dispatch(toggleLabelButton(label_id, "poly_button"));

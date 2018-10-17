@@ -1,13 +1,10 @@
 import * as React from "react";
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faAngleDown, faAngleUp} from '@fortawesome/free-solid-svg-icons'
 import {connect} from "react-redux";
 import AnnotationListP from "./AnnotationList";
 import Counter from "./Counter";
 import "../styles/Label.css"
 import {toggleLabel} from "./controlActions";
-import CreateLineButton from "./CreateLineButton";
-import CreatePolyButton from "./CreatePolyButton";
 
 class LabelP extends React.Component {
     constructor(props) {
@@ -25,8 +22,9 @@ class LabelP extends React.Component {
         return (
 
 
-            <div className="lbl-card" onClick={this.props.onClick}>
+            <div className="lbl-card" >
                 <div className={"card-header " + activeClass}
+                     onClick={this.props.onClick}
                      id={"heading_" + this.props.name}>
                     <div className={"lbl-text"}>
                         <div className={"lbl-dot"} style={{backgroundColor: this.props.color}}/>

@@ -14,7 +14,7 @@
 }
 
 .list-group-item {
-    padding: 0px 2px;
+    padding: 0 !important;
 }
 
 .thumbnail-container {

@@ -13,14 +13,6 @@
 
 }
 
-.poly_button{
-    display: none;
-}
-
-.poly_item:hover .poly_button{
-    display: block;
-}
-
 .row.no-gutters {
   margin-right: 0;
   margin-left: 0;

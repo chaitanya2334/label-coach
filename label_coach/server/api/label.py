@@ -95,7 +95,7 @@ class LabelResource(Resource):
             printFail(traceback.print_exc)
 
     def find_config(self, folder_id):
-        folder = Folder().load(folder_id, user=self.getCurrentUser())
+        folder = Folder().load(folder_id, user=self.getCurrentUser(), level=AccessType.READ)
         for file_path, file in Folder().fileList(folder, self.getCurrentUser(), data=False):
             printOk(file)
             if file['name'] == "config.json":
@@ -109,7 +109,7 @@ class LabelResource(Resource):
     def createLabelFile(self, file_name, folder_id):
         try:
             file = list(File().find({'name': file_name}).limit(1))
-            folder = Folder().load(folder_id, user=self.getCurrentUser())
+            folder = Folder().load(folder_id, user=self.getCurrentUser(), level=AccessType.READ)
             printOk(file)
             if not file:
                 file = self.createNewFile(folder, file_name)
