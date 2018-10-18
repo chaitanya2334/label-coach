@@ -14,14 +14,16 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import "../styles/EnhancedTable1.css"
+import Divider from "@material-ui/core/Divider";
 
 let counter = 0;
 
-function createData(name, calories, fat, carbs, protein) {
+function createData(name) {
     counter += 1;
-    return {id: counter, name, calories, fat, carbs, protein};
+    return {id: counter, name};
 }
 
 function desc(a, b, orderBy) {
@@ -50,10 +52,6 @@ function getSorting(order, orderBy) {
 
 const rows = [
     {id: 'name', numeric: false, disablePadding: true, label: 'Dessert (100g serving)'},
-    {id: 'calories', numeric: true, disablePadding: false, label: 'Calories'},
-    {id: 'fat', numeric: true, disablePadding: false, label: 'Fat (g)'},
-    {id: 'carbs', numeric: true, disablePadding: false, label: 'Carbs (g)'},
-    {id: 'protein', numeric: true, disablePadding: false, label: 'Protein (g)'},
 ];
 
 class EnhancedTableHead extends React.Component {
@@ -63,51 +61,54 @@ class EnhancedTableHead extends React.Component {
         }
     }
 
+    handleChangePage(event, page) {
+        this.setState({page});
+    };
+
+    handleChangeRowsPerPage(event) {
+        this.setState({rowsPerPage: event.target.value});
+    };
+
     render() {
-        const {onSelectAllClick, order, orderBy, numSelected, rowCount} = this.props;
+        const {onSelectAllClick, data, rowsPerPage, page, order, orderBy, numSelected, rowCount} = this.props;
         let highlight = numSelected > 0 ? "tb-highlight-light" : "";
         return (
-            <TableHead>
-                <TableRow>
-                    <TableCell padding="checkbox">
-                        <Checkbox className="color-green"
-                                  indeterminate={numSelected > 0 && numSelected < rowCount}
-                                  checked={numSelected === rowCount}
-                                  onChange={onSelectAllClick}
-                        />
-                    </TableCell>
-                    <TableCell>
-                        <div className="tb-title">
-                            {numSelected > 0 ? (
-                                <Typography color="inherit" variant="subtitle1">
-                                    {numSelected} selected
-                                </Typography>
-                            ) : (
-                                <Typography variant="h6" id="tableTitle">
-                                    Nutrition
-                                </Typography>
-                            )}
-                        </div>
-                        <div className="tb-spacer"/>
-                        <div className="tb-actions">
-                            {numSelected > 0 ? (
-                                <Tooltip title="Delete">
-                                    <IconButton aria-label="Delete">
-                                        <DeleteIcon/>
-                                    </IconButton>
-                                </Tooltip>
-                            ) : (
-                                <Tooltip title="Filter list">
-                                    <IconButton aria-label="Filter list">
-                                        <FilterListIcon/>
-                                    </IconButton>
-                                </Tooltip>
-                            )}
-                        </div>
+            <Toolbar className={"tb-space-bet"}>
+                <Checkbox className="color-green"
+                          indeterminate={numSelected > 0 && numSelected < rowCount}
+                          checked={numSelected === rowCount}
+                          onChange={onSelectAllClick}
+                />
 
-                    </TableCell>
-                </TableRow>
-            </TableHead>
+                <div className="tb-title">
+                    {numSelected > 0 ? (
+                        <Tooltip title="Delete">
+                            <IconButton aria-label="Delete">
+                                <DeleteIcon/>
+                            </IconButton>
+                        </Tooltip>
+                    ) : (
+                        <Typography variant="h6" id="tableTitle">
+
+                        </Typography>
+                    )}
+                </div>
+                <TablePagination
+                    component="div"
+                    count={data.length}
+                    rowsPerPage={rowsPerPage}
+                    rowsPerPageOptions={[]}
+                    page={page}
+                    backIconButtonProps={{
+                        'aria-label': 'Previous Page',
+                    }}
+                    nextIconButtonProps={{
+                        'aria-label': 'Next Page',
+                    }}
+                    onChangePage={this.handleChangePage}
+                />
+            </Toolbar>
+
         );
     }
 }
@@ -120,19 +121,19 @@ export default class EnhancedTable extends React.Component {
             orderBy: 'calories',
             selected: [],
             data: [
-                createData('Cupcake', 305, 3.7, 67, 4.3),
-                createData('Donut', 452, 25.0, 51, 4.9),
-                createData('Eclair', 262, 16.0, 24, 6.0),
-                createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-                createData('Gingerbread', 356, 16.0, 49, 3.9),
-                createData('Honeycomb', 408, 3.2, 87, 6.5),
-                createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-                createData('Jelly Bean', 375, 0.0, 94, 0.0),
-                createData('KitKat', 518, 26.0, 65, 7.0),
-                createData('Lollipop', 392, 0.2, 98, 0.0),
-                createData('Marshmallow', 318, 0, 81, 2.0),
-                createData('Nougat', 360, 19.0, 9, 37.0),
-                createData('Oreo', 437, 18.0, 63, 4.0),
+                createData('Cupcake'),
+                createData('Donut'),
+                createData('Eclair'),
+                createData('Frozen yoghurt'),
+                createData('Gingerbread'),
+                createData('Honeycomb'),
+                createData('Ice cream sandwich'),
+                createData('Jelly Bean'),
+                createData('KitKat'),
+                createData('Lollipop'),
+                createData('Marsh'),
+                createData('Nougat'),
+                createData('Oreo'),
             ],
             page: 0,
             rowsPerPage: 5,
@@ -180,13 +181,6 @@ export default class EnhancedTable extends React.Component {
         this.setState({selected: newSelected});
     };
 
-    handleChangePage(event, page) {
-        this.setState({page});
-    };
-
-    handleChangeRowsPerPage(event) {
-        this.setState({rowsPerPage: event.target.value});
-    };
 
     isSelected(id) {
         return this.state.selected.indexOf(id) !== -1;
@@ -199,15 +193,19 @@ export default class EnhancedTable extends React.Component {
         return (
             <Paper className="tb-root" elevation={0} square={true}>
                 <div className="tb-wrapper">
+                    <EnhancedTableHead
+                        numSelected={selected.length}
+                        data={data}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        order={order}
+                        orderBy={orderBy}
+                        onSelectAllClick={this.handleSelectAllClick}
+                        onRequestSort={this.handleRequestSort}
+                        rowCount={data.length}
+                    />
+                    <Divider/>
                     <Table className="tb-table" aria-labelledby="tableTitle">
-                        <EnhancedTableHead
-                            numSelected={selected.length}
-                            order={order}
-                            orderBy={orderBy}
-                            onSelectAllClick={this.handleSelectAllClick}
-                            onRequestSort={this.handleRequestSort}
-                            rowCount={data.length}
-                        />
                         <TableBody>
                             {stableSort(data, getSorting(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -229,10 +227,20 @@ export default class EnhancedTable extends React.Component {
                                             <TableCell component="th" scope="row" padding="none">
                                                 {n.name}
                                             </TableCell>
-                                            <TableCell numeric>{n.calories}</TableCell>
-                                            <TableCell numeric>{n.fat}</TableCell>
-                                            <TableCell numeric>{n.carbs}</TableCell>
-                                            <TableCell numeric>{n.protein}</TableCell>
+                                            <TableCell component="th" scope="row" padding="none">
+                                                <Tooltip title="Edit">
+                                                    <IconButton aria-label="Edit">
+                                                        <EditIcon/>
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </TableCell>
+                                            <TableCell component="th" scope="row" padding="none">
+                                                <Tooltip title="Delete">
+                                                    <IconButton aria-label="Delete">
+                                                        <DeleteIcon/>
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </TableCell>
                                         </TableRow>
                                     );
                                 })}
