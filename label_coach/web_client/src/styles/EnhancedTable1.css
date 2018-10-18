@@ -25,6 +25,14 @@
     min-height: 48px!important;
 }
 
+.tb-mouse-over{
+    visibility: visible!important;
+}
+
+.tb-hidden{
+    visibility: hidden!important;
+}
+
 
 .tb-actions{
     color: red;

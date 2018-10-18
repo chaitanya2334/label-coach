@@ -84,19 +84,26 @@ export class EnhancedTableHead extends React.Component {
                     </TableCell>
                     <TableCell component="th" scope="row" padding="none">
                         {numSelected > 0 ? (
-                            <Tooltip title="Delete">
-                                <IconButton aria-label="Delete">
-                                    <DeleteIcon/>
-                                </IconButton>
-                            </Tooltip>
+                            <Typography color="inherit" variant="subtitle1">
+                                {numSelected} selected
+                            </Typography>
                         ) : (
                             <Typography variant="h6" id="tableTitle">
                                 Annotations
                             </Typography>
                         )}
-                    </TableCell >
+                    </TableCell>
                     <TableCell component="th" scope="row" padding="none"/>
-                    <TableCell component="th" scope="row" padding="none"/>
+                    <TableCell component="th" scope="row" padding="none">
+                        {numSelected > 0 ? (
+                            <Tooltip title="Delete">
+                                <IconButton aria-label="Delete">
+                                    <DeleteIcon/>
+                                </IconButton>
+                            </Tooltip>
+                        ) : ""}
+
+                    </TableCell>
                 </TableRow>
             </TableHead>
 
@@ -172,13 +179,23 @@ export class EnhancedTable extends React.Component {
         this.setState({selected: newSelected});
     };
 
+    onMouseEnter(event, id) {
+        this.setState({mouseOver: id});
+    }
+
+    onMouseLeave(event, id) {
+        if (this.state.mouseOver === id) {
+            this.setState({mouseOver: ""});
+        }
+    }
+
 
     isSelected(id) {
         return this.state.selected.indexOf(id) !== -1;
     };
 
     render() {
-        const {data, order, orderBy, selected, rowsPerPage, page} = this.state;
+        const {data, order, mouseOver, orderBy, selected, rowsPerPage, page} = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
         return (
@@ -187,44 +204,51 @@ export class EnhancedTable extends React.Component {
 
                     <Table className="tb-table" aria-labelledby="tableTitle">
                         <EnhancedTableHead
-                                numSelected={selected.length}
-                                onSelectAllClick={this.handleSelectAllClick}
-                                rowCount={data.length}
-                            />
+                            numSelected={selected.length}
+                            onSelectAllClick={this.handleSelectAllClick}
+                            rowCount={data.length}
+                        />
                         <TableBody>
                             {stableSort(data, getSorting(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map(n => {
                                     const isSelected = this.isSelected(n.id);
+                                    const mouseOverClass = mouseOver === n.id ? "tb-mouse-over" : "tb-hidden";
                                     return (
                                         <TableRow
                                             hover
-                                            onClick={event => this.handleClick(event, n.id)}
+
                                             role="checkbox"
                                             aria-checked={isSelected}
                                             tabIndex={-1}
                                             key={n.id}
                                             selected={isSelected}
+                                            onMouseEnter={event => this.onMouseEnter(event, n.id)}
+                                            onMouseLeave={event => this.onMouseLeave(event, n.id)}
                                         >
                                             <TableCell padding="checkbox">
-                                                <Checkbox checked={isSelected}/>
+                                                <Checkbox checked={isSelected} onClick={event => this.handleClick(event, n.id)}/>
                                             </TableCell>
                                             <TableCell component="th" scope="row" padding="none">
                                                 {n.name}
                                             </TableCell>
                                             <TableCell component="th" scope="row" padding="none">
-                                                <Tooltip title="Edit">
-                                                    <IconButton aria-label="Edit">
+
+                                                <Tooltip title="Edit" >
+                                                    <IconButton className={mouseOverClass} aria-label="Edit">
                                                         <EditIcon/>
                                                     </IconButton>
                                                 </Tooltip>
+
+
                                             </TableCell>
                                             <TableCell component="th" scope="row" padding="none">
-                                                <Tooltip title="Delete">
-                                                    <IconButton aria-label="Delete">
+                                                <Tooltip title="Delete" className={mouseOverClass}>
+                                                    <IconButton className={mouseOverClass} aria-label="Delete">
                                                         <DeleteIcon/>
                                                     </IconButton>
                                                 </Tooltip>
+
                                             </TableCell>
                                         </TableRow>
                                     );
