@@ -54,7 +54,7 @@ const rows = [
     {id: 'name', numeric: false, disablePadding: true, label: 'Dessert (100g serving)'},
 ];
 
-class EnhancedTableHead extends React.Component {
+export class EnhancedTableHead extends React.Component {
     createSortHandler(property) {
         return event => {
             this.props.onRequestSort(event, property);
@@ -70,10 +70,10 @@ class EnhancedTableHead extends React.Component {
     };
 
     render() {
-        const {onSelectAllClick, data, rowsPerPage, page, order, orderBy, numSelected, rowCount} = this.props;
+        const {onSelectAllClick, numSelected, rowCount} = this.props;
         let highlight = numSelected > 0 ? "tb-highlight-light" : "";
         return (
-            <Toolbar className={"tb-space-bet"}>
+            <Toolbar className={"tb-left-align tb-wrapper tb-root"}>
                 <Checkbox className="color-green"
                           indeterminate={numSelected > 0 && numSelected < rowCount}
                           checked={numSelected === rowCount}
@@ -93,27 +93,13 @@ class EnhancedTableHead extends React.Component {
                         </Typography>
                     )}
                 </div>
-                <TablePagination
-                    component="div"
-                    count={data.length}
-                    rowsPerPage={rowsPerPage}
-                    rowsPerPageOptions={[]}
-                    page={page}
-                    backIconButtonProps={{
-                        'aria-label': 'Previous Page',
-                    }}
-                    nextIconButtonProps={{
-                        'aria-label': 'Next Page',
-                    }}
-                    onChangePage={this.handleChangePage}
-                />
             </Toolbar>
 
         );
     }
 }
 
-export default class EnhancedTable extends React.Component {
+export class EnhancedTable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -193,17 +179,6 @@ export default class EnhancedTable extends React.Component {
         return (
             <Paper className="tb-root" elevation={0} square={true}>
                 <div className="tb-wrapper">
-                    <EnhancedTableHead
-                        numSelected={selected.length}
-                        data={data}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        order={order}
-                        orderBy={orderBy}
-                        onSelectAllClick={this.handleSelectAllClick}
-                        onRequestSort={this.handleRequestSort}
-                        rowCount={data.length}
-                    />
                     <Divider/>
                     <Table className="tb-table" aria-labelledby="tableTitle">
                         <TableBody>
@@ -252,7 +227,20 @@ export default class EnhancedTable extends React.Component {
                         </TableBody>
                     </Table>
                 </div>
-
+                <TablePagination
+                    component="div"
+                    count={data.length}
+                    rowsPerPage={rowsPerPage}
+                    rowsPerPageOptions={[]}
+                    page={page}
+                    backIconButtonProps={{
+                        'aria-label': 'Previous Page',
+                    }}
+                    nextIconButtonProps={{
+                        'aria-label': 'Next Page',
+                    }}
+                    onChangePage={this.handleChangePage}
+                />
             </Paper>
         );
     }

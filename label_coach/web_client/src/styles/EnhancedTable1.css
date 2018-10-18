@@ -15,10 +15,11 @@
     flex: 1 1 100%;
 }
 
-.tb-space-bet{
-    justify-content: space-between;
-    padding-left: 12px !important;
-    padding-right: 12px !important;
+.tb-left-align{
+    justify-content: flex-start;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-left: -12px !important;
 }
 
 .tb-actions{
@@ -31,6 +32,7 @@
 
 .tb-root{
     width: 100%;
+    min-height: 48px !important;
 }
 
 .color-green{

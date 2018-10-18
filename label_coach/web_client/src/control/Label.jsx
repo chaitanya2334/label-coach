@@ -10,7 +10,9 @@ import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import Typography from "@material-ui/core/Typography";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import EnhancedTable from "./EnhancedTable";
+import {EnhancedTable, EnhancedTableHead} from "./EnhancedTable";
+import Divider from "@material-ui/core/Divider";
+import Paper from "@material-ui/core/Paper";
 
 class LabelP extends React.Component {
     constructor(props) {
@@ -27,14 +29,25 @@ class LabelP extends React.Component {
 
         return (
             <ExpansionPanel expanded={this.props.expanded} onChange={this.handleChange}>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
-                    <div className={"lbl-dot"} style={{backgroundColor: this.props.color}}/>
-                    <Typography>{this.props.name}</Typography>
-                    <Counter key={"c_" + this.props.id} count={count}/>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails className="remove-all-padding">
-                    <EnhancedTable/>
+                {this.props.expanded ? (
+                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
+                            <EnhancedTableHead
+                                numSelected={1}
+                                onSelectAllClick={this.handleSelectAllClick}
+                                rowCount={13}
+                            />
+                    </ExpansionPanelSummary>
+                ) : (
+                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
+                        <div className={"lbl-dot"} style={{backgroundColor: this.props.color}}/>
+                        <Typography>{this.props.name}</Typography>
+                        <Counter key={"c_" + this.props.id} count={count}/>
+                    </ExpansionPanelSummary>
+                )}
 
+                <ExpansionPanelDetails className="remove-all-padding">
+
+                    <EnhancedTable/>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
         )
