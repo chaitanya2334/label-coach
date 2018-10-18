@@ -1,0 +1,39 @@
+.tb-toolbar{
+}
+
+.tb-highlight-light{
+    color: palevioletred;
+    background-color: palevioletred;
+}
+
+.tb-highlight-normal{
+    color: red;
+    background-color: red;
+}
+
+.tb-spacer{
+    flex: 1 1 100%;
+}
+
+.tb-actions{
+    color: red;
+}
+
+.tb-title{
+    flex: 0 0 auto;
+}
+
+.tb-root{
+    width: 100%;
+}
+
+.color-green{
+    color: green !important;
+}
+
+.tb-table{
+}
+
+.tb-wrapper{
+    overflow-x: auto;
+}

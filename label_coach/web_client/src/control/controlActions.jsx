@@ -97,11 +97,11 @@ export function selectLabel(label){
     }
 }
 
-// toggle label doesnt turn off other labels
-export function toggleLabel(label) {
+export function expandLabel(label_id, state) {
     return {
-        type: 'TOGGLE_LABEL',
-        label_id: label.id,
+        type: 'EXPAND_LABEL',
+        label_id: label_id,
+        state: state,
     }
 }
 

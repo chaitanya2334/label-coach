@@ -91,7 +91,7 @@ class ToolBarP extends React.Component {
                                       size="small"><BrushIcon/></ToggleButton>
                         <ToggleButton disabled id="line" value="line" className="btn-small"
                                       size="small"><CreateIcon/></ToggleButton>
-                        <ToggleButton disabled id="poly" value="poly" className="btn-small" size="large"><FontAwesomeIcon
+                        <ToggleButton id="poly" value="poly" className="btn-small" size="large"><FontAwesomeIcon
                             className='icon-medium' icon={faDrawPolygon}/></ToggleButton>
                         <ToggleButton value="eraser" id="erazer" size="small">
                             <SvgIcon>

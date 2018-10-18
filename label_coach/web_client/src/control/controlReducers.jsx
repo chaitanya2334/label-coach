@@ -187,6 +187,7 @@ export function labels(labels = [], action) {
                     draft.push({
                                    id: draft.length,
                                    active: false,
+                                   expanded: false,
                                    name: label.name,
                                    poly_button: true,
                                    line_button: true,
@@ -225,7 +226,14 @@ export function labels(labels = [], action) {
             case 'UPDATE_ANN':
             case 'CANCEL_ANN':
             case 'TOGGLE_BUTTON':
-            case 'TOGGLE_LABEL':
+
+                draft[action.label_id] = labelReducer(draft[action.label_id], action);
+                return draft;
+
+            case 'EXPAND_LABEL':
+                for (let label of draft) {
+                    label.expanded = false;
+                }
 
                 draft[action.label_id] = labelReducer(draft[action.label_id], action);
                 return draft;
@@ -241,7 +249,7 @@ export function labels(labels = [], action) {
                 for (let label of draft) {
                     label.active = false;
                 }
-                draft[action.label_id] = labelReducer(draft[action.label_id], action)
+                draft[action.label_id] = labelReducer(draft[action.label_id], action);
                 return draft;
 
             default:
@@ -381,8 +389,8 @@ export function labelReducer(label, action) {
                 draft[action.button_type] = !draft[action.button_type];
                 return draft;
 
-            case 'TOGGLE_LABEL':
-                draft.active = !draft.active;
+            case 'EXPAND_LABEL':
+                draft.expanded = action.state;
                 return draft;
 
             case "SELECT_LABEL":

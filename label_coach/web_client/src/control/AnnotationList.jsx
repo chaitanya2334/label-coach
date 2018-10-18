@@ -10,7 +10,6 @@ export default class AnnotationListP extends React.Component {
 
     render() {
         let colorClass = "bg-color" + this.props.color;
-        let activeClass = this.props.active ? "active" : "";
         let rows = [];
         if (this.props.polygons.length > 0) {
             this.props.polygons
@@ -36,7 +35,7 @@ export default class AnnotationListP extends React.Component {
 
         return (
 
-            <ul className={"annotations list-group " + colorClass + " " + activeClass}>
+            <ul className={"annotations list-group " + colorClass + " active"}>
                 {rows}
             </ul>
 
