@@ -29,24 +29,13 @@ class LabelP extends React.Component {
 
         return (
             <ExpansionPanel expanded={this.props.expanded} onChange={this.handleChange}>
-                {this.props.expanded ? (
-                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
-                            <EnhancedTableHead
-                                numSelected={1}
-                                onSelectAllClick={this.handleSelectAllClick}
-                                rowCount={13}
-                            />
-                    </ExpansionPanelSummary>
-                ) : (
-                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
-                        <div className={"lbl-dot"} style={{backgroundColor: this.props.color}}/>
-                        <Typography>{this.props.name}</Typography>
-                        <Counter key={"c_" + this.props.id} count={count}/>
-                    </ExpansionPanelSummary>
-                )}
 
+                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
+                    <div className={"lbl-dot"} style={{backgroundColor: this.props.color}}/>
+                    <Typography>{this.props.name}</Typography>
+                    <Counter key={"c_" + this.props.id} count={count}/>
+                </ExpansionPanelSummary>
                 <ExpansionPanelDetails className="remove-all-padding">
-
                     <EnhancedTable/>
                 </ExpansionPanelDetails>
             </ExpansionPanel>

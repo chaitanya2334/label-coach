@@ -73,27 +73,32 @@ export class EnhancedTableHead extends React.Component {
         const {onSelectAllClick, numSelected, rowCount} = this.props;
         let highlight = numSelected > 0 ? "tb-highlight-light" : "";
         return (
-            <Toolbar className={"tb-left-align tb-wrapper tb-root"}>
-                <Checkbox className="color-green"
-                          indeterminate={numSelected > 0 && numSelected < rowCount}
-                          checked={numSelected === rowCount}
-                          onChange={onSelectAllClick}
-                />
-
-                <div className="tb-title">
-                    {numSelected > 0 ? (
-                        <Tooltip title="Delete">
-                            <IconButton aria-label="Delete">
-                                <DeleteIcon/>
-                            </IconButton>
-                        </Tooltip>
-                    ) : (
-                        <Typography variant="h6" id="tableTitle">
-
-                        </Typography>
-                    )}
-                </div>
-            </Toolbar>
+            <TableHead>
+                <TableRow>
+                    <TableCell padding="checkbox">
+                        <Checkbox className="color-green"
+                                  indeterminate={numSelected > 0 && numSelected < rowCount}
+                                  checked={numSelected === rowCount}
+                                  onChange={onSelectAllClick}
+                        />
+                    </TableCell>
+                    <TableCell component="th" scope="row" padding="none">
+                        {numSelected > 0 ? (
+                            <Tooltip title="Delete">
+                                <IconButton aria-label="Delete">
+                                    <DeleteIcon/>
+                                </IconButton>
+                            </Tooltip>
+                        ) : (
+                            <Typography variant="h6" id="tableTitle">
+                                Annotations
+                            </Typography>
+                        )}
+                    </TableCell >
+                    <TableCell component="th" scope="row" padding="none"/>
+                    <TableCell component="th" scope="row" padding="none"/>
+                </TableRow>
+            </TableHead>
 
         );
     }
@@ -179,8 +184,13 @@ export class EnhancedTable extends React.Component {
         return (
             <Paper className="tb-root" elevation={0} square={true}>
                 <div className="tb-wrapper">
-                    <Divider/>
+
                     <Table className="tb-table" aria-labelledby="tableTitle">
+                        <EnhancedTableHead
+                                numSelected={selected.length}
+                                onSelectAllClick={this.handleSelectAllClick}
+                                rowCount={data.length}
+                            />
                         <TableBody>
                             {stableSort(data, getSorting(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
