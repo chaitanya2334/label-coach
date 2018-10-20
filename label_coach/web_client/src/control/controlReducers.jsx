@@ -222,7 +222,8 @@ export function labels(labels = [], action) {
                                            points: eraser.points,
                                            selected: false
                                        })),
-                                   }
+                                   },
+                                   page: 0
                                });
                 }
                 return draft;
@@ -232,6 +233,11 @@ export function labels(labels = [], action) {
             case 'UPDATE_ANN':
             case 'CANCEL_ANN':
             case 'TOGGLE_BUTTON':
+            case "CHANGE_PAGE":
+            case 'SELECT_ANN':
+            case 'SELECT_ALL_ANN':
+            case 'DESELECT_ALL_ANN':
+            case 'DESELECT_ANN':
 
                 draft[action.label_id] = labelReducer(draft[action.label_id], action);
                 return draft;
@@ -305,6 +311,26 @@ export function annotationReducer(ann, action) {
                     }
                 }
                 return draft;
+
+            case 'SELECT_ANN':
+                draft[action.item_id].selected = true;
+                return draft;
+
+            case 'SELECT_ALL_ANN':
+                for (let ann of draft) {
+                    draft[ann.id].selected = true;
+                }
+                return draft;
+
+            case 'DESELECT_ANN':
+                draft[action.item_id].selected = false;
+                return draft;
+
+            case 'DESELECT_ALL_ANN':
+                for (let ann of draft) {
+                    draft[ann.id].selected = false;
+                }
+                return draft;
         }
     });
 }
@@ -330,7 +356,18 @@ export function labelReducer(label, action) {
             case 'LOCK_ALL_ANN':
             case 'UNLOCK_ANN':
             case 'UPDATE_ANN':
+            case 'SELECT_ANN':
+            case 'DESELECT_ANN':
                 draft.ann[action.ann_type] = annotationReducer(draft.ann[action.ann_type], action);
+                return draft;
+
+            case 'SELECT_ALL_ANN':
+            case 'DESELECT_ALL_ANN':
+                for (let ann_type in draft.ann) {
+                    if (draft.ann.hasOwnProperty(ann_type)) {
+                        draft.ann[ann_type] = annotationReducer(draft.ann[ann_type], action);
+                    }
+                }
                 return draft;
 
             case 'TOGGLE_BUTTON':
@@ -352,6 +389,9 @@ export function labelReducer(label, action) {
             case 'TOGGLE_Expand':
                 draft.areaexpand = !draft.areaexpand;
                 return;
+            case 'CHANGE_PAGE':
+                draft.page = action.page;
+                return draft;
 
             default:
                 return draft;

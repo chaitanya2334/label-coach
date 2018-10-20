@@ -29,6 +29,46 @@ export function setThumbnailBarVisibility(state) {
     }
 }
 
+export function selectAllAnnotations(label_id){
+    return {
+        type: 'SELECT_ALL_ANN',
+        label_id: label_id
+    }
+}
+
+export function deselectAllAnnotations(label_id){
+    return {
+        type: 'DESELECT_ALL_ANN',
+        label_id: label_id
+    }
+}
+
+export function changePage(label_id, page){
+    return{
+        type: 'CHANGE_PAGE',
+        label_id: label_id,
+        page: page,
+    }
+}
+
+export function selectAnnotation(label_id, ann_type, item_id){
+    return {
+        type: 'SELECT_ANN',
+        label_id: label_id,
+        ann_type: ann_type,
+        item_id: item_id,
+    }
+}
+
+export function deselectAnnotation(label_id, ann_type, item_id){
+    return {
+        type: 'DESELECT_ANN',
+        label_id: label_id,
+        ann_type: ann_type,
+        item_id: item_id,
+    }
+}
+
 export function addAnnotation(ann_type, label_id, args={}) {
     return {
         type: 'ADD_ANN',

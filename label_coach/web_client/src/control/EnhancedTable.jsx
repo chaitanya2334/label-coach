@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from "react-redux";
 import {withStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -18,13 +19,15 @@ import EditIcon from '@material-ui/icons/Edit';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import "../styles/EnhancedTable1.css"
 import Divider from "@material-ui/core/Divider";
-
-let counter = 0;
-
-function createData(name) {
-    counter += 1;
-    return {id: counter, name};
-}
+import {
+    changePage,
+    deselectAllAnnotations,
+    deselectAnnotation,
+    selectAllAnnotations,
+    selectAnnotation,
+    selectLabel
+} from "./controlActions";
+import {EnhancedTableHead} from "./EnhancedTableHead";
 
 function desc(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -50,133 +53,33 @@ function getSorting(order, orderBy) {
     return order === 'desc' ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 }
 
-const rows = [
-    {id: 'name', numeric: false, disablePadding: true, label: 'Dessert (100g serving)'},
-];
+class EnhancedTableP extends React.Component {
+    constructor(props) {
+        super(props);
+        this.order = 'asc';
+        this.orderBy = 'calories';
+        this.rowsPerPage = 5;
+        this.state = {
+            mouseOver: ""
+        };
 
-export class EnhancedTableHead extends React.Component {
-    createSortHandler(property) {
-        return event => {
-            this.props.onRequestSort(event, property);
-        }
+        this.handleChangePage = this.handleChangePage.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
     handleChangePage(event, page) {
-        this.setState({page});
+        this.props.changePage(page);
     };
 
-    handleChangeRowsPerPage(event) {
-        this.setState({rowsPerPage: event.target.value});
-    };
-
-    render() {
-        const {onSelectAllClick, numSelected, rowCount} = this.props;
-        let highlight = numSelected > 0 ? "tb-highlight-light" : "";
-        return (
-            <TableHead>
-                <TableRow>
-                    <TableCell padding="checkbox">
-                        <Checkbox className="color-green"
-                                  indeterminate={numSelected > 0 && numSelected < rowCount}
-                                  checked={numSelected === rowCount}
-                                  onChange={onSelectAllClick}
-                        />
-                    </TableCell>
-                    <TableCell component="th" scope="row" padding="none">
-                        {numSelected > 0 ? (
-                            <Typography color="inherit" variant="subtitle1">
-                                {numSelected} selected
-                            </Typography>
-                        ) : (
-                            <Typography variant="h6" id="tableTitle">
-                                Annotations
-                            </Typography>
-                        )}
-                    </TableCell>
-                    <TableCell component="th" scope="row" padding="none"/>
-                    <TableCell component="th" scope="row" padding="none">
-                        {numSelected > 0 ? (
-                            <Tooltip title="Delete">
-                                <IconButton aria-label="Delete">
-                                    <DeleteIcon/>
-                                </IconButton>
-                            </Tooltip>
-                        ) : ""}
-
-                    </TableCell>
-                </TableRow>
-            </TableHead>
-
-        );
-    }
-}
-
-export class EnhancedTable extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            order: 'asc',
-            orderBy: 'calories',
-            selected: [],
-            data: [
-                createData('Cupcake'),
-                createData('Donut'),
-                createData('Eclair'),
-                createData('Frozen yoghurt'),
-                createData('Gingerbread'),
-                createData('Honeycomb'),
-                createData('Ice cream sandwich'),
-                createData('Jelly Bean'),
-                createData('KitKat'),
-                createData('Lollipop'),
-                createData('Marsh'),
-                createData('Nougat'),
-                createData('Oreo'),
-            ],
-            page: 0,
-            rowsPerPage: 5,
-        };
-    }
-
-
-    handleRequestSort(event, property) {
-        const orderBy = property;
-        let order = 'desc';
-
-        if (this.state.orderBy === property && this.state.order === 'desc') {
-            order = 'asc';
-        }
-
-        this.setState({order, orderBy});
-    }
-
-    handleSelectAllClick(event) {
-        if (event.target.checked) {
-            this.setState(state => ({selected: state.data.map(n => n.id)}));
-            return;
-        }
-        this.setState({selected: []});
-    }
 
     handleClick(event, id) {
-        const {selected} = this.state;
+        const {data, selected} = this.props;
         const selectedIndex = selected.indexOf(id);
-        let newSelected = [];
-
         if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, id);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selected.slice(0, selectedIndex),
-                selected.slice(selectedIndex + 1),
-            );
+            this.props.select(data[id].ann_type, data[id].item_id);
+        } else {
+            this.props.deselect(data[id].ann_type, data[id].item_id);
         }
-
-        this.setState({selected: newSelected});
     };
 
     onMouseEnter(event, id) {
@@ -191,12 +94,13 @@ export class EnhancedTable extends React.Component {
 
 
     isSelected(id) {
-        return this.state.selected.indexOf(id) !== -1;
+        return this.props.selected.indexOf(id) !== -1;
     };
 
     render() {
-        const {data, order, mouseOver, orderBy, selected, rowsPerPage, page} = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
+        const {data, selected, page} = this.props;
+        const {mouseOver} = this.state;
+        const emptyRows = this.rowsPerPage - Math.min(this.rowsPerPage, data.length - page * this.rowsPerPage);
 
         return (
             <Paper className="tb-root" elevation={0} square={true}>
@@ -204,20 +108,19 @@ export class EnhancedTable extends React.Component {
 
                     <Table className="tb-table" aria-labelledby="tableTitle">
                         <EnhancedTableHead
+                            label_id={this.props.label_id}
                             numSelected={selected.length}
-                            onSelectAllClick={this.handleSelectAllClick}
                             rowCount={data.length}
                         />
                         <TableBody>
-                            {stableSort(data, getSorting(order, orderBy))
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            {stableSort(data, getSorting(this.order, this.orderBy))
+                                .slice(page * this.rowsPerPage, page * this.rowsPerPage + this.rowsPerPage)
                                 .map(n => {
                                     const isSelected = this.isSelected(n.id);
                                     const mouseOverClass = mouseOver === n.id ? "tb-mouse-over" : "tb-hidden";
                                     return (
                                         <TableRow
                                             hover
-
                                             role="checkbox"
                                             aria-checked={isSelected}
                                             tabIndex={-1}
@@ -227,14 +130,15 @@ export class EnhancedTable extends React.Component {
                                             onMouseLeave={event => this.onMouseLeave(event, n.id)}
                                         >
                                             <TableCell padding="checkbox">
-                                                <Checkbox checked={isSelected} onClick={event => this.handleClick(event, n.id)}/>
+                                                <Checkbox checked={isSelected}
+                                                          onClick={event => this.handleClick(event, n.id)}/>
                                             </TableCell>
                                             <TableCell component="th" scope="row" padding="none">
                                                 {n.name}
                                             </TableCell>
                                             <TableCell component="th" scope="row" padding="none">
 
-                                                <Tooltip title="Edit" >
+                                                <Tooltip title="Edit">
                                                     <IconButton className={mouseOverClass} aria-label="Edit">
                                                         <EditIcon/>
                                                     </IconButton>
@@ -264,7 +168,7 @@ export class EnhancedTable extends React.Component {
                 <TablePagination
                     component="div"
                     count={data.length}
-                    rowsPerPage={rowsPerPage}
+                    rowsPerPage={this.rowsPerPage}
                     rowsPerPageOptions={[]}
                     page={page}
                     backIconButtonProps={{
@@ -279,3 +183,62 @@ export class EnhancedTable extends React.Component {
         );
     }
 }
+
+// ---------- Container ----------
+function collectAnnotation(anns) {
+    let ret = [];
+    let i = 0;
+    for (let ann_type in anns) {
+        if (anns.hasOwnProperty(ann_type)) {
+            for (let ann of anns[ann_type]) {
+                ret.push({
+                             id: i,
+                             name: ann.text,
+                             selected: ann.selected,
+                             ann_type: ann_type,
+                             item_id: ann.id
+                         });
+                i++;
+            }
+        }
+    }
+    return ret;
+}
+
+function collectSelected(data) {
+    let ret = [];
+    for (let item of data) {
+        if (item.selected) {
+            ret.push(item.id);
+        }
+    }
+    return ret;
+}
+
+function mapStateToProps(state, ownProps) {
+    let data = collectAnnotation(state.labels[ownProps.label_id].ann);
+    return {
+        data: data,
+        selected: collectSelected(data),
+        page: state.labels[ownProps.label_id].page
+    }
+}
+
+function mapDispatchToProps(dispatch, ownProps) {
+    return {
+        select: (ann_type, item_id) => {
+            dispatch(selectAnnotation(ownProps.label_id, ann_type, item_id))
+        },
+        deselect: (ann_type, item_id) => {
+            dispatch(deselectAnnotation(ownProps.label_id, ann_type, item_id))
+        },
+        changePage: (page) => {
+            dispatch(changePage(ownProps.label_id, page));
+        }
+    }
+}
+
+export const EnhancedTable = connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(EnhancedTableP);

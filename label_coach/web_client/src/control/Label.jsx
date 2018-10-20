@@ -36,7 +36,7 @@ class LabelP extends React.Component {
                     <Counter key={"c_" + this.props.id} count={count}/>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails className="remove-all-padding">
-                    <EnhancedTable/>
+                    <EnhancedTable label_id={this.props.id}/>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
         )

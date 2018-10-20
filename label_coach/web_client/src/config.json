@@ -13,10 +13,10 @@
         "polygons": [],
         "brushes": [],
         "erasers": [],
-        "selected": [],
-        "page": 0,
-        "rowsPerPage": 5
-      }
+        "selected": []
+      },
+      "page": 0,
+      "rowsPerPage": 5
     },
     {
       "id": 1,
@@ -30,10 +30,10 @@
         "lines": [],
         "polygons": [],
         "brushes": [],
-        "erasers": [],
-        "page": 0,
-        "rowsPerPage": 5
-      }
+        "erasers": []
+      },
+      "page": 0,
+      "rowsPerPage": 5
     },
     {
       "id": 2,
@@ -47,10 +47,10 @@
         "lines": [],
         "polygons": [],
         "brushes": [],
-        "erasers": [],
-        "page": 0,
-        "rowsPerPage": 5
-      }
+        "erasers": []
+      },
+      "page": 0,
+      "rowsPerPage": 5
     },
     {
       "id": 3,
@@ -64,10 +64,10 @@
         "lines": [],
         "polygons": [],
         "brushes": [],
-        "erasers": [],
-        "page": 0,
-        "rowsPerPage": 5
-      }
+        "erasers": []
+      },
+      "page": 0,
+      "rowsPerPage": 5
     }
   ]
 }
