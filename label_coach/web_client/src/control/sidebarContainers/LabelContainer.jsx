@@ -17,7 +17,7 @@ export class LabelContainerP extends React.Component {
                 rows.push(
                     <Label key={label.id} id={label.id} name={label.name} color={label.color} expanded={label.expanded}
                            lineButtonState={label.line_button} polyButtonState={label.poly_button}
-                           polygons={label.polygons} lines={label.lines}/>
+                           polygons={label.ann.polygons} lines={label.ann.lines}/>
                 );
             });
         }

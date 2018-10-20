@@ -8,10 +8,15 @@
       "expanded": false,
       "line_button": true,
       "poly_button": true,
-      "lines": [],
-      "polygons": [],
-      "brushes": [],
-      "erasers": []
+      "ann": {
+        "lines": [],
+        "polygons": [],
+        "brushes": [],
+        "erasers": [],
+        "selected": [],
+        "page": 0,
+        "rowsPerPage": 5
+      }
     },
     {
       "id": 1,
@@ -21,10 +26,14 @@
       "expanded": false,
       "line_button": true,
       "poly_button": true,
-      "lines": [],
-      "polygons": [],
-      "brushes": [],
-      "erasers": []
+      "ann": {
+        "lines": [],
+        "polygons": [],
+        "brushes": [],
+        "erasers": [],
+        "page": 0,
+        "rowsPerPage": 5
+      }
     },
     {
       "id": 2,
@@ -34,10 +43,14 @@
       "expanded": false,
       "line_button": true,
       "poly_button": true,
-      "lines": [],
-      "polygons": [],
-      "brushes": [],
-      "erasers": []
+      "ann": {
+        "lines": [],
+        "polygons": [],
+        "brushes": [],
+        "erasers": [],
+        "page": 0,
+        "rowsPerPage": 5
+      }
     },
     {
       "id": 3,
@@ -47,10 +60,14 @@
       "expanded": false,
       "line_button": true,
       "poly_button": true,
-      "lines": [],
-      "polygons": [],
-      "brushes": [],
-      "erasers": []
+      "ann": {
+        "lines": [],
+        "polygons": [],
+        "brushes": [],
+        "erasers": [],
+        "page": 0,
+        "rowsPerPage": 5
+      }
     }
   ]
 }

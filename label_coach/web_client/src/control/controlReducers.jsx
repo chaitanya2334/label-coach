@@ -192,31 +192,37 @@ export function labels(labels = [], action) {
                                    poly_button: true,
                                    line_button: true,
                                    color: label.color,
-                                   polygons: label.polygons.map((polygon, index) => ({
-                                       id: index,
-                                       drawState: "read-only",
-                                       text: polygon.text,
-                                       points: polygon.points
-                                   })),
-                                   lines: label.lines.map((line, index) => ({
-                                       id: index,
-                                       drawState: "read-only",
-                                       text: line.text,
-                                       points: line.points
-                                   })),
-                                   brushes: label.brushes.map((brush, index) => ({
-                                       id: index,
-                                       drawState: "read-only",
-                                       text: brush.text,
-                                       points: brush.points,
-                                       brush_radius: brush.brush_radius
-                                   })),
-                                   erasers: label.erasers.map((eraser, index) => ({
-                                       id: index,
-                                       drawState: "read-only",
-                                       text: eraser.text,
-                                       points: eraser.points
-                                   })),
+                                   ann: {
+                                       polygons: label.polygons.map((polygon, index) => ({
+                                           id: index,
+                                           drawState: "read-only",
+                                           text: polygon.text,
+                                           points: polygon.points,
+                                           selected: false,
+                                       })),
+                                       lines: label.lines.map((line, index) => ({
+                                           id: index,
+                                           drawState: "read-only",
+                                           text: line.text,
+                                           points: line.points,
+                                           selected: false,
+                                       })),
+                                       brushes: label.brushes.map((brush, index) => ({
+                                           id: index,
+                                           drawState: "read-only",
+                                           text: brush.text,
+                                           points: brush.points,
+                                           brush_radius: brush.brush_radius,
+                                           selected: false,
+                                       })),
+                                       erasers: label.erasers.map((eraser, index) => ({
+                                           id: index,
+                                           drawState: "read-only",
+                                           text: eraser.text,
+                                           points: eraser.points,
+                                           selected: false
+                                       })),
+                                   }
                                });
                 }
                 return draft;
@@ -262,30 +268,40 @@ export function labels(labels = [], action) {
 }
 
 export function annotationReducer(ann, action) {
+    //ann_type can be polygons, lines, brushes, or erasers.
+    // This reducer handles the full array of a single type of annotations
     return produce(ann, draft => {
         switch (action.type) {
             case 'ADD_ANN':
-                draft.text = action.ann_type + draft.id;
-                draft.points = [];
-                draft.drawState = "create";
+                let newAnn = {id: draft.length};
+                newAnn.text = action.ann_type + newAnn.id;
+                newAnn.points = [];
+                newAnn.drawState = "create";
                 for (let key in action.args) {
-                    draft[key] = action.args[key];
+                    newAnn[key] = newAnn.args[key];
+                }
+                draft.push(newAnn);
+                return draft;
+
+            case 'LOCK_ALL_ANN':
+                for (let ann of draft) {
+                    draft[ann.id].drawState = "read-only";
                 }
                 return draft;
 
             case 'LOCK_ANN':
-                draft.drawState = "read-only";
+                draft[action.item_id].drawState = "read-only";
                 return draft;
 
             case 'UNLOCK_ANN':
-                draft.drawState = "edit";
+                draft[action.item_id].drawState = "edit";
                 return draft;
 
             case 'UPDATE_ANN':
-                if (draft.drawState === "edit" || draft.drawState === "create") {
-                    draft.points = action.points;
+                if (draft[action.item_id].drawState === "edit" || draft[action.item_id].drawState === "create") {
+                    draft[action.item_id].points = action.points;
                     for (let key in action.args) {
-                        draft[key] = action.args[key];
+                        draft[action.item_id][key] = action.args[key];
                     }
                 }
                 return draft;
@@ -310,79 +326,11 @@ export function labelReducer(label, action) {
     return produce(label, draft => {
         switch (action.type) {
             case 'ADD_ANN':
-                switch (action.ann_type) {
-                    case "polygon":
-                        draft.polygons.push(annotationReducer({id: label.polygons.length}, action));
-                        break;
-                    case "line":
-                        draft.lines.push(annotationReducer({id: label.lines.length}, action));
-                        break;
-                    case "brush":
-                        draft.brushes.push(annotationReducer({id: label.brushes.length}, action));
-                        break;
-                    case "eraser":
-                        draft.erasers.push(annotationReducer({id: label.erasers.length}, action));
-                        break;
-                }
-                return draft;
-
-            case 'LOCK_ALL_ANN':
-                let subAction = Object.assign({}, action);
-                subAction.type = "LOCK_ANN";
-                switch (action.ann_type) {
-                    case "line":
-                        for (let line of draft.lines) {
-                            draft.lines[line.id] = annotationReducer(draft.lines[line.id], subAction);
-                        }
-                        return draft;
-                    case "polygon":
-                        for (let polygon of draft.polygons) {
-                            draft.polygons[polygon.id] = annotationReducer(draft.polygons[polygon.id], subAction);
-                        }
-                        return draft;
-                    case "brush":
-                        for (let brush of draft.brushes) {
-                            draft.brushes[brush.id] = annotationReducer(draft.brushes[brush.id], subAction);
-                        }
-                        return draft;
-                    case "eraser":
-                        for (let eraser of draft.erasers) {
-                            draft.erasers[eraser.id] = annotationReducer(draft.erasers[eraser.id], subAction);
-                        }
-                        return draft;
-                    default:
-                        return draft;
-                }
-
             case 'LOCK_ANN':
+            case 'LOCK_ALL_ANN':
             case 'UNLOCK_ANN':
             case 'UPDATE_ANN':
-                switch (action.ann_type) {
-                    case "polygon":
-                        draft.polygons[action.item_id] =
-                            annotationReducer(draft.polygons[action.item_id], action);
-                        break;
-                    case "line":
-                        draft.lines[action.item_id] = annotationReducer(draft.lines[action.item_id], action);
-                        break;
-                    case "brush":
-                        draft.brushes[action.item_id] = annotationReducer(draft.brushes[action.item_id], action);
-                        break;
-                    case "eraser":
-                        draft.erasers[action.item_id] = annotationReducer(draft.erasers[action.item_id], action);
-                        break;
-                }
-                return draft;
-
-            case 'CANCEL_ANN':
-                switch (action.ann_type) {
-                    case "polygon":
-                        draft.polygons.pop();
-                        break;
-                    case "line":
-                        draft.lines.pop();
-                        break;
-                }
+                draft.ann[action.ann_type] = annotationReducer(draft.ann[action.ann_type], action);
                 return draft;
 
             case 'TOGGLE_BUTTON':

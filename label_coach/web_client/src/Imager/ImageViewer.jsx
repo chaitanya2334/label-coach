@@ -241,14 +241,14 @@ class ImageViewerP extends React.Component {
     onDragEnd(event) {
         if (this.activeBrush) {
             this.activeBrush.onMouseDragEnd();
-            this.props.addNewStroke("brush", this.activeBrush.label.id, this.activeBrush.id, this.activeBrush.brushSize,
+            this.props.addNewStroke("brushes", this.activeBrush.label.id, this.activeBrush.id, this.activeBrush.brushSize,
                                     this.activeBrush.getImagePoints());
             this.brushes.push(this.activeBrush);
             this.activeBrush = null;
         }
         if (this.activeEraser) {
             this.activeEraser.onMouseDragEnd();
-            this.props.addNewStroke("eraser", this.activeEraser.label.id, this.activeEraser.id, this.activeEraser.size,
+            this.props.addNewStroke("erasers", this.activeEraser.label.id, this.activeEraser.id, this.activeEraser.size,
                                     this.activeEraser.getImagePoints());
             this.erasers.push(this.activeEraser);
             this.activeEraser = null;
@@ -438,25 +438,25 @@ function mapLabelsToAnns(labels) {
     let brushes = [];
     let erasers = [];
     for (let label of labels) {
-        let newPolygons = label.polygons.map((poly) => {
+        let newPolygons = label.ann.polygons.map((poly) => {
             let newPoly = Object.assign({}, poly);
             newPoly.label = label;
             newPoly.poly_id = poly.id;
             return newPoly;
         });
-        let newLines = label.lines.map((line) => {
+        let newLines = label.ann.lines.map((line) => {
             let newLine = Object.assign({}, line);
             newLine.label_id = label.id;
             newLine.line_id = line.id;
             return newLine;
         });
-        let newBrushes = label.brushes.map((brush) => {
+        let newBrushes = label.ann.brushes.map((brush) => {
             let newBrush = Object.assign({}, brush);
             newBrush.label = label;
             newBrush.id = brush.id;
             return newBrush;
         });
-        let newErasers = label.erasers.map((eraser) => {
+        let newErasers = label.ann.erasers.map((eraser) => {
             let newEraser = Object.assign({}, eraser);
             newEraser.label = label;
             newEraser.eraser_id = eraser.id;
@@ -526,23 +526,23 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         addPolygon: (label_id, poly_id, points) => {
-            dispatch(addAnnotation("polygon", label_id));
-            dispatch(updateAnnotation("polygon", label_id, poly_id, points));
-            dispatch(lockAnnotation("polygon", label_id, poly_id));
+            dispatch(addAnnotation("polygons", label_id));
+            dispatch(updateAnnotation("polygons", label_id, poly_id, points));
+            dispatch(lockAnnotation("polygons", label_id, poly_id));
             dispatch(setSaveStatus("dirty"));
         },
         updatePolygon: (label_id, poly_id, points) => {
-            dispatch(updateAnnotation("polygon", label_id, poly_id, points));
+            dispatch(updateAnnotation("polygons", label_id, poly_id, points));
         },
         lockPolygon: (label_id, poly_id) => {
-            dispatch(lockAnnotation("polygon", label_id, poly_id));
+            dispatch(lockAnnotation("polygons", label_id, poly_id));
             dispatch(setSaveStatus("dirty"));
         },
         updateLine: (label_id, line_id, points) => {
-            dispatch(updateAnnotation("line", label_id, line_id, points));
+            dispatch(updateAnnotation("lines", label_id, line_id, points));
         },
         lockLine: (label_id, line_id) => {
-            dispatch(lockAnnotation("line", label_id, line_id));
+            dispatch(lockAnnotation("lines", label_id, line_id));
             dispatch(setSaveStatus("dirty"));
         },
         addNewStroke: (ann_type, label_id, brush_id, brush_radius, points) => {
