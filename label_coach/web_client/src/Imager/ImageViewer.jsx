@@ -330,7 +330,7 @@ class ImageViewerP extends React.Component {
                 this.activeEraser = new Eraser(this.svgOverlay,
                                                this.viewer,
                                                activeLabel,
-                                               activeLabel.erasers.length,
+                                               activeLabel.ann.erasers.length,
                                                this.props.toolRadius,
                                                this.zoom);
                 break;
@@ -338,7 +338,7 @@ class ImageViewerP extends React.Component {
                 this.activeBrush = new Brush(this.svgOverlay,
                                              this.viewer,
                                              activeLabel,
-                                             activeLabel.brushes.length,
+                                             activeLabel.ann.brushes.length,
                                              this.props.toolRadius,
                                              this.zoom);
                 break;
@@ -346,11 +346,11 @@ class ImageViewerP extends React.Component {
                 this.activeLine = new Line(this.svgOverlay,
                                            this.viewer,
                                            activeLabel,
-                                           activeLabel.lines.length,  // TODO pass the label datastructure directly
+                                           activeLabel.ann.lines.length,  // TODO pass the label datastructure directly
                                            this.zoom);
                 break;
             case "poly":
-                let poly_id = activeLabel.polygons.length;
+                let poly_id = activeLabel.ann.polygons.length;
                 this.activePolygon = new Polygon(this.svgOverlay,
                                                  this.viewer,
                                                  activeLabel,
