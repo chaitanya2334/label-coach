@@ -193,21 +193,21 @@ export function labels(labels = [], action) {
                                    line_button: true,
                                    color: label.color,
                                    ann: {
-                                       polygons: label.polygons.map((polygon, index) => ({
+                                       polygons: label.ann.polygons.map((polygon, index) => ({
                                            id: index,
                                            drawState: "read-only",
                                            text: polygon.text,
                                            points: polygon.points,
                                            selected: false,
                                        })),
-                                       lines: label.lines.map((line, index) => ({
+                                       lines: label.ann.lines.map((line, index) => ({
                                            id: index,
                                            drawState: "read-only",
                                            text: line.text,
                                            points: line.points,
                                            selected: false,
                                        })),
-                                       brushes: label.brushes.map((brush, index) => ({
+                                       brushes: label.ann.brushes.map((brush, index) => ({
                                            id: index,
                                            drawState: "read-only",
                                            text: brush.text,
@@ -215,7 +215,7 @@ export function labels(labels = [], action) {
                                            brush_radius: brush.brush_radius,
                                            selected: false,
                                        })),
-                                       erasers: label.erasers.map((eraser, index) => ({
+                                       erasers: label.ann.erasers.map((eraser, index) => ({
                                            id: index,
                                            drawState: "read-only",
                                            text: eraser.text,

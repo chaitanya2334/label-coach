@@ -302,10 +302,7 @@ export function fetchLabels(label_id) {
                 labels = labels.map(label => ({
                     name: label.name,
                     color: label.color,
-                    polygons: label.polygons,
-                    lines: label.lines,
-                    brushes: label.brushes,
-                    erasers: label.erasers,
+                    ann: label.ann
                 }));
                 dispatch(replaceLabels(labels));
                 dispatch(fetchLabelMeta(label_id, (file) => {

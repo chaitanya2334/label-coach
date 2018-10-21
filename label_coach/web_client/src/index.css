@@ -4,3 +4,7 @@ body {
     overflow: hidden;
     font-family: sans-serif;
 }
+
+button:focus {
+    outline: none!important;
+}

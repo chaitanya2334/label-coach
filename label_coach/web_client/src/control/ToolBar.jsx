@@ -159,7 +159,7 @@ function mapDispatchToProps(dispatch) {
             dispatch(setHeader(state));
         },
         save: () => {
-            dispatch(lockAllAnnotations("brush"));
+            dispatch(lockAllAnnotations("brushes"));
             dispatch(setSaveStatus("dirty"));
         }
     };
