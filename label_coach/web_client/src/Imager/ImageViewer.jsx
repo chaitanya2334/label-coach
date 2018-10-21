@@ -355,6 +355,7 @@ class ImageViewerP extends React.Component {
                                                  this.viewer,
                                                  activeLabel,
                                                  "create",
+                                                 false,
                                                  poly_id,  // TODO pass the label datastructure directly
                                                  this.zoom, this.props.addPolygon);
                 break;

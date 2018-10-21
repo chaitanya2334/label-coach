@@ -30,23 +30,32 @@ export default class Polygon extends Shape {
             this.inside = false;
         });
         this.complete = false;
-        this.drawState = drawState;
+        this.drawState = selected ? "selected" : drawState;
         this.label = label;
         this.poly_id = poly_id;
-
 
         this.CLOSE_THRESH = 0.001;
         this.minDist = 0.001;
         this.addPolygon = addPolygon;
-        this.stateToDotColor = {"create": this.label.color, "edit": 'red', "read_only": 'blue'}
-
+        this.stateToDotColor = {
+            "create": this.label.color,
+            "edit": 'red',
+            "read_only": this.label.color,
+            "selected": 'red'
+        };
+        this.stateToLineColor = {
+            "create": this.label.color,
+            "edit": 'red',
+            "read_only": this.label.color,
+            "selected": 'red'
+        };
     }
 
     setDrawState(state) {
         this.drawState = state;
     }
 
-    onEnter(){
+    onEnter() {
 
     }
 
@@ -98,7 +107,7 @@ export default class Polygon extends Shape {
         return sqr(v.x - w.x) + sqr(v.y - w.y) < this.minDist
     }
 
-    setState(state){
+    setState(state) {
         switch (state) {
             case "edit":
                 this.potentialDot = new Dot(this.overlay, this.viewer, this, this.dots.length, null, this.zoom, true);
@@ -298,6 +307,12 @@ export default class Polygon extends Shape {
 
     updatePolygon(vpPoint) {
         let points = "";
+        this.d3obj.attr('stroke', this.stateToLineColor[this.drawState]);
+        if(this.drawState === "selected") {
+            this.d3obj.attr('stroke-dasharray', "0.004");
+        }else{
+            this.d3obj.attr('stroke-dasharray', "");
+        }
         for (let i = 0; i < this.dots.length; i++) {
             this.dots[i].setColor(this.stateToDotColor[this.drawState]);
             let p = this.dots[i].p;
