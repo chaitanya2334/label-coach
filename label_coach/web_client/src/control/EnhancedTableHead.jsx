@@ -24,7 +24,7 @@ import {
     deselectAnnotation,
     selectAllAnnotations,
     selectAnnotation,
-    selectLabel
+    selectLabel, setSaveStatus
 } from "./controlActions";
 
 
@@ -45,22 +45,22 @@ class EnhancedTableHeadP extends React.Component {
 
     render() {
 
-        let highlight = this.props.numSelected > 0 ? "tb-highlight-light" : "";
+        let highlight = this.props.selected.length > 0 ? "tb-highlight-light" : "";
         return (
             <TableHead>
                 <TableRow>
                     <TableCell padding="checkbox">
                         <Checkbox className="color-green"
-                                  indeterminate={this.props.numSelected > 0 &&
-                                  this.props.numSelected < this.props.rowCount}
-                                  checked={this.props.numSelected === this.props.rowCount}
+                                  indeterminate={this.props.selected.length > 0 &&
+                                  this.props.selected.length < this.props.rowCount}
+                                  checked={this.props.selected.length === this.props.rowCount}
                                   onChange={this.handleSelectAllClick}
                         />
                     </TableCell>
                     <TableCell component="th" scope="row" padding="none">
-                        {this.props.numSelected > 0 ? (
+                        {this.props.selected.length > 0 ? (
                             <Typography color="inherit" variant="subtitle1">
-                                {this.props.numSelected} selected
+                                {this.props.selected.length} selected
                             </Typography>
                         ) : (
                             <Typography variant="h6" id="tableTitle">
@@ -70,9 +70,9 @@ class EnhancedTableHeadP extends React.Component {
                     </TableCell>
                     <TableCell component="th" scope="row" padding="none"/>
                     <TableCell component="th" scope="row" padding="none">
-                        {this.props.numSelected > 0 ? (
+                        {this.props.selected.length > 0 ? (
                             <Tooltip title="Delete">
-                                <IconButton aria-label="Delete">
+                                <IconButton aria-label="Delete" onClick={event => this.props.onDelete(event, this.props.selected)}>
                                     <DeleteIcon/>
                                 </IconButton>
                             </Tooltip>
@@ -104,7 +104,8 @@ function mapDispatchToProps(dispatch, ownProps) {
             dispatch(selectAnnotation(ownProps.label_id, ownProps.ann_type, ownProps.item_id))
         },
         deselect: () => {
-            dispatch(deselectAnnotation(ownProps.label_id, ownProps.ann_type, ownProps.item_id))
+            dispatch(deselectAnnotation(ownProps.label_id, ownProps.ann_type, ownProps.item_id));
+
         }
     }
 }

@@ -20,12 +20,12 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import "../styles/EnhancedTable1.css"
 import Divider from "@material-ui/core/Divider";
 import {
-    changePage,
+    changePage, deleteAnnotation,
     deselectAllAnnotations,
     deselectAnnotation,
     selectAllAnnotations,
     selectAnnotation,
-    selectLabel
+    selectLabel, setSaveStatus, unlockAnnotation
 } from "./controlActions";
 import {EnhancedTableHead} from "./EnhancedTableHead";
 
@@ -69,7 +69,7 @@ class EnhancedTableP extends React.Component {
 
     handleChangePage(event, page) {
         this.props.changePage(page);
-    };
+    }
 
 
     handleClick(event, id) {
@@ -80,7 +80,7 @@ class EnhancedTableP extends React.Component {
         } else {
             this.props.deselect(data[id].ann_type, data[id].item_id);
         }
-    };
+    }
 
     onMouseEnter(event, id) {
         this.setState({mouseOver: id});
@@ -89,6 +89,17 @@ class EnhancedTableP extends React.Component {
     onMouseLeave(event, id) {
         if (this.state.mouseOver === id) {
             this.setState({mouseOver: ""});
+        }
+    }
+
+    onEdit(event, id){
+        this.props.onEdit(id);
+    }
+
+    onDelete(event, ids){
+        let {data} = this.props;
+        for (let id of ids) {
+            this.props.delete(data[id].ann_type, data[id].item_id);
         }
     }
 
@@ -109,7 +120,8 @@ class EnhancedTableP extends React.Component {
                     <Table className="tb-table" aria-labelledby="tableTitle">
                         <EnhancedTableHead
                             label_id={this.props.label_id}
-                            numSelected={selected.length}
+                            selected={selected}
+                            onDelete={(event, ids)=>{this.onDelete(event, ids)}}
                             rowCount={data.length}
                         />
                         <TableBody>
@@ -139,7 +151,8 @@ class EnhancedTableP extends React.Component {
                                             <TableCell component="th" scope="row" padding="none">
 
                                                 <Tooltip title="Edit">
-                                                    <IconButton className={mouseOverClass} aria-label="Edit">
+                                                    <IconButton className={mouseOverClass} aria-label="Edit"
+                                                                onClick={event => this.onEdit(event, n.id)}>
                                                         <EditIcon/>
                                                     </IconButton>
                                                 </Tooltip>
@@ -148,7 +161,8 @@ class EnhancedTableP extends React.Component {
                                             </TableCell>
                                             <TableCell component="th" scope="row" padding="none">
                                                 <Tooltip title="Delete" className={mouseOverClass}>
-                                                    <IconButton className={mouseOverClass} aria-label="Delete">
+                                                    <IconButton className={mouseOverClass} aria-label="Delete"
+                                                                onClick={event => this.onDelete(event, [n.id])}>
                                                         <DeleteIcon/>
                                                     </IconButton>
                                                 </Tooltip>
@@ -234,6 +248,14 @@ function mapDispatchToProps(dispatch, ownProps) {
         },
         changePage: (page) => {
             dispatch(changePage(ownProps.label_id, page));
+        },
+        edit: (ann_type, item_id) =>{
+            dispatch(unlockAnnotation(ann_type, ownProps.label_id, item_id));
+        },
+        delete: (ann_type, item_id) =>{
+            dispatch(deleteAnnotation(ann_type, ownProps.label_id, item_id));
+            dispatch(setSaveStatus("dirty"));
+
         }
     }
 }

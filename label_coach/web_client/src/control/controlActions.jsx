@@ -114,6 +114,15 @@ export function updateAnnotation(ann_type, label_id, item_id, points, args={}) {
     }
 }
 
+export function deleteAnnotation(ann_type, label_id, item_id){
+    return {
+        type: 'DELETE_ANN',
+        ann_type: ann_type,
+        label_id: label_id,
+        item_id: item_id,
+    }
+}
+
 export function cancelAnnotation(ann_type, label_id) {
     return {
         type: 'CANCEL_ANN',

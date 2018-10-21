@@ -1,5 +1,11 @@
 import produce from "immer";
 
+Array.prototype.remove = function (from, to) {
+    var rest = this.slice((to || from) + 1 || this.length);
+    this.length = from < 0 ? this.length + from : from;
+    return this.push.apply(this, rest);
+};
+
 export function tools(tools = {
     "brush": {},
     "eraser": {},
@@ -70,23 +76,22 @@ export function rightBar(rightBar = "", action) {
 }
 
 
-export function saveIndicator(saveIndicator = {}, action) {
-    switch (action.type) {
-        case 'EDIT_SAVE_INDICATOR_TEXT':
-            return produce(saveIndicator, draftState => {
-                draftState.text = action.text
-            });
-        case 'SET_SAVE_STATUS':
-            return produce(saveIndicator, draftState => {
-                draftState.status = action.status
-            });
-        case 'SET_LAST_UPDATED':
-            return produce(saveIndicator, draftState => {
-                draftState.lastUpdated = action.date;
-            });
-        default:
-            return saveIndicator;
-    }
+export function saveIndicator(saveIndicator = {text: "", status: "done", lastUpdated: null}, action) {
+    return produce(saveIndicator, draft => {
+        switch (action.type) {
+            case 'EDIT_SAVE_INDICATOR_TEXT':
+                draft.text = action.text;
+                return draft;
+            case 'SET_SAVE_STATUS':
+                draft.status = action.status;
+                return draft;
+            case 'SET_LAST_UPDATED':
+                draft.lastUpdated = action.date;
+                return draft;
+            default:
+                return draft;
+        }
+    });
 }
 
 export function imageReducer(image, action) {
@@ -230,6 +235,7 @@ export function labels(labels = [], action) {
             case 'ADD_ANN':
             case 'LOCK_ANN':
             case 'UNLOCK_ANN':
+            case 'DELETE_ANN':
             case 'UPDATE_ANN':
             case 'CANCEL_ANN':
             case 'TOGGLE_BUTTON':
@@ -279,7 +285,8 @@ export function annotationReducer(ann, action) {
     return produce(ann, draft => {
         switch (action.type) {
             case 'ADD_ANN':
-                let newAnn = {id: draft.length};
+                let lastAnnId = draft.length > 0 ? draft[draft.length - 1].id : -1;
+                let newAnn = {id: lastAnnId + 1};
                 newAnn.text = action.ann_type + newAnn.id;
                 newAnn.points = [];
                 newAnn.drawState = "create";
@@ -291,44 +298,54 @@ export function annotationReducer(ann, action) {
 
             case 'LOCK_ALL_ANN':
                 for (let ann of draft) {
-                    draft[ann.id].drawState = "read-only";
+                    draft.find(x => x.id === ann.id).drawState = "read-only";
                 }
                 return draft;
 
             case 'LOCK_ANN':
-                draft[action.item_id].drawState = "read-only";
+                draft.find(x => x.id === action.item_id).drawState = "read-only";
                 return draft;
 
             case 'UNLOCK_ANN':
-                draft[action.item_id].drawState = "edit";
+                draft.find(x => x.id === action.item_id).drawState = "edit";
                 return draft;
 
             case 'UPDATE_ANN':
-                if (draft[action.item_id].drawState === "edit" || draft[action.item_id].drawState === "create") {
-                    draft[action.item_id].points = action.points;
+                if (draft.find(x => x.id === action.item_id).drawState === "edit" ||
+                    draft.find(x => x.id === action.item_id).drawState === "create") {
+
+                    draft.find(x => x.id === action.item_id).points = action.points;
                     for (let key in action.args) {
-                        draft[action.item_id][key] = action.args[key];
+                        draft.find(x => x.id === action.item_id)[key] = action.args[key];
                     }
                 }
                 return draft;
 
+            case 'DELETE_ANN':
+                draft.remove(draft.findIndex(x => x.id === action.item_id));
+                return draft;
+
+            case 'DELETE_ALL_ANN':
+                draft = [];
+                return draft;
+
             case 'SELECT_ANN':
-                draft[action.item_id].selected = true;
+                draft.find(x => x.id === action.item_id).selected = true;
                 return draft;
 
             case 'SELECT_ALL_ANN':
                 for (let ann of draft) {
-                    draft[ann.id].selected = true;
+                    draft.find(x => x.id === ann.id).selected = true;
                 }
                 return draft;
 
             case 'DESELECT_ANN':
-                draft[action.item_id].selected = false;
+                draft.find(x => x.id === action.item_id).selected = false;
                 return draft;
 
             case 'DESELECT_ALL_ANN':
                 for (let ann of draft) {
-                    draft[ann.id].selected = false;
+                    draft.find(x => x.id === ann.id).selected = false;
                 }
                 return draft;
         }
@@ -355,6 +372,7 @@ export function labelReducer(label, action) {
             case 'LOCK_ANN':
             case 'LOCK_ALL_ANN':
             case 'UNLOCK_ANN':
+            case 'DELETE_ANN':
             case 'UPDATE_ANN':
             case 'SELECT_ANN':
             case 'DESELECT_ANN':

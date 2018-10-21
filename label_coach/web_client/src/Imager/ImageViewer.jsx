@@ -373,29 +373,51 @@ class ImageViewerP extends React.Component {
 
         for (let eraser of this.props.erasers) {
             let eraserObj =
-                new Eraser(this.svgOverlay, this.viewer, eraser.label, eraser.id,
-                           this.props.toolRadius, this.zoom);
+                new Eraser(this.svgOverlay,
+                           this.viewer,
+                           eraser.label,
+                           eraser.id,
+                           this.props.toolRadius,
+                           this.zoom);
+
             eraserObj.addImagePoints(eraser.points);
             this.erasers.push(eraserObj);
         }
 
         for (let brush of this.props.brushes) {
-            let brushObj = new Brush(this.svgOverlay, this.viewer, brush.label, brush.id, brush.brush_radius,
+            let brushObj = new Brush(this.svgOverlay,
+                                     this.viewer,
+                                     brush.label,
+                                     brush.id,
+                                     brush.brush_radius,
                                      this.zoom);
+
             brushObj.addImagePoints(brush.points);
             this.brushes.push(brushObj);
         }
 
         //create polygons from props
         for (let polygon of this.props.polygons) {
-            let polyObj = new Polygon(this.svgOverlay, this.viewer, polygon.label, "read_only", polygon.poly_id,
-                                      this.zoom, this.props.addPolygon);
+            let polyObj = new Polygon(this.svgOverlay,
+                                      this.viewer,
+                                      polygon.label,
+                                      "read_only",
+                                      polygon.selected,
+                                      polygon.poly_id,
+                                      this.zoom,
+                                      this.props.addPolygon);
+
             polyObj.addImagePoints(polygon.points);
             this.polygons.push(polyObj);
         }
 
         for (let line of this.props.lines) {
-            let lineObj = new Line(this.svgOverlay, this.viewer, line.label_id, line.line_id, this.zoom);
+            let lineObj = new Line(this.svgOverlay,
+                                   this.viewer,
+                                   line.label_id,
+                                   line.line_id,
+                                   this.zoom);
+
             lineObj.addImagePoints(line.points);
             this.lines.push(lineObj);
         }

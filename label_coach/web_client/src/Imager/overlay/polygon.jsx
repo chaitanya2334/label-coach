@@ -6,7 +6,7 @@ import OpenSeadragon from "openseadragon";
 
 
 export default class Polygon extends Shape {
-    constructor(overlay, viewer, label, drawState, poly_id, zoom, addPolygon) {
+    constructor(overlay, viewer, label, drawState, selected, poly_id, zoom, addPolygon) {
         super(overlay, viewer);
         this.zoom = zoom;
         this.dots = [];
