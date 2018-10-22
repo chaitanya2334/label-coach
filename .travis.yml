@@ -54,7 +54,6 @@ script:
   - CONDA_DIR="$HOME/build/env/conda${PY}"
   - export PATH="$CONDA_DIR/bin:$PATH"
   - source activate label-coach
-  - rm -r $CONDA_DIR/lib/python3.6/site-packages/girder/plugins/label_coach
   - girder-install plugin -s $HOME/build/chaitanya2334/label-coach/label_coach
   - cd $CONDA_DIR/lib/python3.6/site-packages/girder/plugins/label_coach
   - girder-install web --plugins label_coach
