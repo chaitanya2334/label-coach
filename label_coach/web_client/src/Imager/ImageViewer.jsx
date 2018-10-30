@@ -5,7 +5,7 @@ import OpenSeadragon from 'openseadragon'
 import './overlay/osdSvgOverlay';
 import connect from "react-redux/es/connect/connect";
 import {
-    addAnnotation,
+    addAnnotation, deleteAnnotation,
     lockAnnotation,
     setSaveStatus,
     unlockAnnotation,
@@ -135,6 +135,15 @@ class ImageViewerP extends React.Component {
         let onEsc = this.onEsc.bind(this);
         document.addEventListener("keydown", onEsc, false);
 
+        d3.select(this.svgOverlay.svg())
+          .attr("filter", "url(#constantOpacity)");
+        this.filter = d3.select(this.svgOverlay.svg())
+                        .append('filter')
+                        .attr("id", "constantOpacity")
+                        .append("feColorMatrix")
+                        .attr("type", "matrix")
+                        .attr("values", "1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.9 0");
+
     }
 
     onEsc() {
@@ -233,7 +242,7 @@ class ImageViewerP extends React.Component {
         }
 
         if (this.activeEraser) {
-            let isDragSuccessful = this.activeEraser.onMouseDrag(viewportPoint);
+            this.activeEraser.onMouseDrag(viewportPoint);
         }
 
     }
@@ -241,16 +250,20 @@ class ImageViewerP extends React.Component {
     onDragEnd(event) {
         if (this.activeBrush) {
             this.activeBrush.onMouseDragEnd();
-            this.props.addNewStroke("brushes", this.activeBrush.label.id, this.activeBrush.id, this.activeBrush.brushSize,
+            this.props.addNewStroke("brushes", this.activeBrush.label.id, this.activeBrush.id, this.activeBrush.size,
                                     this.activeBrush.getImagePoints());
             this.brushes.push(this.activeBrush);
             this.activeBrush = null;
         }
         if (this.activeEraser) {
             this.activeEraser.onMouseDragEnd();
-            this.props.addNewStroke("erasers", this.activeEraser.label.id, this.activeEraser.id, this.activeEraser.size,
-                                    this.activeEraser.getImagePoints());
-            this.erasers.push(this.activeEraser);
+            // delete all brushes intersecting with active eraser
+            let brush_label_pairs= [];
+            for (let brush of this.activeEraser.getErasedBrushes(this.brushes)){
+                brush_label_pairs.push({label_id: brush.label.id, brush_id: brush.id});
+            }
+            this.props.deleteStrokes("brushes", brush_label_pairs);
+            this.activeEraser.delete();
             this.activeEraser = null;
         }
     }
@@ -371,20 +384,6 @@ class ImageViewerP extends React.Component {
             this.setActiveTool(this.props.activeTool, this.props.activeLabel);
         }
 
-
-        for (let eraser of this.props.erasers) {
-            let eraserObj =
-                new Eraser(this.svgOverlay,
-                           this.viewer,
-                           eraser.label,
-                           eraser.id,
-                           this.props.toolRadius,
-                           this.zoom);
-
-            eraserObj.addImagePoints(eraser.points);
-            this.erasers.push(eraserObj);
-        }
-
         for (let brush of this.props.brushes) {
             let brushObj = new Brush(this.svgOverlay,
                                      this.viewer,
@@ -479,18 +478,11 @@ function mapLabelsToAnns(labels) {
             newBrush.id = brush.id;
             return newBrush;
         });
-        let newErasers = label.ann.erasers.map((eraser) => {
-            let newEraser = Object.assign({}, eraser);
-            newEraser.label = label;
-            newEraser.eraser_id = eraser.id;
-            return newEraser;
-        });
         lines = lines.concat(newLines);
         polygons = polygons.concat(newPolygons);
         brushes = brushes.concat(newBrushes);
-        erasers = erasers.concat(newErasers);
     }
-    return {lines, polygons, brushes, erasers};
+    return {lines, polygons, brushes};
 }
 
 function getActiveImageInfo(images) {
@@ -528,7 +520,7 @@ function mapStateToProps(state) {
 
 
     let {dbId, mimeType, title} = getActiveImageInfo(state.images);
-    let {lines, polygons, brushes, erasers} = mapLabelsToAnns(state.labels);
+    let {lines, polygons, brushes} = mapLabelsToAnns(state.labels);
     let activeLabel = getActiveLabel(state.labels);
     let toolRadius = getToolRadius(state.tools, state.rightBar);
     return {
@@ -541,8 +533,7 @@ function mapStateToProps(state) {
         activeTool: state.rightBar,
         polygons: polygons,
         lines: lines,
-        brushes: brushes,
-        erasers: erasers
+        brushes: brushes
     };
 }
 
@@ -569,9 +560,16 @@ function mapDispatchToProps(dispatch) {
             dispatch(setSaveStatus("dirty"));
         },
         addNewStroke: (ann_type, label_id, brush_id, brush_radius, points) => {
-            dispatch(addAnnotation(ann_type, label_id, {"brush_radius": brush_radius}));
+            dispatch(addAnnotation(ann_type, label_id, brush_id, {"brush_radius": brush_radius}));
             dispatch(updateAnnotation(ann_type, label_id, brush_id, points, {"brush_radius": brush_radius}));
             dispatch(lockAnnotation(ann_type, label_id, brush_id));
+            dispatch(setSaveStatus("dirty"));
+        },
+        deleteStrokes: (ann_type, label_brush_ids) =>{
+            for(let pair of label_brush_ids) {
+                let {label_id, brush_id} = pair;
+                dispatch(deleteAnnotation(ann_type, label_id, brush_id));
+            }
             dispatch(setSaveStatus("dirty"));
         }
     };

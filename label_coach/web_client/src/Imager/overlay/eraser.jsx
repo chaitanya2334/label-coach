@@ -5,7 +5,7 @@ import Stroke from "./stroke";
 export default class Eraser extends Stroke {
     constructor(overlay, viewer, label, id, size, zoom) {
         super(overlay, viewer, label, id, size, zoom);
-
+        this.erasedBrushes = [];
 
     }
 
@@ -43,14 +43,6 @@ export default class Eraser extends Stroke {
         }
     }
 
-    onExit() {
-        if (this.isCursor) {
-            this.cursor.remove();
-            this.isCursor = false;
-        }
-        document.body.style.cursor = "auto";
-    }
-
     createCursor() {
         return d3.select(this.overlay.getNode(1))
                  .append("circle")
@@ -60,6 +52,18 @@ export default class Eraser extends Stroke {
                  .attr('class', 'dot')
                  .attr('id', 'c' + this.id)
                  .attr("r", this.r * (1 / this.zoom));
+    }
+
+    getErasedBrushes(activeBrushes){
+        // delete brush strokes if the eraser intesects
+        for (let brush of activeBrushes) {
+            if (brush.label.id === this.label.id) {
+                if (this.intersect(brush).length > 0) {
+                    this.erasedBrushes.push(brush);
+                }
+            }
+        }
+        return this.erasedBrushes;
     }
 
     delete() {

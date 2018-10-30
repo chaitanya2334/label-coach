@@ -40,39 +40,48 @@ class LabelResource(Resource):
         self.route('GET', ('meta',), self.getLabelMeta)
         self.route('GET', ('create',), self.createLabelFile)
         self.route('POST', (), self.postLabel)
+        self.coll_m = Collection()
+        self.file_m = File()
+        self.folder_m = Folder()
+        self.item_m = Item()
+        self.upload_m = Upload()
+        self.asset_m = Assetstore()
 
     def get_root_folder(self):
-        collection_model = Collection()
-        collection = list(collection_model.list(user=self.getCurrentUser(), offset=0, limit=1))[0]
-        return list(Folder().find({'parentId': collection['_id']}))[0]
+        collection = list(self.coll_m.list(user=self.getCurrentUser(), offset=0, limit=1))[0]
+        return list(self.folder_m.find({'parentId': collection['_id']}))[0]
 
     def write_to_file(self, file, data):
         j = json.dumps(data, indent=2, sort_keys=True)
         stream = BytesIO(str.encode(j))
         chunk = RequestBodyStream(stream, size=len(j))
-        uploadModel = Upload()
-        upload = uploadModel.createUploadToFile(file, self.getCurrentUser(), len(j))
-        uploadModel.handleChunk(upload, chunk, filter=True, user=self.getCurrentUser())
+        upload = self.upload_m.createUploadToFile(file, self.getCurrentUser(), len(j))
+        self.upload_m.handleChunk(upload, chunk, filter=True, user=self.getCurrentUser())
         return upload
 
     def createNewFile(self, folder, file_name):
         parent_folder = self.get_root_folder()
         printOk(parent_folder)
         printOk2(self.getCurrentUser())
-        item = Item().createItem(file_name,
-                                 creator=self.getCurrentUser(),
-                                 folder=folder,
-                                 description='label file',
-                                 reuseExisting=False)
+        item = self.item_m.createItem(file_name,
+                                      creator=self.getCurrentUser(),
+                                      folder=folder,
+                                      description='label file',
+                                      reuseExisting=False)
 
-        file = File().createFile(creator=self.getCurrentUser(), item=item, name=file_name,
-                                 assetstore=Assetstore().getCurrent(), size=0, mimeType="application/json")
+        file = self.file_m.createFile(size=0,
+                                      item=item,
+                                      name=file_name,
+                                      creator=self.getCurrentUser(),
+                                      assetstore=self.asset_m.getCurrent(),
+                                      mimeType="application/json")
         return file
 
     def copy(self, srcFile, destFile):
-        upload = Upload().createUploadToFile(destFile, self.getCurrentUser(), srcFile['size'])
-        Upload().handleChunk(upload, RequestBodyStream(File().open(srcFile), size=destFile['size']),
-                             user=self.getCurrentUser())
+        upload = self.upload_m.createUploadToFile(destFile, self.getCurrentUser(), srcFile['size'])
+        self.upload_m.handleChunk(upload=upload,
+                                  chunk=RequestBodyStream(self.file_m.open(srcFile), size=destFile['size']),
+                                  user=self.getCurrentUser())
         return upload
 
     @access.public
@@ -83,10 +92,9 @@ class LabelResource(Resource):
         printOk('getLabelsList() was called!')
 
         try:
-            collection_model = Collection()
-            collection = list(collection_model.list(user=self.getCurrentUser(), offset=0, limit=1))[0]
-            files = collection_model.fileList(collection, user=self.getCurrentUser(), data=False,
-                                              includeMetadata=True, mimeFilter=['application/json'])
+            collection = list(self.coll_m.list(user=self.getCurrentUser(), offset=0, limit=1))[0]
+            files = self.coll_m.fileList(collection, user=self.getCurrentUser(), data=False,
+                                         includeMetadata=True, mimeFilter=['application/json'])
             files = list(files)
             cherrypy.response.headers["Content-Type"] = "application/json"
             return dumps(files)
@@ -96,7 +104,7 @@ class LabelResource(Resource):
 
     def find_config(self, folder_id):
         folder = Folder().load(folder_id, user=self.getCurrentUser(), level=AccessType.READ)
-        for file_path, file in Folder().fileList(folder, self.getCurrentUser(), data=False):
+        for file_path, file in self.folder_m.fileList(folder, self.getCurrentUser(), data=False):
             printOk(file)
             if file['name'] == "config.json":
                 return file
@@ -108,8 +116,8 @@ class LabelResource(Resource):
     @rest.rawResponse
     def createLabelFile(self, file_name, folder_id):
         try:
-            file = list(File().find({'name': file_name}).limit(1))
-            folder = Folder().load(folder_id, user=self.getCurrentUser(), level=AccessType.READ)
+            file = list(self.file_m.find({'name': file_name}).limit(1))
+            folder = self.folder_m.load(folder_id, user=self.getCurrentUser(), level=AccessType.READ)
             printOk(file)
             if not file:
                 file = self.createNewFile(folder, file_name)
@@ -139,10 +147,9 @@ class LabelResource(Resource):
     @rest.rawResponse
     def getLabel(self, label_id):
         try:
-            fileModel = File()
-            file = fileModel.load(label_id, level=AccessType.READ, user=self.getCurrentUser())
+            file = self.file_m.load(label_id, level=AccessType.READ, user=self.getCurrentUser())
             cherrypy.response.headers["Content-Type"] = "application/json"
-            return fileModel.download(file)
+            return self.file_m.download(file)
         except:
             # Unknown slug
             printFail(traceback.print_exc)
@@ -154,8 +161,7 @@ class LabelResource(Resource):
             .param('label_id', 'label file id'))
     def getLabelMeta(self, label_id):
         try:
-            fileModel = File()
-            file = fileModel.load(label_id, level=AccessType.READ, user=self.getCurrentUser())
+            file = self.file_m.load(label_id, level=AccessType.READ, user=self.getCurrentUser())
             cherrypy.response.headers["Content-Type"] = "application/json"
             return dumps(file)
         except:
@@ -170,8 +176,7 @@ class LabelResource(Resource):
     @rest.rawResponse
     def postLabel(self, label_id, params):
         try:
-            fileModel = File()
-            file = fileModel.load(label_id, level=AccessType.WRITE, user=self.getCurrentUser())
+            file = self.file_m.load(label_id, level=AccessType.WRITE, user=self.getCurrentUser())
             cherrypy.response.headers["Content-Type"] = "application/json"
             params['labels'] = json.loads(params['labels'])
             upload = self.write_to_file(file, params)
@@ -183,3 +188,12 @@ class LabelResource(Resource):
             # Unknown slug
             printFail(traceback.print_exc)
             cherrypy.response.status = 404
+
+    @access.public
+    @autoDescribeRoute(
+        Description('Post label by id')
+            .param('label_id', 'label file id'))
+    @rest.rawResponse
+    def strokeToOutline(self, strokes):
+        pass
+        

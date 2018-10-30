@@ -69,11 +69,12 @@ export function deselectAnnotation(label_id, ann_type, item_id){
     }
 }
 
-export function addAnnotation(ann_type, label_id, args={}) {
+export function addAnnotation(ann_type, label_id, item_id, args={}) {
     return {
         type: 'ADD_ANN',
         ann_type: ann_type,
         label_id: label_id,
+        item_id: item_id,
         args: args,
     }
 }
@@ -227,7 +228,6 @@ export function fetchImages(id) {
 
 function postData(url = ``, data = {}, callback) {
     // Default options are marked with *
-    console.log(JSON.stringify(data));
     return restRequest({
                            url: url,
                            method: 'POST',
@@ -306,7 +306,6 @@ export function fetchLabels(label_id) {
                                }
                            })
             .then(json => {
-                console.log(json);
                 let labels = json.labels;
                 labels = labels.map(label => ({
                     name: label.name,
@@ -315,7 +314,6 @@ export function fetchLabels(label_id) {
                 }));
                 dispatch(replaceLabels(labels));
                 dispatch(fetchLabelMeta(label_id, (file) => {
-                    console.log(file.created);
                     dispatch(editSaveIndicatorText("Saved"));
                     dispatch(setLastUpdated(file.created.$date));
                 }))

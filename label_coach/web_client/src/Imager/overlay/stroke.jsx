@@ -1,9 +1,11 @@
 import Shape from "./shape";
 import * as d3 from "d3";
 import OpenSeadragon from "openseadragon";
+import * as svgIntersections from "svg-intersections";
+import Dot from "./dot";
 
 export default class Stroke extends Shape {
-    constructor(overlay, viewer, label, id, size, zoom) {
+    constructor(overlay, viewer, label, id, size, zoom, debug = false) {
         super(overlay, viewer);
         this.R = 0.0015;
         this.size = size;
@@ -13,7 +15,7 @@ export default class Stroke extends Shape {
         this.zoom = zoom;
         this.isCursor = false;
         this.points = [];
-
+        this.debug = debug;
         this.minDist = (this.r * (1 / this.zoom)) / 2;
         // to be overridden
         this.mainPath = this.createPath();
@@ -23,6 +25,80 @@ export default class Stroke extends Shape {
 
     }
 
+    intersect(stroke) {
+        let ret = [];
+        if (this.points.length > 1) {
+            for (let i = 0; i < this.points.length - 1; i++) {
+                let a1 = this.points[i];
+                let a2 = this.points[i + 1];
+                if (this.debug) {
+                    a1.debug(true);
+                    a2.debug(true);
+                }
+                for (let j = 0; j < stroke.points.length - 1; j++) {
+                    let b1 = stroke.points[j];
+                    let b2 = stroke.points[j + 1];
+                    if (this.debug) {
+                        b1.debug(true);
+                        b2.debug(true);
+                    }
+                    let inter = Stroke.intersectLineLine(a1.p, a2.p, b1.p, b2.p);
+                    if (inter !== null) {
+                        ret.push(inter);
+                    }
+                    if (this.debug) {
+                        b1.debug(false);
+                        b2.debug(false);
+                    }
+                }
+                if (this.debug) {
+                    a1.debug(false);
+                    a2.debug(false);
+                }
+            }
+        }
+        return ret;
+    }
+
+    static intersectLineLine(a1, a2, b1, b2) {
+        // borrowed from https://github.com/thelonious/kld-intersections/blob/development/lib/Intersection.js
+        let result = null;
+
+        let ua_t = (b2.x - b1.x) * (a1.y - b1.y) - (b2.y - b1.y) * (a1.x - b1.x);
+        let ub_t = (a2.x - a1.x) * (a1.y - b1.y) - (a2.y - a1.y) * (a1.x - b1.x);
+        let u_b = (b2.y - b1.y) * (a2.x - a1.x) - (b2.x - b1.x) * (a2.y - a1.y);
+
+        if (u_b !== 0) {
+            let ua = ua_t / u_b;
+            let ub = ub_t / u_b;
+
+            if (0 <= ua && ua <= 1 && 0 <= ub && ub <= 1) {
+                result = {
+                    'x': a1.x + ua * (a2.x - a1.x),
+                    'y': a1.y + ua * (a2.y - a1.y)
+                };
+            }
+            else {
+                result = null;
+            }
+        }
+        else {
+            if (ua_t === 0 || ub_t === 0) {
+                // coincident so sent away any point on b
+                result = {
+                    'x': b1,
+                    'y': b2
+                };
+            }
+            else {
+                //parallel
+                result = null;
+            }
+        }
+
+        return result;
+    }
+
     setCursorPos(x, y) {
         this.fillCursorColor();
         this.cursor
@@ -30,7 +106,7 @@ export default class Stroke extends Shape {
             .attr("cy", y);
     }
 
-    fillCursorColor(){
+    fillCursorColor() {
         if (this.cursor) {
             this.cursor.attr("fill", this.label.color);
         }
@@ -87,7 +163,7 @@ export default class Stroke extends Shape {
     getImagePoints() {
         let points = [];
         for (let p of this.points) {
-            points.push(this.viewer.viewport.viewportToImageCoordinates(p));
+            points.push(this.viewer.viewport.viewportToImageCoordinates(p.p));
         }
         return points;
     }
@@ -108,8 +184,10 @@ export default class Stroke extends Shape {
 
     appendDot(vpPoint) {
         let prevPoint = this.points[this.points.length - 1];
-        if (prevPoint === undefined || Stroke.dist(prevPoint, vpPoint) >= this.minDist) {
-            this.points.push(vpPoint);
+        if (prevPoint === undefined || Stroke.dist(prevPoint.p, vpPoint) >= this.minDist) {
+            let dot = new Dot(this.overlay, this.viewer, this, this.points.length - 1, vpPoint, this.zoom, this.debug,
+                              false, false);
+            this.points.push(dot);
             this.draw(d3.curveCardinalOpen);
             return true;
         }
@@ -127,7 +205,7 @@ export default class Stroke extends Shape {
                      .curve(curveType);
         let points = [];
         for (let dot of this.points) {
-            points.push([dot.x, dot.y]);
+            points.push([dot.p.x, dot.p.y]);
         }
         this.mainPath.attr('d', line(points));
     }
@@ -146,6 +224,9 @@ export default class Stroke extends Shape {
         if (this.mainPath) {
             this.mainPath.remove();
         }
-        this.paths = [];
+        for (let point of this.points) {
+            point.delete();
+        }
+        this.points = [];
     }
 }

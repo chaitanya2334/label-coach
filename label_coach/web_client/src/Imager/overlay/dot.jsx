@@ -26,6 +26,14 @@ export default class Dot extends Shape {
 
     }
 
+    debug(on){
+        if(on){
+            this.d3obj.attr('fill', 'blue');
+        }else{
+            this.d3obj.attr('fill', 'red')
+        }
+    }
+
     delete() {
         if (this.d3obj) {
             this.d3obj.remove();

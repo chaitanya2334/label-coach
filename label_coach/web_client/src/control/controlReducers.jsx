@@ -285,13 +285,12 @@ export function annotationReducer(ann, action) {
     return produce(ann, draft => {
         switch (action.type) {
             case 'ADD_ANN':
-                let lastAnnId = draft.length > 0 ? draft[draft.length - 1].id : -1;
-                let newAnn = {id: lastAnnId + 1};
+                let newAnn = {id: action.item_id};
                 newAnn.text = action.ann_type + newAnn.id;
                 newAnn.points = [];
                 newAnn.drawState = "create";
                 for (let key in action.args) {
-                    newAnn[key] = newAnn.args[key];
+                    newAnn[key] = action.args[key];
                 }
                 draft.push(newAnn);
                 return draft;

@@ -13,7 +13,7 @@ class UserControlP extends React.Component {
 
     render() {
         let username = "no-login";
-        if (this.props.user === undefined) {
+        if (this.props.user === undefined || this.props.user === null) {
             this.props.fetchCurrentUser();
         } else {
             username = this.props.user.login;
