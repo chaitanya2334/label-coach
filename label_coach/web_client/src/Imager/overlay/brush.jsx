@@ -20,11 +20,6 @@ export default class Brush extends Stroke {
                  .attr("mask", "url(#eraser_" + this.label.id + ")");
     }
 
-    static dist(p1, p2) {
-        return Math.pow(Math.pow((p1.x - p2.x), 2) + Math.pow((p1.y - p2.y), 2), 0.5)
-    }
-
-
     delete() {
         super.delete();
     }
