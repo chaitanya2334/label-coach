@@ -2,8 +2,8 @@ import * as d3 from "d3";
 import Stroke from "./stroke";
 
 export default class Brush extends Stroke {
-    constructor(overlay, viewer, label, id, brushSize, zoom) {
-        super(overlay, viewer, label, id, brushSize, zoom);
+    constructor(overlay, viewer, label, selected, id, brushSize, zoom) {
+        super(overlay, viewer, label, selected, id, brushSize, zoom);
 
     }
 

@@ -4,7 +4,7 @@ import Stroke from "./stroke";
 
 export default class Eraser extends Stroke {
     constructor(overlay, viewer, label, id, size, zoom) {
-        super(overlay, viewer, label, id, size, zoom);
+        super(overlay, viewer, label, false, id, size, zoom);
         this.erasedBrushes = [];
 
     }

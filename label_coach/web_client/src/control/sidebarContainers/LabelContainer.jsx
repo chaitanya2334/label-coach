@@ -16,8 +16,7 @@ export class LabelContainerP extends React.Component {
             this.props.labels.forEach((label, i) => {
                 rows.push(
                     <Label key={label.id} id={label.id} name={label.name} color={label.color} expanded={label.expanded}
-                           lineButtonState={label.line_button} polyButtonState={label.poly_button}
-                           polygons={label.ann.polygons} lines={label.ann.lines}/>
+                           polygons={label.ann.polygons} lines={label.ann.lines} brushes={label.ann.brushes}/>
                 );
             });
         }

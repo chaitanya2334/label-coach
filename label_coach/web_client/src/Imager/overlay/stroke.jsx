@@ -5,7 +5,7 @@ import * as svgIntersections from "svg-intersections";
 import Dot from "./dot";
 
 export default class Stroke extends Shape {
-    constructor(overlay, viewer, label, id, size, zoom, debug = false) {
+    constructor(overlay, viewer, label, selected, id, size, zoom, debug = false) {
         super(overlay, viewer);
         this.R = 0.0015;
         this.size = size;
@@ -18,7 +18,14 @@ export default class Stroke extends Shape {
         this.debug = debug;
         this.minDist = (this.r * (1 / this.zoom)) / 2;
         // to be overridden
+        this.drawState = selected ? "selected" : "";
         this.mainPath = this.createPath();
+        if (this.drawState === "selected") {
+            this.highlightPath = this.createPath();
+            this.highlightPath.attr("stroke-width", (this.r / 5) * (1 / this.zoom));
+            this.highlightPath.attr("stroke", 'red');
+            this.highlightPath.attr("opacity", 0.9);
+        }
     }
 
     createPath() {
@@ -208,6 +215,10 @@ export default class Stroke extends Shape {
             points.push([dot.p.x, dot.p.y]);
         }
         this.mainPath.attr('d', line(points));
+        if(this.highlightPath){
+            this.highlightPath.attr('d', line(points));
+        }
+
     }
 
     setSize(size) {
@@ -223,6 +234,9 @@ export default class Stroke extends Shape {
         }
         if (this.mainPath) {
             this.mainPath.remove();
+        }
+        if (this.highlightPath){
+            this.highlightPath.remove();
         }
         for (let point of this.points) {
             point.delete();

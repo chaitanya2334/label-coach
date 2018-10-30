@@ -90,8 +90,6 @@ class ImageViewerP extends React.Component {
                                             zoomOutButton: 'zoom-out',
                                             homeButton: 'reset',
                                             fullPageButton: 'full-page',
-                                            nextButton: 'next',
-                                            previousButton: 'previous',
                                             showNavigator: true,
                                             navigatorId: 'navigator',
                                         });
@@ -351,6 +349,7 @@ class ImageViewerP extends React.Component {
                 this.activeBrush = new Brush(this.svgOverlay,
                                              this.viewer,
                                              activeLabel,
+                                             false,
                                              activeLabel.ann.brushes.length,
                                              this.props.toolRadius,
                                              this.zoom);
@@ -388,6 +387,7 @@ class ImageViewerP extends React.Component {
             let brushObj = new Brush(this.svgOverlay,
                                      this.viewer,
                                      brush.label,
+                                     brush.selected,
                                      brush.id,
                                      brush.brush_radius,
                                      this.zoom);

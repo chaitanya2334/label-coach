@@ -82,7 +82,7 @@ class ToolBarP extends React.Component {
                         <ToggleButton value="zoom-map" id="full-page" size="small"><ZoomOutMapIcon/></ToggleButton>
                         <ToggleButton value="zoom-in" id="zoom-in" size="small"><ZoomInIcon/></ToggleButton>
                         <ToggleButton value="zoom-out" id="zoom-out" size="small"><ZoomOutIcon/></ToggleButton>
-                        <ToggleButton value="home" id="home" size="small"><HomeIcon/></ToggleButton>
+                        <ToggleButton value="reset" id="reset" size="small"><HomeIcon/></ToggleButton>
                     </ToggleButtonGroup>
                     <Divider className={"vertical-divider"}/>
 

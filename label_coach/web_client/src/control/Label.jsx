@@ -25,7 +25,7 @@ class LabelP extends React.Component {
     }
 
     render() {
-        let count = this.props.polygons.length + this.props.lines.length;
+        let count = this.props.polygons.length + this.props.lines.length + this.props.brushes.length;
 
         return (
             <ExpansionPanel expanded={this.props.expanded} onChange={this.handleChange}>
