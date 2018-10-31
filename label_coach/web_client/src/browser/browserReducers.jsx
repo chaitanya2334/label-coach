@@ -1,38 +1,57 @@
 import produce from "immer";
 
-export function folderReducer(folder={}, action) {
-    switch (action.type) {
-        case 'UPDATE_FOLDER_THUMBNAILS':
-            return produce(folder, draftState=>{
-                draftState.thumbnails = action.thumbnails.map(file => ({
-                  id: file._id.$oid
-                }))
-            })
-    }
+export function assignmentReducer(assignment = {}, action) {
+    return produce(assignment, draft => {
+                       switch (action.type) {
+                           case 'UPDATE_FOLDER_THUMBNAILS':
+                               draft.thumbnails = action.thumbnails.map(file => ({
+                                   id: file._id.$oid
+                               }));
+                               return draft;
+                           default:
+                               return draft;
+
+                       }
+                   }
+    );
 }
 
-export function folders(folders = [], action) {
-    switch (action.type) {
-        case 'POPULATE_FOLDERS':
-            return produce(folders, draftState => {
-                draftState = [];
-                for (let folder of action.folders) {
-                    draftState.push({
-                                        id: draftState.length,
-                                        objId: folder.objId,
-                                        name: folder.name,
-                                        created: folder.created,
-                                        updated: folder.updated
-                                    })
-                }
-                return draftState;
-            });
-        case 'UPDATE_FOLDER_THUMBNAILS':
-            return produce(folders, (draftState) => {
-                let id = draftState.findIndex(x => x.objId === action.folderId);
-                draftState[id] = folderReducer(draftState[id], action);
-            });
-        default:
-            return folders;
-    }
+export function assignments(assignments = [], action) {
+    return produce(assignments, draft => {
+                       switch (action.type) {
+                           case 'POPULATE_ASSIGNMENTS':
+                               draft = [];
+
+                               for (let assignment of action.assignments) {
+                                   let {name, image_folder, label_folders, owner} = assignment;
+
+                                   draft.push({
+                                                  id: image_folder._id.$oid,
+                                                  name: name,
+                                                  imageFolder: {
+                                                      objId: image_folder._id.$oid,
+                                                      name: image_folder.name,
+                                                      created: image_folder.created,
+                                                      updated: image_folder.updated
+                                                  },
+                                                  labelFolders: label_folders.map((folder) => ({
+                                                      objId: folder._id.$oid,
+                                                      name: folder.name,
+                                                      created: folder.created,
+                                                      updated: folder.updated
+                                                  })),
+                                                  owner: owner
+                                              })
+                               }
+                               return draft;
+
+                           case 'UPDATE_FOLDER_THUMBNAILS':
+                               let idx = draft.findIndex(x => x.id === action.assignmentId);
+                               draft[idx] = assignmentReducer(draft[idx], action);
+                               return draft;
+                           default:
+                               return draft;
+                       }
+                   }
+    );
 }

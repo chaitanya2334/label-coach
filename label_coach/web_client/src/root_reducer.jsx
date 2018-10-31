@@ -9,7 +9,7 @@ import {
     thumbnailBarVisibility, tools
 } from "./control/controlReducers";
 import {authentication} from "./login/loginReducer";
-import {folders} from "./browser/browserReducers";
+import {assignments} from "./browser/browserReducers";
 
 export default combineReducers({
                                    tools,
@@ -18,7 +18,7 @@ export default combineReducers({
                                    thumbnailBarVisibility,
                                    saveIndicator,
                                    authentication,
-                                   folders,
+                                   assignments,
                                    currentFolder,
                                    images,
                                    labels,

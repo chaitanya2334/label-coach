@@ -7,7 +7,7 @@ import Provider from "react-redux/es/components/Provider";
 import {applyMiddleware, createStore} from "redux";
 import thunk from "redux-thunk";
 import rootReducer from "../root_reducer"
-import CollectionGrid from "../browser/CollectionGrid";
+import AssignmentGrid from "../browser/AssignmentGrid";
 import {fetchImages} from "../control/controlActions";
 import UserControl from "../control/UserControl";
 
@@ -34,7 +34,7 @@ export default class CollectionBrowserP extends React.Component {
 
                 <div className={"row"}>
                     <div className={"col-lg-8 offset-lg-2"}>
-                        <CollectionGrid className={"layout"} isDraggable={false} isResizable={false} items={50}/>
+                        <AssignmentGrid className={"layout"} isDraggable={false} isResizable={false} items={50}/>
 
                     </div>
                 </div>

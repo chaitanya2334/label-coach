@@ -68,13 +68,12 @@ class ImageResource(Resource):
             folderModel = Folder()
             self.user = self.getCurrentUser()
             folder = folderModel.load(folderId, level=AccessType.READ, user=self.getCurrentUser())
-            files = folderModel.fileList(doc=folder, user=self.getCurrentUser(), data=False, includeMetadata=True,
+            files = folderModel.fileList(doc=folder, user=self.getCurrentUser(), data=False, includeMetadata=False,
                                          mimeFilter=['application/octet-stream', 'image/png', 'image/jpeg'])
             ret_files = []
             for filename, file in files:
                 filename = os.path.splitext(filename)[0]
                 printOk("filename: " + filename)
-                file['label_id'] = self.find_label_id(folder, filename)
                 ret_files.append(file)
 
             cherrypy.response.headers["Content-Type"] = "application/json"

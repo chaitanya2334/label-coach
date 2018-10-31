@@ -1,43 +1,40 @@
 import {fetchImages, replaceLabels} from "../control/controlActions";
 import {restRequest} from "girder/rest";
 
-function populateFolders(folders) {
+function populateAssignments(assignments) {
     return {
-        type: 'POPULATE_FOLDERS',
-        folders: folders
+        type: 'POPULATE_ASSIGNMENTS',
+        assignments: assignments
     }
 }
 
-function updateFolderThumbnails(folderId, thumbnails) {
+function updateFolderThumbnails(assignmentId, thumbnails) {
     return {
         type: 'UPDATE_FOLDER_THUMBNAILS',
-        folderId: folderId,
+        assignmentId: assignmentId,
         thumbnails: thumbnails
     }
 }
 
-export function selectCollection(id, history) {
+export function selectAssignment(id, history) {
     return (dispatch) => {
         history.push("/tasker/" + id);
     }
 }
 
-export function findCollection() {
+export function findAssignments() {
     return function (dispatch) {
         return restRequest({
-                               url: "/collection/",
+                               url: "/assignment/",
                                method: "GET",
                                data: {
-                                   limit: 1,
+                                   limit: 50,
                                }
-                           }).then(collections=>{
-                               if(collections.length > 0){
-                                   console.log("collections.length");
-                                   console.log(collections.length);
-                                   let id = collections[0]._id;
-                                   dispatch(fetchFolders(id));
+                           }).then(assignments=>{
+                               if(assignments.length > 0){
+                                   dispatch(populateAssignments(assignments));
                                }else{
-                                   console.error("No collection found!!!!");
+                                   console.error("No assignments found!!!!");
                                }
 
         })
@@ -69,7 +66,7 @@ export function fetchFolders(id) {
     }
 }
 
-export function fetchThumbnails(folderId, n) {
+export function fetchThumbnails(assignmentId, folderId, n) {
     return function (dispatch) {
         return restRequest({
                                url: "/image/",
@@ -81,7 +78,7 @@ export function fetchThumbnails(folderId, n) {
             .then(files => {
                 let thumbnails = files.sort(() => .5 - Math.random())
                                       .slice(0, n);
-                dispatch(updateFolderThumbnails(folderId, thumbnails))
+                dispatch(updateFolderThumbnails(assignmentId, thumbnails))
             })
     }
 }

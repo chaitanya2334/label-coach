@@ -47,11 +47,23 @@ class LabelResource(Resource):
         self.upload_m = Upload()
         self.asset_m = Assetstore()
 
-    def get_root_folder(self):
+        self.cp_config = {'tools.staticdir.on': True,
+                          'tools.staticdir.index': 'index.html'}
+
+        self.setupRoutes()
+
+    def setupRoutes(self):
+        self.route('GET', (), handler=self.getLabelList)
+        self.route('GET', (':ann_id',), self.getLabel)
+        self.route('GET', ('meta',), self.getLabelMeta)
+        self.route('GET', ('create',), self.createLabelFile)
+        self.route('POST', (), self.postLabel)
+
+    def getRootFolder(self):
         collection = list(self.coll_m.list(user=self.getCurrentUser(), offset=0, limit=1))[0]
         return list(self.folder_m.find({'parentId': collection['_id']}))[0]
 
-    def write_to_file(self, file, data):
+    def writeToFile(self, file, data):
         j = json.dumps(data, indent=2, sort_keys=True)
         stream = BytesIO(str.encode(j))
         chunk = RequestBodyStream(stream, size=len(j))
@@ -60,7 +72,7 @@ class LabelResource(Resource):
         return upload
 
     def createNewFile(self, folder, file_name):
-        parent_folder = self.get_root_folder()
+        parent_folder = self.getRootFolder()
         printOk(parent_folder)
         printOk2(self.getCurrentUser())
         item = self.item_m.createItem(file_name,
@@ -179,7 +191,7 @@ class LabelResource(Resource):
             file = self.file_m.load(label_id, level=AccessType.WRITE, user=self.getCurrentUser())
             cherrypy.response.headers["Content-Type"] = "application/json"
             params['labels'] = json.loads(params['labels'])
-            upload = self.write_to_file(file, params)
+            upload = self.writeToFile(file, params)
             printOk2(file)
             printOk(upload)
             return dumps(upload)
@@ -196,4 +208,3 @@ class LabelResource(Resource):
     @rest.rawResponse
     def strokeToOutline(self, strokes):
         pass
-        
