@@ -33,13 +33,7 @@ class LabelResource(Resource):
     def __init__(self):
         super().__init__()
         self.resourceName = 'label'
-        self.cp_config = {'tools.staticdir.on': True,
-                          'tools.staticdir.index': 'index.html'}
-        self.route('GET', (), handler=self.getLabelList)
-        self.route('GET', (':label_id',), self.getLabel)
-        self.route('GET', ('meta',), self.getLabelMeta)
-        self.route('GET', ('create',), self.createLabelFile)
-        self.route('POST', (), self.postLabel)
+
         self.coll_m = Collection()
         self.file_m = File()
         self.folder_m = Folder()
@@ -47,21 +41,14 @@ class LabelResource(Resource):
         self.upload_m = Upload()
         self.asset_m = Assetstore()
 
-        self.cp_config = {'tools.staticdir.on': True,
-                          'tools.staticdir.index': 'index.html'}
-
         self.setupRoutes()
 
     def setupRoutes(self):
         self.route('GET', (), handler=self.getLabelList)
-        self.route('GET', (':ann_id',), self.getLabel)
+        self.route('GET', (':label_id',), self.getLabel)
         self.route('GET', ('meta',), self.getLabelMeta)
         self.route('GET', ('create',), self.createLabelFile)
         self.route('POST', (), self.postLabel)
-
-    def getRootFolder(self):
-        collection = list(self.coll_m.list(user=self.getCurrentUser(), offset=0, limit=1))[0]
-        return list(self.folder_m.find({'parentId': collection['_id']}))[0]
 
     def writeToFile(self, file, data):
         j = json.dumps(data, indent=2, sort_keys=True)
@@ -72,9 +59,6 @@ class LabelResource(Resource):
         return upload
 
     def createNewFile(self, folder, file_name):
-        parent_folder = self.getRootFolder()
-        printOk(parent_folder)
-        printOk2(self.getCurrentUser())
         item = self.item_m.createItem(file_name,
                                       creator=self.getCurrentUser(),
                                       folder=folder,
@@ -114,12 +98,35 @@ class LabelResource(Resource):
         except:
             printFail(traceback.print_exc)
 
-    def find_config(self, folder_id):
-        folder = Folder().load(folder_id, user=self.getCurrentUser(), level=AccessType.READ)
-        for file_path, file in self.folder_m.fileList(folder, self.getCurrentUser(), data=False):
+    def getConfigFolder(self, label_folder_id):
+        label_folder = Folder().load(label_folder_id,
+                                     user=self.getCurrentUser(),
+                                     level=AccessType.READ)
+        creatorId = str(label_folder['creatorId'])
+        config_folder = self.folder_m.load(label_folder['meta'][creatorId], level=AccessType.READ,
+                                           user=self.getCurrentUser())
+        return config_folder
+
+    def findConfig(self, folder_id):
+        folder = self.getConfigFolder(folder_id)
+        files = self.folder_m.fileList(folder, self.getCurrentUser(), data=False)
+        for file_path, file in files:
             printOk(file)
             if file['name'] == "config.json":
                 return file
+
+    def __findFile(self, folder, file_name):
+        item = list(self.item_m.find({'folderId': folder['_id'], 'name': file_name}).limit(1))
+        if not item:
+            return None
+
+        item = item[0]
+        file = list(self.file_m.find({'itemId': item['_id']}).limit(1))
+
+        if not file:
+            return None
+
+        return file[0]
 
     @access.public
     @autoDescribeRoute(
@@ -128,25 +135,24 @@ class LabelResource(Resource):
     @rest.rawResponse
     def createLabelFile(self, file_name, folder_id):
         try:
-            file = list(self.file_m.find({'name': file_name}).limit(1))
+
             folder = self.folder_m.load(folder_id, user=self.getCurrentUser(), level=AccessType.READ)
-            printOk(file)
+            file = self.__findFile(folder, file_name)
+            printOk2(file)
             if not file:
                 file = self.createNewFile(folder, file_name)
-                config_file = self.find_config(folder_id)
+                config_file = self.findConfig(folder_id)
                 if not config_file:
                     printFail("No config file found")
                     return errorMessage("No config file found")
                 else:
-                    printOk(config_file)
                     res = self.copy(config_file, file)
-                    printOk(res['fileId'])
                     return dumps({
                         "label_id": res['fileId']
                     })
 
             return dumps({
-                "label_id": file[0]['_id']
+                "label_id": file['_id']
             })
         except:
             printFail(traceback.print_exc)

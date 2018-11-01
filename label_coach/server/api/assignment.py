@@ -31,7 +31,7 @@ class PILBytesIO(BytesIO):
 class AssignmentResource(Resource):
     def __init__(self):
         super().__init__()
-        self.route('GET', (), handler=self.list)
+
         self.coll_m = Collection()
         self.file_m = File()
         self.folder_m = Folder()
@@ -40,23 +40,34 @@ class AssignmentResource(Resource):
         self.asset_m = Assetstore()
         self.user_m = User()
 
+        self.setupRoutes()
+
+    def setupRoutes(self):
+        self.route('GET', (), handler=self.list)
+        self.route('GET', (':a_id',), handler=self.getAssignment)
+
     def __findName(self, folder):
         imageFolder = self.__findImageFolder(folder)
-        return imageFolder['name']
+        if isinstance(imageFolder, dict):
+            return imageFolder['name']
+
+        return ""
 
     def __findImageFolder(self, folder):
         creatorId = folder['creatorId']
+        ret = ""
         if creatorId == self.getCurrentUser()['_id']:
             # this folder was created by this user, and so it will contain the images
-            printFail(folder)
+            # printFail(folder)
             ret = folder
         else:
             meta = folder['meta']
             # this is the label file, and so should only have one entry in the metadata
             assert len(meta) == 1
             # that one entry contains link to the image folder, key must be the creator of this folder
-            assert creatorId in meta
-            ret = self.folder_m.load(meta[creatorId],
+            assert str(creatorId) in meta, (str(creatorId), meta)
+
+            ret = self.folder_m.load(meta[str(creatorId)],
                                      level=AccessType.READ,
                                      user=self.getCurrentUser())
 
@@ -88,18 +99,37 @@ class AssignmentResource(Resource):
     @rest.rawResponse
     def list(self):
         try:
-            user = self.getCurrentUser()
-            folders = self.folder_m.find({'parentId': user['_id'],
-                                          'parentCollection': 'user'})
-            ret = []
-            for folder in folders:
+            ret = self.__list()
+            cherrypy.response.headers["Content-Type"] = "application/json"
+            return dumps(ret)
+
+        except:
+            printFail(traceback.print_exc)
+
+    def __list(self):
+        user = self.getCurrentUser()
+        folders = self.folder_m.find({'parentId': user['_id'],
+                                      'parentCollection': 'user'})
+        ret = []
+        for folder in folders:
+            if self.__findName(folder):
                 ret.append({'name': self.__findName(folder),
                             'image_folder': self.__findImageFolder(folder),
                             'label_folders': self.__findLabelFolder(folder),
                             'owner': self.__findOwner(folder)})
 
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return dumps(ret)
+        return ret
 
+    @access.public
+    @autoDescribeRoute(
+        Description('Get assignment by id').param('a_id', 'folder id that controls the assignment'))
+    @rest.rawResponse
+    def getAssignment(self, a_id):
+        try:
+            assignments = self.__list()
+            for assignment in assignments:
+                # printOk2(assignment)
+                if str(assignment['image_folder']['_id']) == a_id:
+                    return dumps(assignment)
         except:
             printFail(traceback.print_exc)

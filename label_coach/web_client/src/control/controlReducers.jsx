@@ -113,15 +113,17 @@ export function imageReducer(image, action) {
     }
 }
 
-export function currentFolder(currentFolder = {}, action) {
-    switch (action.type) {
-        case 'SET_CURRENT_FOLDER':
-            return produce(currentFolder, draftState => {
-                draftState.id = action.id;
-            });
-        default:
-            return currentFolder;
-    }
+export function currentAssignment(currentAssignment = {}, action) {
+    return produce(currentAssignment, draft => {
+        switch (action.type) {
+            case 'SET_CURRENT_ASSIGNMENT':
+                draft = action.assignment;
+                return draft;
+            default:
+                return currentAssignment;
+        }
+    });
+
 }
 
 export function images(images = [], action) {

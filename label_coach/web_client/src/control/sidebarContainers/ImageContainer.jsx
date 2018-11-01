@@ -17,7 +17,7 @@ class ImageContainerP extends React.Component {
                 rows.push(
                     <Thumbnail key={image.id} id={image.id} active={image.active} title={image.title}
                                folderId={image.folderId} imageId={image.dbId} mimeType={image.mimeType}
-                               labelFileId={image.labelFileId} currentFolder={this.props.currentFolder}/>
+                               labelFileId={image.labelFileId} labelFolderId={this.props.labelFolderId}/>
                 );
             });
         }
@@ -39,10 +39,16 @@ function getSearchLabels(images, searchTerm) {
     return images.filter(image => image.title.match(escapeRegExp(searchTerm)));
 }
 
+function getLabelFolderId(currentAssignment) {
+    if (currentAssignment.hasOwnProperty('label_folders') && currentAssignment.label_folders.length > 0){
+        return currentAssignment.label_folders[0]._id.$oid;
+    }
+}
+
 function mapStateToProps(state) {
     return {
         images: getSearchLabels(state.images, state.searchImages),
-        currentFolder: state.currentFolder
+        labelFolderId: getLabelFolderId(state.currentAssignment),
     }
 }
 

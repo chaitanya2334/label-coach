@@ -1,6 +1,6 @@
 import {combineReducers} from "redux";
 import {
-    currentFolder,
+    currentAssignment,
     images,
     labels, rightBar,
     saveIndicator,
@@ -19,7 +19,7 @@ export default combineReducers({
                                    saveIndicator,
                                    authentication,
                                    assignments,
-                                   currentFolder,
+                                   currentAssignment,
                                    images,
                                    labels,
                                    searchImages,
