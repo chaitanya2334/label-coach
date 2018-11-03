@@ -540,7 +540,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         addPolygon: (label_id, poly_id, points) => {
-            dispatch(addAnnotation("polygons", label_id));
+            dispatch(addAnnotation("polygons", label_id, poly_id));
             dispatch(updateAnnotation("polygons", label_id, poly_id, points));
             dispatch(lockAnnotation("polygons", label_id, poly_id));
             dispatch(setSaveStatus("dirty"));
