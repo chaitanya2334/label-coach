@@ -1,10 +1,10 @@
 import * as React from "react";
 import "../../styles/LabelContainer.css"
 import {connect} from "react-redux";
-import Label from "../Label";
+import {LabelContainerP} from "./LabelContainer";
 
 
-export class LabelContainerP extends React.Component {
+export class AnnotatorContainerP extends React.Component {
     constructor(props) {
         super(props);
 
@@ -12,11 +12,10 @@ export class LabelContainerP extends React.Component {
 
     render() {
         let rows = [];
-        if (this.props.labels.length > 0) {
-            this.props.labels.forEach((label, i) => {
+        if (this.props.annotators.length > 0) {
+            this.props.annotators.forEach((annotator, i) => {
                 rows.push(
-                    <Label key={label.id} id={label.id} name={label.name} color={label.color} expanded={label.expanded}
-                           polygons={label.ann.polygons} lines={label.ann.lines} brushes={label.ann.brushes} label={label}/>
+                    <LabelContainerP labels={annotator.labels}/>
                 );
             });
         }
@@ -37,7 +36,7 @@ function getSearchLabels(labels, searchTerm) {
 
 function mapStateToProps(state) {
     return {
-        labels: getSearchLabels(state.labels, state.searchLabels)
+        annotators: state.adminData.annotators
     }
 }
 
@@ -45,7 +44,7 @@ function mapDispatchToProps(dispatch) {
     return {};
 }
 
-export const LabelContainer = connect(
+export const AnnotatorContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(LabelContainerP);
+)(AnnotatorContainerP);

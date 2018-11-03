@@ -48,6 +48,7 @@ class LabelResource(Resource):
         self.route('GET', (':label_id',), self.getLabel)
         self.route('GET', ('meta',), self.getLabelMeta)
         self.route('GET', ('create',), self.createLabelFile)
+        self.route('GET', ('by_name',), self.getLabelByName)
         self.route('POST', (), self.postLabel)
 
     def writeToFile(self, file, data):
@@ -160,6 +161,21 @@ class LabelResource(Resource):
 
     @access.public
     @autoDescribeRoute(
+        Description('Get labels by file_name')
+            .param('file_name', 'label file name').param('folder_id', 'the parent folder id'))
+    @rest.rawResponse
+    def getLabelByName(self, file_name, folder_id):
+        try:
+            folder = self.folder_m.load(folder_id, user=self.getCurrentUser(), level=AccessType.READ)
+            file = self.__findFile(folder, file_name)
+            cherrypy.response.headers["Content-Type"] = "application/json"
+            return self.file_m.download(file)
+        except:
+            printFail(traceback.print_exc)
+            cherrypy.response.status = 500
+
+    @access.public
+    @autoDescribeRoute(
         Description('Get label by id')
             .param('label_id', 'label file id'))
     @rest.rawResponse
@@ -186,6 +202,8 @@ class LabelResource(Resource):
             # Unknown slug
             printFail(traceback.print_exc)
             cherrypy.response.status = 404
+
+
 
     @access.public
     @autoDescribeRoute(

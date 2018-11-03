@@ -17,7 +17,8 @@ class ImageContainerP extends React.Component {
                 rows.push(
                     <Thumbnail key={image.id} id={image.id} active={image.active} title={image.title}
                                folderId={image.folderId} imageId={image.dbId} mimeType={image.mimeType}
-                               labelFileId={image.labelFileId} labelFolderId={this.props.labelFolderId}/>
+                               labelFileId={image.labelFileId} labelFolderId={this.props.labelFolderId}
+                               currentAssignment={this.props.currentAssignment} isAdmin={this.props.isAdmin}/>
                 );
             });
         }
@@ -31,6 +32,13 @@ class ImageContainerP extends React.Component {
 
 // ---------- Container ----------
 
+function isAdmin(currentUser, currentAssignment) {
+    if (currentUser !== undefined && currentAssignment.hasOwnProperty('owner')) {
+        return currentUser._id === currentAssignment.owner._id.$oid;
+    }
+    return false;
+}
+
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
@@ -40,7 +48,7 @@ function getSearchLabels(images, searchTerm) {
 }
 
 function getLabelFolderId(currentAssignment) {
-    if (currentAssignment.hasOwnProperty('label_folders') && currentAssignment.label_folders.length > 0){
+    if (currentAssignment.hasOwnProperty('label_folders') && currentAssignment.label_folders.length > 0) {
         return currentAssignment.label_folders[0]._id.$oid;
     }
 }
@@ -49,6 +57,8 @@ function mapStateToProps(state) {
     return {
         images: getSearchLabels(state.images, state.searchImages),
         labelFolderId: getLabelFolderId(state.currentAssignment),
+        currentAssignment: state.currentAssignment,
+        isAdmin: isAdmin(state.authentication.user, state.currentAssignment)
     }
 }
 

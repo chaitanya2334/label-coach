@@ -11,6 +11,7 @@ import ImageViewer from "../Imager/ImageViewer";
 import {LabelContainer} from "../control/sidebarContainers/LabelContainer";
 
 import {
+    fetchAdminData,
     fetchCurrentAssignment,
     fetchImages,
 } from "../control/controlActions";
@@ -20,24 +21,29 @@ import {withRouter} from "react-router";
 import {BrushContainer} from "../control/sidebarContainers/BrushContainer";
 import {EraserContainer} from "../control/sidebarContainers/EraserContainer";
 import {LabelSelectorContainer} from "../control/sidebarContainers/LabelSelectorContainer";
+import {AnnotatorContainer} from "../control/sidebarContainers/AnnotatorContainer";
+import {isEmpty} from "../utils";
 
 class LabelTaskerP extends React.Component {
     constructor(props) {
         super(props);
     }
 
-    render() {
-        if (this.props.currentAssignmentId !== this.props.match.params.id) {
-            this.props.fetchImages();
-        }
+    setSideBars() {
         let rightBar, leftBar;
         switch (this.props.rightBar) {
             case "labels":
-                rightBar =
-                    <SideBarP itemType="labels">
-                        <LabelContainer/>
-                    </SideBarP>;
-
+                if (this.props.isAdmin) {
+                    rightBar =
+                        <SideBarP itemType="Annotators">
+                            <AnnotatorContainer/>
+                        </SideBarP>
+                } else {
+                    rightBar =
+                        <SideBarP itemType="labels">
+                            <LabelContainer/>
+                        </SideBarP>;
+                }
                 break;
             case "brush":
                 rightBar =
@@ -66,7 +72,14 @@ class LabelTaskerP extends React.Component {
             default:
                 rightBar = null;
         }
+        return {rightBar, leftBar}
+    }
 
+    render() {
+        if (this.props.currentAssignmentId !== this.props.match.params.id) {
+            this.props.fetchImages();
+        }
+        let {rightBar, leftBar} = this.setSideBars();
 
         return (
             <div>
@@ -102,18 +115,21 @@ class LabelTaskerP extends React.Component {
 
 // ---------- Container ----------
 
-function getId(currentAssignment){
+function getId(currentAssignment) {
     if (currentAssignment.hasOwnProperty('image_folder')) {
         return currentAssignment.image_folder._id.$oid
     }
     return ""
 }
+
+
 function mapStateToProps(state) {
     return {
         images: state.images,
         currentAssignmentId: getId(state.currentAssignment),
         thumbnailBarVisibility: state.thumbnailBarVisibility,
-        rightBar: state.rightBar
+        rightBar: state.rightBar,
+        isAdmin: !isEmpty(state.adminData)
     };
 }
 
@@ -121,6 +137,7 @@ function mapDispatchToProps(dispatch, ownProps) {
     return {
         fetchImages: () => {
             dispatch(fetchCurrentAssignment(ownProps.match.params.id));
+            dispatch(fetchAdminData(ownProps.match.params.id));
             dispatch(fetchImages(ownProps.match.params.id))
         }
     };

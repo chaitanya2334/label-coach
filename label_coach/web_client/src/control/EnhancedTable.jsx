@@ -92,11 +92,11 @@ class EnhancedTableP extends React.Component {
         }
     }
 
-    onEdit(event, id){
+    onEdit(event, id) {
         this.props.onEdit(id);
     }
 
-    onDelete(event, ids){
+    onDelete(event, ids) {
         let {data} = this.props;
         for (let id of ids) {
             this.props.delete(data[id].ann_type, data[id].item_id);
@@ -104,12 +104,14 @@ class EnhancedTableP extends React.Component {
     }
 
 
-    isSelected(id) {
-        return this.props.selected.indexOf(id) !== -1;
+    isSelected(selected, id) {
+        return selected.indexOf(id) !== -1;
     };
 
     render() {
-        const {data, selected, page} = this.props;
+        let data = collectAnnotation(this.props.label.ann);
+        let selected = collectSelected(data);
+        let page = this.props.label.page;
         const {mouseOver} = this.state;
         const emptyRows = this.rowsPerPage - Math.min(this.rowsPerPage, data.length - page * this.rowsPerPage);
 
@@ -121,14 +123,16 @@ class EnhancedTableP extends React.Component {
                         <EnhancedTableHead
                             label_id={this.props.label_id}
                             selected={selected}
-                            onDelete={(event, ids)=>{this.onDelete(event, ids)}}
+                            onDelete={(event, ids) => {
+                                this.onDelete(event, ids)
+                            }}
                             rowCount={data.length}
                         />
                         <TableBody>
                             {stableSort(data, getSorting(this.order, this.orderBy))
                                 .slice(page * this.rowsPerPage, page * this.rowsPerPage + this.rowsPerPage)
                                 .map(n => {
-                                    const isSelected = this.isSelected(n.id);
+                                    const isSelected = this.isSelected(selected, n.id);
                                     const mouseOverClass = mouseOver === n.id ? "tb-mouse-over" : "tb-hidden";
                                     return (
                                         <TableRow
@@ -230,12 +234,7 @@ function collectSelected(data) {
 }
 
 function mapStateToProps(state, ownProps) {
-    let data = collectAnnotation(state.labels[ownProps.label_id].ann);
-    return {
-        data: data,
-        selected: collectSelected(data),
-        page: state.labels[ownProps.label_id].page
-    }
+
 }
 
 function mapDispatchToProps(dispatch, ownProps) {
@@ -249,10 +248,10 @@ function mapDispatchToProps(dispatch, ownProps) {
         changePage: (page) => {
             dispatch(changePage(ownProps.label_id, page));
         },
-        edit: (ann_type, item_id) =>{
+        edit: (ann_type, item_id) => {
             dispatch(unlockAnnotation(ann_type, ownProps.label_id, item_id));
         },
-        delete: (ann_type, item_id) =>{
+        delete: (ann_type, item_id) => {
             dispatch(deleteAnnotation(ann_type, ownProps.label_id, item_id));
             dispatch(setSaveStatus("dirty"));
 

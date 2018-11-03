@@ -6,6 +6,54 @@ Array.prototype.remove = function (from, to) {
     return this.push.apply(this, rest);
 };
 
+export function annotatorReducer(annotator={}, action) {
+    return produce(annotator, draft => {
+                       switch (action.type) {
+                           case "SET_ADMIN_LABELS":
+                               draft['labels'] = action.labels;
+                               return draft;
+                           default:
+                               return draft;
+                       }
+                   }
+    );
+
+}
+
+export function annotatorsReducer(annotators, action) {
+    return produce(annotators, draft => {
+                       switch (action.type) {
+                           case "SET_ADMIN_LABELS":
+                               let idx = draft.findIndex(obj => obj.user._id.$oid === action.user_id.$oid);
+                               if (idx !== -1) {
+                                   draft[idx] = annotatorReducer(draft[idx], action);
+                               }
+                               return draft;
+                           default:
+                               return draft;
+                       }
+                   }
+    );
+}
+
+export function adminData(adminData = {}, action) {
+    return produce(adminData, draft => {
+                       switch (action.type) {
+                           case "SET_ADMIN_DATA":
+                               return action.adminData;
+                           case "SET_SOME_SETTING":
+                               draft['somesetting'] = true;
+                               return draft;
+                           case "SET_ADMIN_LABELS":
+                               draft['annotators'] = annotatorsReducer(draft['annotators'], action);
+                               return draft;
+                           default:
+                               return draft;
+                       }
+                   }
+    );
+}
+
 export function tools(tools = {
     "brush": {},
     "eraser": {},

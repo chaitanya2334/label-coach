@@ -6,7 +6,7 @@ import {
     saveIndicator,
     searchImages,
     searchLabels, showHeader,
-    thumbnailBarVisibility, tools
+    thumbnailBarVisibility, tools, adminData,
 } from "./control/controlReducers";
 import {authentication} from "./login/loginReducer";
 import {assignments} from "./browser/browserReducers";
@@ -18,6 +18,7 @@ export default combineReducers({
                                    thumbnailBarVisibility,
                                    saveIndicator,
                                    authentication,
+    adminData,
                                    assignments,
                                    currentAssignment,
                                    images,

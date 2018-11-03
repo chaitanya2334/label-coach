@@ -45,6 +45,7 @@ class AssignmentResource(Resource):
     def setupRoutes(self):
         self.route('GET', (), handler=self.list)
         self.route('GET', (':a_id',), handler=self.getAssignment)
+        self.route('GET', ('admin_data',), handler=self.getAdminData)
 
     def __findName(self, folder):
         imageFolder = self.__findImageFolder(folder)
@@ -120,16 +121,47 @@ class AssignmentResource(Resource):
 
         return ret
 
+    def __getAssignment(self, _id):
+        assignments = self.__list()
+        for assignment in assignments:
+            # printOk2(assignment)
+            if str(assignment['image_folder']['_id']) == _id:
+                return assignment
+
+        return None
+
+    def __getAnnotators(self, assignment):
+        ret = []
+        for label_folder in assignment['label_folders']:
+            printOk(label_folder)
+            ret.append({
+                'user': self.user_m.load(label_folder['parentId'], user=self.getCurrentUser(), level=AccessType.READ),
+            })
+
+        return ret
+
     @access.public
     @autoDescribeRoute(
         Description('Get assignment by id').param('a_id', 'folder id that controls the assignment'))
     @rest.rawResponse
     def getAssignment(self, a_id):
         try:
-            assignments = self.__list()
-            for assignment in assignments:
-                # printOk2(assignment)
-                if str(assignment['image_folder']['_id']) == a_id:
-                    return dumps(assignment)
+            assignment = self.__getAssignment(a_id)
+            return dumps(assignment)
+        except:
+            printFail(traceback.print_exc)
+
+    @access.public
+    @autoDescribeRoute(
+        Description('Get admin data associated with assignment id').param('a_id',
+                                                                          'folder id that controls the assignment'))
+    @rest.rawResponse
+    def getAdminData(self, a_id):
+        try:
+            assignment = self.__getAssignment(a_id)
+            if assignment['owner']['_id'] == self.getCurrentUser()['_id']:
+                # then current user is this assignment's admin
+                return dumps({'annotators': self.__getAnnotators(assignment)})
+
         except:
             printFail(traceback.print_exc)

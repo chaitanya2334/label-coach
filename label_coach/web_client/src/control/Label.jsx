@@ -29,14 +29,13 @@ class LabelP extends React.Component {
 
         return (
             <ExpansionPanel expanded={this.props.expanded} onChange={this.handleChange}>
-
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
                     <div className={"lbl-dot"} style={{backgroundColor: this.props.color}}/>
                     <Typography>{this.props.name}</Typography>
                     <Counter key={"c_" + this.props.id} count={count}/>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails className="remove-all-padding">
-                    <EnhancedTable label_id={this.props.id}/>
+                    <EnhancedTable label_id={this.props.id} label={this.props.label}/>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
         )

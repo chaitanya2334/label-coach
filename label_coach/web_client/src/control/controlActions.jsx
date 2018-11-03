@@ -397,3 +397,63 @@ export function setOutline(state) {
         state: state,
     }
 }
+
+export function setAdminData(adminData) {
+    return {
+        type: 'SET_ADMIN_DATA',
+        adminData: adminData
+    }
+}
+
+export function setAdminLabels(user_id, labels){
+    return {
+        type: 'SET_ADMIN_LABELS',
+        user_id: user_id,
+        labels: labels,
+    }
+}
+
+export function fetchAdminData(assignmentId) {
+    return function (dispatch) {
+        return restRequest({
+                               url: "/assignment/admin_data",
+                               method: 'GET',
+                               data: {
+                                   a_id: assignmentId
+                               }
+                           })
+            .then(response => {
+                if (typeof response === 'string') {
+                    return JSON.parse(response);
+                } else {
+                    return response;
+                }
+            })
+            .then(adminData => {
+                dispatch(setAdminData(adminData))
+            });
+    }
+}
+
+export function fetchAdminLabels(label_name, user, folder_id) {
+    return function (dispatch) {
+        return restRequest({
+                               url: "/label/by_name",
+                               method: 'GET',
+                               data: {
+                                   file_name: label_name,
+                                   folder_id: folder_id
+                               }
+                           })
+            .then(response => {
+                if (typeof response === 'string') {
+                    return JSON.parse(response);
+                } else {
+                    return response;
+                }
+            })
+            .then(obj => {
+                dispatch(setAdminLabels(user, obj.labels))
+            });
+    }
+}
