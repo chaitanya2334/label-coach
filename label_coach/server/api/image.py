@@ -135,7 +135,7 @@ class ImageResource(Resource):
         try:
             file = File().load(image_id, level=AccessType.READ, user=self.user)
             cherrypy.response.headers["Content-Type"] = "application/png"
-            return File().download(file)
+            return File().download(file, headers=False)
 
         except:
             # Unknown slug
