@@ -6,54 +6,6 @@ Array.prototype.remove = function (from, to) {
     return this.push.apply(this, rest);
 };
 
-export function annotatorReducer(annotator={}, action) {
-    return produce(annotator, draft => {
-                       switch (action.type) {
-                           case "SET_ADMIN_LABELS":
-                               draft['labels'] = action.labels;
-                               return draft;
-                           default:
-                               return draft;
-                       }
-                   }
-    );
-
-}
-
-export function annotatorsReducer(annotators, action) {
-    return produce(annotators, draft => {
-                       switch (action.type) {
-                           case "SET_ADMIN_LABELS":
-                               let idx = draft.findIndex(obj => obj.user._id.$oid === action.user_id.$oid);
-                               if (idx !== -1) {
-                                   draft[idx] = annotatorReducer(draft[idx], action);
-                               }
-                               return draft;
-                           default:
-                               return draft;
-                       }
-                   }
-    );
-}
-
-export function adminData(adminData = {}, action) {
-    return produce(adminData, draft => {
-                       switch (action.type) {
-                           case "SET_ADMIN_DATA":
-                               return action.adminData;
-                           case "SET_SOME_SETTING":
-                               draft['somesetting'] = true;
-                               return draft;
-                           case "SET_ADMIN_LABELS":
-                               draft['annotators'] = annotatorsReducer(draft['annotators'], action);
-                               return draft;
-                           default:
-                               return draft;
-                       }
-                   }
-    );
-}
-
 export function tools(tools = {
     "brush": {},
     "eraser": {},
@@ -294,6 +246,10 @@ export function labels(labels = [], action) {
             case 'SELECT_ALL_ANN':
             case 'DESELECT_ALL_ANN':
             case 'DESELECT_ANN':
+            case 'SHOW_ANN':
+            case 'HIDE_ANN':
+            case 'SHOW_ALL_ANN':
+            case 'HIDE_ALL_ANN':
 
                 draft[action.label_id] = labelReducer(draft[action.label_id], action);
                 return draft;
@@ -388,6 +344,16 @@ export function annotationReducer(ann, action) {
                 }
                 return draft;
 
+            case 'SHOW_ANN':
+                draft.find(x => x.id === action.item_id).displayed = true;
+                return draft;
+
+            case 'SHOW_ALL_ANN':
+                for (let ann of draft) {
+                    draft.find(x => x.id === ann.id).displayed = true;
+                }
+                return draft;
+
             case 'DESELECT_ANN':
                 draft.find(x => x.id === action.item_id).selected = false;
                 return draft;
@@ -395,6 +361,16 @@ export function annotationReducer(ann, action) {
             case 'DESELECT_ALL_ANN':
                 for (let ann of draft) {
                     draft.find(x => x.id === ann.id).selected = false;
+                }
+                return draft;
+
+            case 'HIDE_ANN':
+                draft.find(x => x.id === action.item_id).displayed = false;
+                return draft;
+
+            case 'HIDE_ALL_ANN':
+                for (let ann of draft) {
+                    draft.find(x => x.id === ann.id).displayed = false;
                 }
                 return draft;
         }
@@ -425,11 +401,16 @@ export function labelReducer(label, action) {
             case 'UPDATE_ANN':
             case 'SELECT_ANN':
             case 'DESELECT_ANN':
+            case 'SHOW_ANN':
+            case 'HIDE_ANN':
+
                 draft.ann[action.ann_type] = annotationReducer(draft.ann[action.ann_type], action);
                 return draft;
 
             case 'SELECT_ALL_ANN':
             case 'DESELECT_ALL_ANN':
+            case 'SHOW_ALL_ANN':
+            case 'HIDE_ALL_ANN':
                 for (let ann_type in draft.ann) {
                     if (draft.ann.hasOwnProperty(ann_type)) {
                         draft.ann[ann_type] = annotationReducer(draft.ann[ann_type], action);

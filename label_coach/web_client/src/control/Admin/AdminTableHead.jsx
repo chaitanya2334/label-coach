@@ -1,34 +1,19 @@
 import React from 'react';
 import {connect} from "react-redux";
-import {withStyles} from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import FilterListIcon from '@material-ui/icons/FilterList';
-import "../styles/EnhancedTable.css"
-import Divider from "@material-ui/core/Divider";
-import {
-    deselectAllAnnotations,
-    deselectAnnotation,
-    selectAllAnnotations,
-    selectAnnotation,
-    selectLabel, setSaveStatus
-} from "./controlActions";
+import "../../styles/EnhancedTable.css"
+
+import {hideAllAnnotations, showAllAnnotations} from "./AdminActions";
 
 
-class EnhancedTableHeadP extends React.Component {
+class AdminTableHeadP extends React.Component {
     constructor(props) {
         super(props);
         this.handleSelectAllClick = this.handleSelectAllClick.bind(this);
@@ -36,10 +21,10 @@ class EnhancedTableHeadP extends React.Component {
 
 
     handleSelectAllClick(event) {
-        if (event.target.checked) {
-            this.props.selectAll();
+        if (this.props.selected.length > 0) {
+            this.props.hideAll();
         } else {
-            this.props.deselectAll();
+            this.props.showAll();
         }
     }
 
@@ -70,14 +55,6 @@ class EnhancedTableHeadP extends React.Component {
                     </TableCell>
                     <TableCell component="th" scope="row" padding="none"/>
                     <TableCell component="th" scope="row" padding="none">
-                        {this.props.selected.length > 0 ? (
-                            <Tooltip title="Delete">
-                                <IconButton aria-label="Delete" onClick={event => this.props.onDelete(event, this.props.selected)}>
-                                    <DeleteIcon/>
-                                </IconButton>
-                            </Tooltip>
-                        ) : ""}
-
                     </TableCell>
                 </TableRow>
             </TableHead>
@@ -94,23 +71,16 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch, ownProps) {
     return {
-        selectAll: () => {
-            dispatch(selectAllAnnotations(ownProps.label_id));
+        showAll: () => {
+            dispatch(showAllAnnotations(ownProps.user_id, ownProps.label_id));
         },
-        deselectAll: () => {
-            dispatch(deselectAllAnnotations(ownProps.label_id));
-        },
-        select: () => {
-            dispatch(selectAnnotation(ownProps.label_id, ownProps.ann_type, ownProps.item_id))
-        },
-        deselect: () => {
-            dispatch(deselectAnnotation(ownProps.label_id, ownProps.ann_type, ownProps.item_id));
-
+        hideAll: () => {
+            dispatch(hideAllAnnotations(ownProps.user_id, ownProps.label_id));
         }
     }
 }
 
-export const EnhancedTableHead = connect(
+export const AdminTableHead = connect(
     mapStateToProps,
     mapDispatchToProps
-)(EnhancedTableHeadP);
+)(AdminTableHeadP);

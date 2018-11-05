@@ -11,7 +11,6 @@ import ImageViewer from "../Imager/ImageViewer";
 import {LabelContainer} from "../control/sidebarContainers/LabelContainer";
 
 import {
-    fetchAdminData,
     fetchCurrentAssignment,
     fetchImages,
 } from "../control/controlActions";
@@ -21,8 +20,9 @@ import {withRouter} from "react-router";
 import {BrushContainer} from "../control/sidebarContainers/BrushContainer";
 import {EraserContainer} from "../control/sidebarContainers/EraserContainer";
 import {LabelSelectorContainer} from "../control/sidebarContainers/LabelSelectorContainer";
-import {AnnotatorContainer} from "../control/sidebarContainers/AnnotatorContainer";
+import {AnnotatorContainer} from "../control/Admin/AnnotatorContainer";
 import {isEmpty} from "../utils";
+import {fetchAdminData} from "../control/Admin/AdminActions";
 
 class LabelTaskerP extends React.Component {
     constructor(props) {

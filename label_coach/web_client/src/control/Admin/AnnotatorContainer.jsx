@@ -1,7 +1,15 @@
 import * as React from "react";
 import "../../styles/LabelContainer.css"
 import {connect} from "react-redux";
-import {LabelContainerP} from "./LabelContainer";
+import ViewLabel from "../Admin/ViewLabel";
+import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import ExpandMoreIcon from "../../../../node_modules/@material-ui/icons/ExpandMore";
+import Typography from "@material-ui/core/Typography";
+import Counter from "../Counter";
+import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import ExpansionPanel from "@material-ui/core/ExpansionPanel";
+import Annotator from "./Annotator";
+
 
 
 export class AnnotatorContainerP extends React.Component {
@@ -10,17 +18,17 @@ export class AnnotatorContainerP extends React.Component {
 
     }
 
+
+
     render() {
         let rows = [];
         if (this.props.annotators.length > 0) {
             this.props.annotators.forEach((annotator, i) => {
-                rows.push(
-                    <LabelContainerP labels={annotator.labels}/>
-                );
+                rows.push(<Annotator key={i} annotator={annotator}/>);
             });
         }
         return (
-            <div className="label-container">
+            <div className="ann-container">
                 {rows}
             </div>
         );

@@ -136,6 +136,7 @@ class AssignmentResource(Resource):
             printOk(label_folder)
             ret.append({
                 'user': self.user_m.load(label_folder['parentId'], user=self.getCurrentUser(), level=AccessType.READ),
+                'expanded': False,
             })
 
         return ret

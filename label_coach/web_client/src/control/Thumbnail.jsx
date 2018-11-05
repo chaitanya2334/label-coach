@@ -1,8 +1,9 @@
 import * as React from "react";
 import "../styles/Thumbnail.css";
 import connect from "react-redux/es/connect/connect";
-import {createLabelFile, fetchAdminData, fetchAdminLabels, fetchLabels, selectImage} from "./controlActions";
+import {createLabelFile, fetchLabels, selectImage} from "./controlActions";
 import "@material/elevation/dist/mdc.elevation.css";
+import {fetchAdminLabels} from "./Admin/AdminActions";
 
 class ThumbnailP extends React.Component {
     constructor(props) {
