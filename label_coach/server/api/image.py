@@ -58,11 +58,19 @@ class ImageResource(Resource):
                 return label['_id']
 
     @staticmethod
-    def __filter(files, file_type):
+    def __set_mime_type(ext):
+        if ext == ".jpg" or ext == ".jpeg":
+            return "image/jpeg"
+        elif ext == ".svs":
+            return "application/octet-stream"
+
+    def __filter(self, files, file_type):
         ret = []
         for filename, file in files:
             name, ext = os.path.splitext(filename)
             if ext in file_type:
+                if not file['mimeType']:
+                    file['mimeType'] = self.__set_mime_type(ext)
                 ret.append((filename, file))
 
         return ret
