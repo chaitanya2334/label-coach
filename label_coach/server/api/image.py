@@ -57,6 +57,16 @@ class ImageResource(Resource):
             if labelname == name:
                 return label['_id']
 
+    @staticmethod
+    def __filter(files, file_type):
+        ret = []
+        for filename, file in files:
+            name, ext = os.path.splitext(filename)
+            if ext in file_type:
+                ret.append((filename, file))
+
+        return ret
+
     @access.public
     @autoDescribeRoute(
         Description('Get image list').param('folderId', 'folder id'))
@@ -68,8 +78,8 @@ class ImageResource(Resource):
             folderModel = Folder()
             self.user = self.getCurrentUser()
             folder = folderModel.load(folderId, level=AccessType.READ, user=self.getCurrentUser())
-            files = folderModel.fileList(doc=folder, user=self.getCurrentUser(), data=False, includeMetadata=False,
-                                         mimeFilter=['application/octet-stream', 'image/png', 'image/jpeg'])
+            files = folderModel.fileList(doc=folder, user=self.getCurrentUser(), data=False, includeMetadata=False)
+            files = self.__filter(files, file_type=[".jpg", ".jpeg", ".svs"])
             ret_files = []
             for filename, file in files:
                 filename = os.path.splitext(filename)[0]
