@@ -5,7 +5,8 @@ export function assignmentReducer(assignment = {}, action) {
                        switch (action.type) {
                            case 'UPDATE_FOLDER_THUMBNAILS':
                                draft.thumbnails = action.thumbnails.map(file => ({
-                                   id: file._id.$oid
+                                   id: file._id.$oid,
+                                   mimeType: file.mimeType
                                }));
                                return draft;
                            default:

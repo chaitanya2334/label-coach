@@ -86,6 +86,7 @@ body {
     color: #333!important;
     background-color: #fff!important;
     overflow: hidden!important;
+    overflow-y: auto!important;
 }
 
 .modal-header{
