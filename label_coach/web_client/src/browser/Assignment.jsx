@@ -20,6 +20,14 @@ class AssignmentP extends React.Component {
         console.log(this.state);
     }
 
+    getThumbnailPath(imageId) {
+        if (this.props.mimeType === "image/jpeg" || this.props.mimeType === "image/png") {
+            return "api/v1/image/" + imageId + "?image_id=" + imageId;
+        }else{
+            return "api/v1/image/dzi/" + imageId + "_files/10/0_0.jpeg";
+        }
+    }
+
     displayThumbnails(n) {
         let ret = [];
         let w = 6;
@@ -33,7 +41,7 @@ class AssignmentP extends React.Component {
             for (let i = 0; i < n; i++) {
                 let path = "";
                 if (this.props.thumbnails.length > i) {
-                    path = "api/v1/image/dzi/" + this.props.thumbnails[i].id + "_files/8/0_0.jpeg";
+                    path = this.getThumbnailPath(this.props.thumbnails[i].id);
                 }
                 ret.push(
                     <div className="thumbnail-container" key={i}
