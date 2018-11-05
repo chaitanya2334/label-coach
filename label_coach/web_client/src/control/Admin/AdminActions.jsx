@@ -43,7 +43,11 @@ export function fetchAdminData(assignmentId) {
                            })
             .then(response => {
                 if (typeof response === 'string') {
-                    return JSON.parse(response);
+                    if(response) {
+                        return JSON.parse(response);
+                    }else{
+                        return [];
+                    }
                 } else {
                     return response;
                 }

@@ -36,10 +36,10 @@ class EnhancedTableHeadP extends React.Component {
 
 
     handleSelectAllClick(event) {
-        if (event.target.checked) {
-            this.props.selectAll();
-        } else {
+        if (this.props.selected.length > 0) {
             this.props.deselectAll();
+        } else {
+            this.props.selectAll();
         }
     }
 

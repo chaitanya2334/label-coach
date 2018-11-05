@@ -72,8 +72,7 @@ class EnhancedTableP extends React.Component {
     }
 
 
-    handleClick(event, id) {
-        const {data, selected} = this.props;
+    handleClick(event, id, data, selected) {
         const selectedIndex = selected.indexOf(id);
         if (selectedIndex === -1) {
             this.props.select(data[id].ann_type, data[id].item_id);
@@ -96,8 +95,7 @@ class EnhancedTableP extends React.Component {
         this.props.onEdit(id);
     }
 
-    onDelete(event, ids) {
-        let {data} = this.props;
+    onDelete(event, ids, data) {
         for (let id of ids) {
             this.props.delete(data[id].ann_type, data[id].item_id);
         }
@@ -177,7 +175,7 @@ class EnhancedTableP extends React.Component {
                                         >
                                             <TableCell padding="checkbox">
                                                 <Checkbox checked={isSelected}
-                                                          onClick={event => this.handleClick(event, n.id)}/>
+                                                          onClick={event => this.handleClick(event, n.id, data, selected)}/>
                                             </TableCell>
                                             <TableCell component="th" scope="row" padding="none">
                                                 {n.name}
@@ -196,7 +194,7 @@ class EnhancedTableP extends React.Component {
                                             <TableCell component="th" scope="row" padding="none">
                                                 <Tooltip title="Delete" className={mouseOverClass}>
                                                     <IconButton className={mouseOverClass} aria-label="Delete"
-                                                                onClick={event => this.onDelete(event, [n.id])}>
+                                                                onClick={event => this.onDelete(event, [n.id], data)}>
                                                         <DeleteIcon/>
                                                     </IconButton>
                                                 </Tooltip>
@@ -236,7 +234,7 @@ class EnhancedTableP extends React.Component {
 
 
 function mapStateToProps(state, ownProps) {
-
+    return state;
 }
 
 function mapDispatchToProps(dispatch, ownProps) {

@@ -526,6 +526,13 @@ function getToolRadius(tools, activeTool) {
     }
 }
 
+function showAll(arr) {
+    arr.forEach((item, i) => {
+        item.displayed = true
+    });
+    return arr;
+}
+
 function mapStateToProps(state) {
 
 
@@ -544,6 +551,9 @@ function mapStateToProps(state) {
         }
     } else {
         [lines, polygons, brushes] = mapLabelsToAnns(state.labels);
+        lines = showAll(lines);
+        polygons = showAll(polygons);
+        brushes = showAll(brushes);
     }
     let activeLabel = getActiveLabel(state.labels);
     let toolRadius = getToolRadius(state.tools, state.rightBar);

@@ -17,8 +17,8 @@ export class LabelContainerP extends React.Component {
         if (this.props.labels.length > 0) {
             this.props.labels.forEach((label, i) => {
                 rows.push(
-                    <Label label={label} expandLabel={this.props.expandLabel}>
-                        <EnhancedTable label_id={this.props.label.id} label={this.props.label}/>
+                    <Label key={i} label={label} expandLabel={this.props.expandLabel}>
+                        <EnhancedTable label_id={label.id} label={label}/>
                     </Label>
                 );
             });
