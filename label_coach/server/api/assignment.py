@@ -57,7 +57,7 @@ class AssignmentResource(Resource):
     def __findImageFolder(self, folder):
         creatorId = folder['creatorId']
         ret = ""
-        if creatorId == self.getCurrentUser()['_id']:
+        if self.folder_m.getAccessLevel(folder, self.getCurrentUser()) == AccessType.ADMIN:
             # this folder was created by this user, and so it will contain the images
             # printFail(folder)
             ret = folder
@@ -77,7 +77,7 @@ class AssignmentResource(Resource):
     def __findLabelFolder(self, folder):
         creatorId = folder['creatorId']
         ret = []
-        if creatorId == self.getCurrentUser()['_id']:
+        if self.folder_m.getAccessLevel(folder, self.getCurrentUser()) == AccessType.ADMIN:
             # this folder was created by this user, so it will contain images
             if 'meta' not in folder:
                 return []
