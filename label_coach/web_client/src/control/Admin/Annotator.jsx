@@ -22,7 +22,7 @@ class AnnotatorP extends React.Component {
 
     getLabelContainer(user_id, labels) {
         let rows = [];
-        if (labels.length > 0) {
+        if (labels !== undefined && labels.length > 0) {
             labels.forEach((label, i) => {
                 rows.push(<ViewLabel key={i} user_id={user_id} label={label}/>);
             });
@@ -34,9 +34,13 @@ class AnnotatorP extends React.Component {
     render() {
         let {expanded, labels, user} = this.props.annotator;
         let count = 0;
-        labels.forEach((label, i) => {
-            count += label.ann.polygons.length + label.ann.lines.length + label.ann.brushes.length;
-        });
+        if (labels !== undefined) {
+            for (let label of labels) {
+                count += label.ann.polygons.length + label.ann.lines.length + label.ann.brushes.length;
+            }
+        }else{
+            count = 0;
+        }
         console.log(user, expanded);
         return (
             <ExpansionPanel key={user._id} expanded={expanded} onChange={this.handleChange}>

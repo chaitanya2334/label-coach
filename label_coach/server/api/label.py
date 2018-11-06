@@ -99,17 +99,26 @@ class LabelResource(Resource):
         except:
             printFail(traceback.print_exc)
 
+    @staticmethod
+    def getOwnerId(folder):
+        aclList = Folder().getFullAccessList(folder)
+        for acl in aclList['users']:
+            if acl['level'] == AccessType.ADMIN:
+                return str(acl['id'])
+        return None
+
     def getConfigFolder(self, label_folder_id):
         label_folder = Folder().load(label_folder_id,
                                      user=self.getCurrentUser(),
                                      level=AccessType.READ)
-        creatorId = str(label_folder['creatorId'])
-        config_folder = self.folder_m.load(label_folder['meta'][creatorId], level=AccessType.READ,
+        ownerId = self.getOwnerId(label_folder)
+        config_folder = self.folder_m.load(label_folder['meta'][ownerId], level=AccessType.READ,
                                            user=self.getCurrentUser())
         return config_folder
 
     def findConfig(self, folder_id):
         folder = self.getConfigFolder(folder_id)
+        printOk2("Config folder {}".format(folder))
         files = self.folder_m.fileList(folder, self.getCurrentUser(), data=False)
         for file_path, file in files:
             printOk(file)
@@ -137,9 +146,8 @@ class LabelResource(Resource):
     def createLabelFile(self, file_name, folder_id):
         try:
 
-            folder = self.folder_m.load(folder_id, user=self.getCurrentUser(), level=AccessType.READ)
+            folder = self.folder_m.load(folder_id, user=self.getCurrentUser(), level=AccessType.WRITE)
             file = self.__findFile(folder, file_name)
-            printOk2(file)
             if not file:
                 file = self.createNewFile(folder, file_name)
                 config_file = self.findConfig(folder_id)
@@ -169,7 +177,10 @@ class LabelResource(Resource):
             folder = self.folder_m.load(folder_id, user=self.getCurrentUser(), level=AccessType.READ)
             file = self.__findFile(folder, file_name)
             cherrypy.response.headers["Content-Type"] = "application/json"
-            return self.file_m.download(file)
+            if file:
+                return self.file_m.download(file)
+            else:
+                return dumps({})
         except:
             printFail(traceback.print_exc)
             cherrypy.response.status = 500
@@ -182,6 +193,7 @@ class LabelResource(Resource):
     def getLabel(self, label_id):
         try:
             file = self.file_m.load(label_id, level=AccessType.READ, user=self.getCurrentUser())
+            printOk2(file)
             cherrypy.response.headers["Content-Type"] = "application/json"
             return self.file_m.download(file)
         except:

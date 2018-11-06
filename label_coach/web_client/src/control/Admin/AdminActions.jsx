@@ -113,8 +113,9 @@ export function fetchAdminLabels(label_name, user, folder_id) {
                 }
             })
             .then(obj => {
-
-                dispatch(setAdminLabels(user, obj.labels))
+                if(Object.keys(obj).length !== 0) {
+                    dispatch(setAdminLabels(user, obj.labels))
+                }
             });
     }
 }
