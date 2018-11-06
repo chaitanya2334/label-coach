@@ -55,7 +55,7 @@ class AssignmentResource(Resource):
         return ""
 
     def __findImageFolder(self, folder):
-        creatorId = folder['creatorId']
+        ownerId = self.__findOwner(folder)
         ret = ""
         if self.folder_m.getAccessLevel(folder, self.getCurrentUser()) == AccessType.ADMIN:
             # this folder was created by this user, and so it will contain the images
@@ -66,16 +66,16 @@ class AssignmentResource(Resource):
             # this is the label file, and so should only have one entry in the metadata
             assert len(meta) == 1
             # that one entry contains link to the image folder, key must be the creator of this folder
-            assert str(creatorId) in meta, (str(creatorId), meta)
+            assert str(ownerId) in meta, (str(ownerId), meta)
 
-            ret = self.folder_m.load(meta[str(creatorId)],
+            ret = self.folder_m.load(meta[str(ownerId)],
                                      level=AccessType.READ,
                                      user=self.getCurrentUser())
 
         return ret
 
     def __findLabelFolder(self, folder):
-        creatorId = folder['creatorId']
+        ownerId = self.__findOwner(folder)
         ret = []
         if self.folder_m.getAccessLevel(folder, self.getCurrentUser()) == AccessType.ADMIN:
             # this folder was created by this user, so it will contain images
@@ -92,7 +92,11 @@ class AssignmentResource(Resource):
         return ret
 
     def __findOwner(self, folder):
-        return self.user_m.load(folder['creatorId'], level=AccessType.READ, user=self.getCurrentUser())
+        aclList = Folder().getFullAccessList(folder)
+        for acl in aclList['users']:
+            if acl['level'] == AccessType.ADMIN:
+                return self.user_m.load(str(acl['id']), level=AccessType.READ, user=self.getCurrentUser())
+        return None
 
     @access.public
     @autoDescribeRoute(

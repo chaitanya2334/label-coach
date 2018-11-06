@@ -1,0 +1,72 @@
+{
+  "labels": [
+    {
+      "id": 0,
+      "name": "Normal Skin",
+      "color": "#00ff00",
+      "active": false,
+      "expanded": false,
+      "line_button": true,
+      "poly_button": true,
+      "ann": {
+        "lines": [],
+        "polygons": [],
+        "brushes": [],
+        "erasers": []
+      },
+      "page": 0,
+      "rowsPerPage": 5
+    },
+    {
+      "id": 1,
+      "name": "2nd degree - Partial thickness burn",
+      "color": "#ffff00",
+      "active": false,
+      "expanded": false,
+      "line_button": true,
+      "poly_button": true,
+      "ann": {
+        "lines": [],
+        "polygons": [],
+        "brushes": [],
+        "erasers": []
+      },
+      "page": 0,
+      "rowsPerPage": 5
+    },
+    {
+      "id": 2,
+      "name": "3rd degree - Full thickness burn",
+      "color": "#660000",
+      "active": false,
+      "expanded": false,
+      "line_button": true,
+      "poly_button": true,
+      "ann": {
+        "lines": [],
+        "polygons": [],
+        "brushes": [],
+        "erasers": []
+      },
+      "page": 0,
+      "rowsPerPage": 5
+    },
+    {
+      "id": 3,
+      "name": "4th degree - charred and/or burn to bone",
+      "color": "#FF8C00",
+      "active": false,
+      "expanded": false,
+      "line_button": true,
+      "poly_button": true,
+      "ann": {
+        "lines": [],
+        "polygons": [],
+        "brushes": [],
+        "erasers": []
+      },
+      "page": 0,
+      "rowsPerPage": 5
+    }
+  ]
+}
