@@ -55,7 +55,7 @@ class AssignmentResource(Resource):
         return ""
 
     def __findImageFolder(self, folder):
-        ownerId = self.__findOwner(folder)
+        owner = self.__findOwner(folder)
         ret = ""
         if self.folder_m.getAccessLevel(folder, self.getCurrentUser()) == AccessType.ADMIN:
             # this folder was created by this user, and so it will contain the images
@@ -66,16 +66,16 @@ class AssignmentResource(Resource):
             # this is the label file, and so should only have one entry in the metadata
             assert len(meta) == 1
             # that one entry contains link to the image folder, key must be the creator of this folder
-            assert str(ownerId) in meta, (str(ownerId), meta)
+            assert str(owner.id) in meta, (str(owner.id), meta)
 
-            ret = self.folder_m.load(meta[str(ownerId)],
+            ret = self.folder_m.load(meta[str(owner.id)],
                                      level=AccessType.READ,
                                      user=self.getCurrentUser())
 
         return ret
 
     def __findLabelFolder(self, folder):
-        ownerId = self.__findOwner(folder)
+        owner = self.__findOwner(folder)
         ret = []
         if self.folder_m.getAccessLevel(folder, self.getCurrentUser()) == AccessType.ADMIN:
             # this folder was created by this user, so it will contain images
