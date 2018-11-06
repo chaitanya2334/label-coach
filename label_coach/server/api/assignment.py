@@ -66,9 +66,9 @@ class AssignmentResource(Resource):
             # this is the label file, and so should only have one entry in the metadata
             assert len(meta) == 1
             # that one entry contains link to the image folder, key must be the creator of this folder
-            assert str(owner.id) in meta, (str(owner.id), meta)
+            assert str(owner['_id']) in meta, (str(owner['_id']), meta)
 
-            ret = self.folder_m.load(meta[str(owner.id)],
+            ret = self.folder_m.load(meta[str(owner['_id'])],
                                      level=AccessType.READ,
                                      user=self.getCurrentUser())
 
