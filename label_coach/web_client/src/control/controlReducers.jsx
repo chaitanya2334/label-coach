@@ -446,3 +446,14 @@ export function labelReducer(label, action) {
         }
     });
 }
+
+export function navState(navState=false, action){
+    return produce(navState, draft =>{
+        switch (action.type) {
+            case "SET_NAV_STATE":
+                return action.state;
+            default:
+                return draft;
+        }
+    });
+}

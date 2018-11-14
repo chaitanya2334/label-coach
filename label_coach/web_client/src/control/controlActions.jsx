@@ -398,3 +398,9 @@ export function setOutline(state) {
     }
 }
 
+export function setNavState(state){
+    return {
+        type: "SET_NAV_STATE",
+        state: state,
+    }
+}

@@ -2,7 +2,7 @@ import {combineReducers} from "redux";
 import {
     currentAssignment,
     images,
-    labels, rightBar,
+    labels, navState, rightBar,
     saveIndicator,
     searchImages,
     searchLabels, showHeader,
@@ -26,4 +26,5 @@ export default combineReducers({
                                    labels,
                                    searchImages,
                                    searchLabels,
+                                   navState,
                                })

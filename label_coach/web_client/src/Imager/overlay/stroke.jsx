@@ -22,7 +22,7 @@ export default class Stroke extends Shape {
         this.mainPath = this.createPath();
         if (this.drawState === "selected") {
             this.highlightPath = this.createPath();
-            this.highlightPath.attr("stroke-width", (this.r / 5) * (1 / this.zoom));
+            this.highlightPath.attr("stroke-width", (this.r / 5));
             this.highlightPath.attr("stroke", 'red');
             this.highlightPath.attr("opacity", 0.9);
         }
@@ -156,7 +156,7 @@ export default class Stroke extends Shape {
                  .append("circle")
                  .attr('class', 'dot')
                  .attr('id', 'c' + this.id)
-                 .attr("r", this.r * (1 / this.zoom));
+                 .attr("r", this.r);
     }
 
     onEnter() {
@@ -224,7 +224,7 @@ export default class Stroke extends Shape {
     setSize(size) {
         this.size = size;
         this.r = this.R * this.size;
-        this.mainPath.attr('stroke-width', this.r * 2 * (1 / this.zoom))
+        this.mainPath.attr('stroke-width', this.r * 2)
     }
 
 

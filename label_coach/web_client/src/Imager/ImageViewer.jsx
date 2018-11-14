@@ -92,6 +92,7 @@ class ImageViewerP extends React.Component {
                                             fullPageButton: 'full-page',
                                             showNavigator: true,
                                             navigatorId: 'navigator',
+                                            //navigatorAutoFade: true,
                                         });
         this.onViewerReady();
     }
@@ -383,6 +384,13 @@ class ImageViewerP extends React.Component {
 
         this.deleteAllAnnotations();
 
+        if (this.props.navState) {
+            this.viewer.navigator.element.style.display = "inline-block";
+            this.viewer.navigator.element.parentElement.parentElement.style.display = "inline-block";
+        } else {
+            this.viewer.navigator.element.style.display = "none";
+            this.viewer.navigator.element.parentElement.parentElement.style.display = "none";
+        }
         if (this.props.activeLabel) {
             this.setActiveTool(this.props.activeTool, this.props.activeLabel);
         }
@@ -567,7 +575,8 @@ function mapStateToProps(state) {
         activeTool: state.rightBar,
         polygons: polygons,
         lines: lines,
-        brushes: brushes
+        brushes: brushes,
+        navState: state.navState
     };
 }
 
