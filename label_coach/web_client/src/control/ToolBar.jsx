@@ -57,9 +57,11 @@ class ToolBarP extends React.Component {
                 switch (sidebar) {
                     case "review":
                         rightBar = "labels";
+                        this.props.setNavState(true);
                         break;
                     case "thumbnail":
                         thumbnailBarVis = true;
+                        this.props.setNavState(true);
                         break;
                 }
             }
