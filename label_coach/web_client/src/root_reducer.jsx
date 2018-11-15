@@ -11,6 +11,7 @@ import {
 import {authentication} from "./login/loginReducer";
 import {assignments} from "./browser/browserReducers";
 import {adminData} from "./control/Admin/AdminReducers";
+import {currentProject} from "./control/Project/ProjectReducers";
 
 export default combineReducers({
                                    tools,
@@ -27,4 +28,5 @@ export default combineReducers({
                                    searchImages,
                                    searchLabels,
                                    navState,
+                                   currentProject,
                                })

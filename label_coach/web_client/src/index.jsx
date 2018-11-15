@@ -12,8 +12,8 @@ import {Provider} from "react-redux";
 import {applyMiddleware, createStore} from "redux";
 import rootReducer from "./root_reducer";
 import thunk from "redux-thunk";
-import {postLabels} from "./control/controlActions";
 import {composeWithDevTools} from "remote-redux-devtools";
+import AdminPage from "./pages/AdminPage";
 
 class Index extends React.Component {
     constructor(props) {
@@ -30,6 +30,7 @@ class Index extends React.Component {
                         <Route exact path="/register" component={RegisterPage}/>
                         <Route path="/tasker/:id" component={LabelTasker}/>
                         <Route exact path="/content" component={CollectionBrowserP}/>
+                        <Route exact path="/admin/:id" component={AdminPage}/>
                     </div>
                 </HashRouter>
             </Provider>
