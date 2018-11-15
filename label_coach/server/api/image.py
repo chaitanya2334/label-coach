@@ -57,6 +57,24 @@ class ImageResource(Resource):
             if labelname == name:
                 return label['_id']
 
+    @staticmethod
+    def __set_mime_type(ext):
+        if ext == ".jpg" or ext == ".jpeg":
+            return "image/jpeg"
+        elif ext == ".svs":
+            return "application/octet-stream"
+
+    def __filter(self, files, file_type):
+        ret = []
+        for filename, file in files:
+            name, ext = os.path.splitext(filename)
+            if ext in file_type:
+                if not file['mimeType']:
+                    file['mimeType'] = self.__set_mime_type(ext)
+                ret.append((filename, file))
+
+        return ret
+
     @access.public
     @autoDescribeRoute(
         Description('Get image list').param('folderId', 'folder id'))
@@ -68,13 +86,12 @@ class ImageResource(Resource):
             folderModel = Folder()
             self.user = self.getCurrentUser()
             folder = folderModel.load(folderId, level=AccessType.READ, user=self.getCurrentUser())
-            files = folderModel.fileList(doc=folder, user=self.getCurrentUser(), data=False, includeMetadata=True,
-                                         mimeFilter=['application/octet-stream', 'image/png', 'image/jpeg'])
+            files = folderModel.fileList(doc=folder, user=self.getCurrentUser(), data=False, includeMetadata=False)
+            files = self.__filter(files, file_type=[".jpg", ".jpeg", ".svs"])
             ret_files = []
             for filename, file in files:
                 filename = os.path.splitext(filename)[0]
                 printOk("filename: " + filename)
-                file['label_id'] = self.find_label_id(folder, filename)
                 ret_files.append(file)
 
             cherrypy.response.headers["Content-Type"] = "application/json"
@@ -118,7 +135,7 @@ class ImageResource(Resource):
         try:
             file = File().load(image_id, level=AccessType.READ, user=self.user)
             cherrypy.response.headers["Content-Type"] = "application/png"
-            return File().download(file)
+            return File().download(file, headers=False)
 
         except:
             # Unknown slug

@@ -1,15 +1,16 @@
 import {combineReducers} from "redux";
 import {
-    currentFolder,
+    currentAssignment,
     images,
-    labels, rightBar,
+    labels, navState, rightBar,
     saveIndicator,
     searchImages,
     searchLabels, showHeader,
-    thumbnailBarVisibility, tools
+    thumbnailBarVisibility, tools,
 } from "./control/controlReducers";
 import {authentication} from "./login/loginReducer";
-import {folders} from "./browser/browserReducers";
+import {assignments} from "./browser/browserReducers";
+import {adminData} from "./control/Admin/AdminReducers";
 
 export default combineReducers({
                                    tools,
@@ -18,10 +19,12 @@ export default combineReducers({
                                    thumbnailBarVisibility,
                                    saveIndicator,
                                    authentication,
-                                   folders,
-                                   currentFolder,
+                                   adminData,
+                                   assignments,
+                                   currentAssignment,
                                    images,
                                    labels,
                                    searchImages,
                                    searchLabels,
+                                   navState,
                                })

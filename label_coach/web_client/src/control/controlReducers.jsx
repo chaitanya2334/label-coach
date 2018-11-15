@@ -113,15 +113,17 @@ export function imageReducer(image, action) {
     }
 }
 
-export function currentFolder(currentFolder = {}, action) {
-    switch (action.type) {
-        case 'SET_CURRENT_FOLDER':
-            return produce(currentFolder, draftState => {
-                draftState.id = action.id;
-            });
-        default:
-            return currentFolder;
-    }
+export function currentAssignment(currentAssignment = {}, action) {
+    return produce(currentAssignment, draft => {
+        switch (action.type) {
+            case 'SET_CURRENT_ASSIGNMENT':
+                draft = action.assignment;
+                return draft;
+            default:
+                return currentAssignment;
+        }
+    });
+
 }
 
 export function images(images = [], action) {
@@ -244,6 +246,10 @@ export function labels(labels = [], action) {
             case 'SELECT_ALL_ANN':
             case 'DESELECT_ALL_ANN':
             case 'DESELECT_ANN':
+            case 'SHOW_ANN':
+            case 'HIDE_ANN':
+            case 'SHOW_ALL_ANN':
+            case 'HIDE_ALL_ANN':
 
                 draft[action.label_id] = labelReducer(draft[action.label_id], action);
                 return draft;
@@ -338,6 +344,16 @@ export function annotationReducer(ann, action) {
                 }
                 return draft;
 
+            case 'SHOW_ANN':
+                draft.find(x => x.id === action.item_id).displayed = true;
+                return draft;
+
+            case 'SHOW_ALL_ANN':
+                for (let ann of draft) {
+                    draft.find(x => x.id === ann.id).displayed = true;
+                }
+                return draft;
+
             case 'DESELECT_ANN':
                 draft.find(x => x.id === action.item_id).selected = false;
                 return draft;
@@ -345,6 +361,16 @@ export function annotationReducer(ann, action) {
             case 'DESELECT_ALL_ANN':
                 for (let ann of draft) {
                     draft.find(x => x.id === ann.id).selected = false;
+                }
+                return draft;
+
+            case 'HIDE_ANN':
+                draft.find(x => x.id === action.item_id).displayed = false;
+                return draft;
+
+            case 'HIDE_ALL_ANN':
+                for (let ann of draft) {
+                    draft.find(x => x.id === ann.id).displayed = false;
                 }
                 return draft;
         }
@@ -375,11 +401,16 @@ export function labelReducer(label, action) {
             case 'UPDATE_ANN':
             case 'SELECT_ANN':
             case 'DESELECT_ANN':
+            case 'SHOW_ANN':
+            case 'HIDE_ANN':
+
                 draft.ann[action.ann_type] = annotationReducer(draft.ann[action.ann_type], action);
                 return draft;
 
             case 'SELECT_ALL_ANN':
             case 'DESELECT_ALL_ANN':
+            case 'SHOW_ALL_ANN':
+            case 'HIDE_ALL_ANN':
                 for (let ann_type in draft.ann) {
                     if (draft.ann.hasOwnProperty(ann_type)) {
                         draft.ann[ann_type] = annotationReducer(draft.ann[ann_type], action);
@@ -410,6 +441,17 @@ export function labelReducer(label, action) {
                 draft.page = action.page;
                 return draft;
 
+            default:
+                return draft;
+        }
+    });
+}
+
+export function navState(navState=false, action){
+    return produce(navState, draft =>{
+        switch (action.type) {
+            case "SET_NAV_STATE":
+                return action.state;
             default:
                 return draft;
         }

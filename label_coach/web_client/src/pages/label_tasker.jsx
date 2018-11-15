@@ -1,44 +1,49 @@
 import * as React from "react";
 import "../styles/LabelTasker.css";
-import {connect, Provider} from "react-redux";
-import {applyMiddleware, createStore} from "redux";
-import rootReducer from "../root_reducer";
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faUser, faRobot} from '@fortawesome/free-solid-svg-icons'
+import {connect} from "react-redux";
+
 
 import Logo from "../logo";
 import SideBarP from "../control/SideBar";
 import ImageContainer from "../control/sidebarContainers/ImageContainer";
-import ToolBar from "../control/ToolBar";
+
 import ImageViewer from "../Imager/ImageViewer";
 import {LabelContainer} from "../control/sidebarContainers/LabelContainer";
-import thunk from "redux-thunk";
-import {fetchImages, fetchLabels, postLabels, setCurrentFolder} from "../control/controlActions";
+
+import {
+    fetchCurrentAssignment,
+    fetchImages,
+} from "../control/controlActions";
 import {Link} from "react-router-dom";
-import CollectionBrowserP from "./collection_browser";
 import UserControl from "../control/UserControl";
 import {withRouter} from "react-router";
 import {BrushContainer} from "../control/sidebarContainers/BrushContainer";
 import {EraserContainer} from "../control/sidebarContainers/EraserContainer";
 import {LabelSelectorContainer} from "../control/sidebarContainers/LabelSelectorContainer";
+import {AnnotatorContainer} from "../control/Admin/AnnotatorContainer";
+import {isEmpty} from "../utils";
+import {fetchAdminData} from "../control/Admin/AdminActions";
 
 class LabelTaskerP extends React.Component {
     constructor(props) {
         super(props);
     }
 
-    render() {
-        if (this.props.currentFolderId !== this.props.match.params.id) {
-            this.props.fetchImages();
-        }
+    setSideBars() {
         let rightBar, leftBar;
         switch (this.props.rightBar) {
             case "labels":
-                rightBar =
-                    <SideBarP itemType="labels">
-                        <LabelContainer/>
-                    </SideBarP>;
-
+                if (this.props.isAdmin) {
+                    rightBar =
+                        <SideBarP itemType="Annotators">
+                            <AnnotatorContainer/>
+                        </SideBarP>
+                } else {
+                    rightBar =
+                        <SideBarP itemType="labels">
+                            <LabelContainer/>
+                        </SideBarP>;
+                }
                 break;
             case "brush":
                 rightBar =
@@ -67,7 +72,14 @@ class LabelTaskerP extends React.Component {
             default:
                 rightBar = null;
         }
+        return {rightBar, leftBar}
+    }
 
+    render() {
+        if (this.props.currentAssignmentId !== this.props.match.params.id) {
+            this.props.fetchImages();
+        }
+        let {rightBar, leftBar} = this.setSideBars();
 
         return (
             <div>
@@ -103,19 +115,29 @@ class LabelTaskerP extends React.Component {
 
 // ---------- Container ----------
 
+function getId(currentAssignment) {
+    if (currentAssignment.hasOwnProperty('image_folder')) {
+        return currentAssignment.image_folder._id.$oid
+    }
+    return ""
+}
+
+
 function mapStateToProps(state) {
     return {
         images: state.images,
-        currentFolderId: state.currentFolder.id,
+        currentAssignmentId: getId(state.currentAssignment),
         thumbnailBarVisibility: state.thumbnailBarVisibility,
-        rightBar: state.rightBar
+        rightBar: state.rightBar,
+        isAdmin: !isEmpty(state.adminData)
     };
 }
 
 function mapDispatchToProps(dispatch, ownProps) {
     return {
         fetchImages: () => {
-            dispatch(setCurrentFolder(ownProps.match.params.id));
+            dispatch(fetchCurrentAssignment(ownProps.match.params.id));
+            dispatch(fetchAdminData(ownProps.match.params.id));
             dispatch(fetchImages(ownProps.match.params.id))
         }
     };

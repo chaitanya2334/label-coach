@@ -92,6 +92,7 @@ class ImageViewerP extends React.Component {
                                             fullPageButton: 'full-page',
                                             showNavigator: true,
                                             navigatorId: 'navigator',
+                                            //navigatorAutoFade: true,
                                         });
         this.onViewerReady();
     }
@@ -256,8 +257,8 @@ class ImageViewerP extends React.Component {
         if (this.activeEraser) {
             this.activeEraser.onMouseDragEnd();
             // delete all brushes intersecting with active eraser
-            let brush_label_pairs= [];
-            for (let brush of this.activeEraser.getErasedBrushes(this.brushes)){
+            let brush_label_pairs = [];
+            for (let brush of this.activeEraser.getErasedBrushes(this.brushes)) {
                 brush_label_pairs.push({label_id: brush.label.id, brush_id: brush.id});
             }
             this.props.deleteStrokes("brushes", brush_label_pairs);
@@ -327,8 +328,12 @@ class ImageViewerP extends React.Component {
         if (this.activeEraser)
             this.activeEraser.delete();
 
-        d3.select(this.svgOverlay.getNode(0)).select("circle").remove();
-        d3.select(this.svgOverlay.getNode(1)).select("circle").remove();
+        d3.select(this.svgOverlay.getNode(0))
+          .select("circle")
+          .remove();
+        d3.select(this.svgOverlay.getNode(1))
+          .select("circle")
+          .remove();
         this.activePolygon = null;
         this.activeBrush = null;
         this.activeEraser = null;
@@ -379,47 +384,60 @@ class ImageViewerP extends React.Component {
 
         this.deleteAllAnnotations();
 
+        if (this.props.navState) {
+            this.viewer.navigator.element.style.display = "inline-block";
+            this.viewer.navigator.element.parentElement.parentElement.style.display = "inline-block";
+        } else {
+            this.viewer.navigator.element.style.display = "none";
+            this.viewer.navigator.element.parentElement.parentElement.style.display = "none";
+        }
         if (this.props.activeLabel) {
             this.setActiveTool(this.props.activeTool, this.props.activeLabel);
         }
 
         for (let brush of this.props.brushes) {
-            let brushObj = new Brush(this.svgOverlay,
-                                     this.viewer,
-                                     brush.label,
-                                     brush.selected,
-                                     brush.id,
-                                     brush.brush_radius,
-                                     this.zoom);
+            if (brush.displayed) {
+                let brushObj = new Brush(this.svgOverlay,
+                                         this.viewer,
+                                         brush.label,
+                                         brush.selected,
+                                         brush.id,
+                                         brush.brush_radius,
+                                         this.zoom);
 
-            brushObj.addImagePoints(brush.points);
-            this.brushes.push(brushObj);
+                brushObj.addImagePoints(brush.points);
+                this.brushes.push(brushObj);
+            }
         }
 
         //create polygons from props
         for (let polygon of this.props.polygons) {
-            let polyObj = new Polygon(this.svgOverlay,
-                                      this.viewer,
-                                      polygon.label,
-                                      "read_only",
-                                      polygon.selected,
-                                      polygon.poly_id,
-                                      this.zoom,
-                                      this.props.addPolygon);
+            if (polygon.displayed) {
+                let polyObj = new Polygon(this.svgOverlay,
+                                          this.viewer,
+                                          polygon.label,
+                                          "read_only",
+                                          polygon.selected,
+                                          polygon.poly_id,
+                                          this.zoom,
+                                          this.props.addPolygon);
 
-            polyObj.addImagePoints(polygon.points);
-            this.polygons.push(polyObj);
+                polyObj.addImagePoints(polygon.points);
+                this.polygons.push(polyObj);
+            }
         }
 
         for (let line of this.props.lines) {
-            let lineObj = new Line(this.svgOverlay,
-                                   this.viewer,
-                                   line.label_id,
-                                   line.line_id,
-                                   this.zoom);
+            if (lineObj.displayed) {
+                let lineObj = new Line(this.svgOverlay,
+                                       this.viewer,
+                                       line.label_id,
+                                       line.line_id,
+                                       this.zoom);
 
-            lineObj.addImagePoints(line.points);
-            this.lines.push(lineObj);
+                lineObj.addImagePoints(line.points);
+                this.lines.push(lineObj);
+            }
         }
 
     }
@@ -482,7 +500,7 @@ function mapLabelsToAnns(labels) {
         polygons = polygons.concat(newPolygons);
         brushes = brushes.concat(newBrushes);
     }
-    return {lines, polygons, brushes};
+    return [lines, polygons, brushes];
 }
 
 function getActiveImageInfo(images) {
@@ -516,11 +534,35 @@ function getToolRadius(tools, activeTool) {
     }
 }
 
+function showAll(arr) {
+    arr.forEach((item, i) => {
+        item.displayed = true
+    });
+    return arr;
+}
+
 function mapStateToProps(state) {
 
 
     let {dbId, mimeType, title} = getActiveImageInfo(state.images);
-    let {lines, polygons, brushes} = mapLabelsToAnns(state.labels);
+    let lines = [], polygons = [], brushes = [];
+    if (state.authentication.user !== undefined && state.authentication.user.admin) {
+        if (state.adminData.annotators !== undefined) {
+            for (let annotator of state.adminData.annotators) {
+                if (annotator.labels !== undefined) {
+                    let [l, p, b] = mapLabelsToAnns(annotator.labels);
+                    lines.push(...l);
+                    polygons.push(...p);
+                    brushes.push(...b);
+                }
+            }
+        }
+    } else {
+        [lines, polygons, brushes] = mapLabelsToAnns(state.labels);
+        lines = showAll(lines);
+        polygons = showAll(polygons);
+        brushes = showAll(brushes);
+    }
     let activeLabel = getActiveLabel(state.labels);
     let toolRadius = getToolRadius(state.tools, state.rightBar);
     return {
@@ -533,7 +575,8 @@ function mapStateToProps(state) {
         activeTool: state.rightBar,
         polygons: polygons,
         lines: lines,
-        brushes: brushes
+        brushes: brushes,
+        navState: state.navState
     };
 }
 
@@ -565,8 +608,8 @@ function mapDispatchToProps(dispatch) {
             dispatch(lockAnnotation(ann_type, label_id, brush_id));
             dispatch(setSaveStatus("dirty"));
         },
-        deleteStrokes: (ann_type, label_brush_ids) =>{
-            for(let pair of label_brush_ids) {
+        deleteStrokes: (ann_type, label_brush_ids) => {
+            for (let pair of label_brush_ids) {
                 let {label_id, brush_id} = pair;
                 dispatch(deleteAnnotation(ann_type, label_id, brush_id));
             }

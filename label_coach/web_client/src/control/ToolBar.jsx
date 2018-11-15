@@ -17,7 +17,7 @@ import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
-import {addAnnotation, setHeader, selectRightBar, setThumbnailBarVisibility} from "./controlActions";
+import {addAnnotation, setHeader, selectRightBar, setThumbnailBarVisibility, setNavState} from "./controlActions";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import BrushIcon from "../../../node_modules/@material-ui/icons/Brush";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -41,6 +41,11 @@ class ToolBarP extends React.Component {
     }
 
     handleDrawTool(event, drawTool) {
+        if(drawTool) {
+            this.props.setNavState(false);
+        }else{
+            this.props.setNavState(true);
+        }
         this.props.selectRightBar(drawTool);
     }
 
@@ -52,9 +57,11 @@ class ToolBarP extends React.Component {
                 switch (sidebar) {
                     case "review":
                         rightBar = "labels";
+                        this.props.setNavState(true);
                         break;
                     case "thumbnail":
                         thumbnailBarVis = true;
+                        this.props.setNavState(true);
                         break;
                 }
             }
@@ -87,13 +94,13 @@ class ToolBarP extends React.Component {
                     <Divider className={"vertical-divider"}/>
 
                     <ToggleButtonGroup exclusive value={this.props.drawTool} justified="true" onChange={this.handleDrawTool}>
-                        <ToggleButton id="brush" value="brush" className="btn-small"
+                        <ToggleButton disabled={this.props.disable} id="brush" value="brush" className="btn-small"
                                       size="small"><BrushIcon/></ToggleButton>
                         <ToggleButton disabled id="line" value="line" className="btn-small"
                                       size="small"><CreateIcon/></ToggleButton>
-                        <ToggleButton id="poly" value="poly" className="btn-small" size="large"><FontAwesomeIcon
+                        <ToggleButton disabled={this.props.disable} id="poly" value="poly" className="btn-small" size="large"><FontAwesomeIcon
                             className='icon-medium' icon={faDrawPolygon}/></ToggleButton>
-                        <ToggleButton value="eraser" id="erazer" size="small">
+                        <ToggleButton disabled={this.props.disable} value="eraser" id="erazer" size="small">
                             <SvgIcon>
                                 <path d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4.008 4.008 0 0
                                     1-5.66 0L2.81 17c-.78-.79-.78-2.05 0-2.84l10.6-10.6c.79-.78 2.05-.78 2.83
@@ -109,7 +116,7 @@ class ToolBarP extends React.Component {
                         <ToggleButton value="review" id="review" size="small" className="text-btn">Review</ToggleButton>
                     </ToggleButtonGroup>
 
-                    <ToggleButton value="save" id="save" size="small"
+                    <ToggleButton disabled={this.props.disable} value="save" id="save" size="small"
                                   onClick={this.props.save}><SaveIcon/> Save</ToggleButton>
 
                 </div>
@@ -124,6 +131,13 @@ class ToolBarP extends React.Component {
 
 
 // ---------- Container ----------
+
+function isAdmin(currentUser, currentAssignment) {
+    if (currentUser !== undefined && currentAssignment.hasOwnProperty('owner')) {
+        return currentUser._id === currentAssignment.owner._id.$oid;
+    }
+    return false;
+}
 
 function mapStateToProps(state) {
     let overview = [];
@@ -143,7 +157,8 @@ function mapStateToProps(state) {
         showHeader: state.showHeader,
         rightBar: state.rightBar,
         overview: overview,
-        drawTool: drawTool
+        drawTool: drawTool,
+        disable: isAdmin(state.authentication.user, state.currentAssignment)
     };
 }
 
@@ -161,6 +176,9 @@ function mapDispatchToProps(dispatch) {
         save: () => {
             dispatch(lockAllAnnotations("brushes"));
             dispatch(setSaveStatus("dirty"));
+        },
+        setNavState: (state) =>{
+            dispatch(setNavState(state));
         }
     };
 }

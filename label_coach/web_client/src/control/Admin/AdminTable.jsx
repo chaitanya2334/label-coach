@@ -1,33 +1,21 @@
 import React from 'react';
 import {connect} from "react-redux";
-import {withStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import FilterListIcon from '@material-ui/icons/FilterList';
-import "../styles/EnhancedTable.css"
-import Divider from "@material-ui/core/Divider";
+import LabelOutlineIcon from '@material-ui/icons/LabelOutlined';
+import LabelIcon from '@material-ui/icons/Label';
+import "../../styles/EnhancedTable.css"
 import {
-    changePage, deleteAnnotation,
-    deselectAllAnnotations,
-    deselectAnnotation,
-    selectAllAnnotations,
-    selectAnnotation,
-    selectLabel, setSaveStatus, unlockAnnotation
-} from "./controlActions";
-import {EnhancedTableHead} from "./EnhancedTableHead";
+    changePage,
+} from "../controlActions";
+
+import {hideAllAnnotations, hideAnnotation, showAllAnnotations, showAnnotation} from "./AdminActions";
+import {AdminTableHead} from "./AdminTableHead";
 
 function desc(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -53,7 +41,7 @@ function getSorting(order, orderBy) {
     return order === 'desc' ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 }
 
-class EnhancedTableP extends React.Component {
+class AdminTableP extends React.Component {
     constructor(props) {
         super(props);
         this.order = 'asc';
@@ -72,12 +60,12 @@ class EnhancedTableP extends React.Component {
     }
 
 
-    handleClick(event, id, data, selected) {
-        const selectedIndex = selected.indexOf(id);
-        if (selectedIndex === -1) {
-            this.props.select(data[id].ann_type, data[id].item_id);
+    handleClick(event, id, data, displayed) {
+        const displayedIndex = displayed.indexOf(id);
+        if (displayedIndex === -1) {
+            this.props.show(data[id].ann_type, data[id].item_id);
         } else {
-            this.props.deselect(data[id].ann_type, data[id].item_id);
+            this.props.hide(data[id].ann_type, data[id].item_id);
         }
     }
 
@@ -91,19 +79,8 @@ class EnhancedTableP extends React.Component {
         }
     }
 
-    onEdit(event, id) {
-        this.props.onEdit(id);
-    }
-
-    onDelete(event, ids, data) {
-        for (let id of ids) {
-            this.props.delete(data[id].ann_type, data[id].item_id);
-        }
-    }
-
-
-    static isSelected(selected, id) {
-        return selected.indexOf(id) !== -1;
+    static isDisplayed(displayed, id) {
+        return displayed.indexOf(id) !== -1;
     };
 
     static collectAnnotation(anns) {
@@ -115,7 +92,7 @@ class EnhancedTableP extends React.Component {
                     ret.push({
                                  id: i,
                                  name: ann.text,
-                                 selected: ann.selected,
+                                 displayed: ann.displayed,
                                  ann_type: ann_type,
                                  item_id: ann.id
                              });
@@ -126,10 +103,10 @@ class EnhancedTableP extends React.Component {
         return ret;
     }
 
-    static collectSelected(data) {
+    static collectDisplayed(data) {
         let ret = [];
         for (let item of data) {
-            if (item.selected) {
+            if (item.displayed) {
                 ret.push(item.id);
             }
         }
@@ -137,8 +114,8 @@ class EnhancedTableP extends React.Component {
     }
 
     render() {
-        let data = EnhancedTableP.collectAnnotation(this.props.label.ann);
-        let selected = EnhancedTableP.collectSelected(data);
+        let data = AdminTableP.collectAnnotation(this.props.label.ann);
+        let displayed = AdminTableP.collectDisplayed(data);
         let page = this.props.label.page;
         const {mouseOver} = this.state;
         const emptyRows = this.rowsPerPage - Math.min(this.rowsPerPage, data.length - page * this.rowsPerPage);
@@ -148,56 +125,46 @@ class EnhancedTableP extends React.Component {
                 <div className="tb-wrapper">
 
                     <Table className="tb-table" aria-labelledby="tableTitle">
-                        <EnhancedTableHead
+                        <AdminTableHead
                             label_id={this.props.label_id}
-                            selected={selected}
+                            selected={displayed}
                             onDelete={(event, ids) => {
                                 this.onDelete(event, ids)
                             }}
+                            user_id={this.props.user_id}
                             rowCount={data.length}
                         />
                         <TableBody>
                             {stableSort(data, getSorting(this.order, this.orderBy))
                                 .slice(page * this.rowsPerPage, page * this.rowsPerPage + this.rowsPerPage)
                                 .map(n => {
-                                    const isSelected = EnhancedTableP.isSelected(selected, n.id);
+                                    const isDisplayed = AdminTableP.isDisplayed(displayed, n.id);
                                     const mouseOverClass = mouseOver === n.id ? "tb-mouse-over" : "tb-hidden";
                                     return (
                                         <TableRow
                                             hover
                                             role="checkbox"
-                                            aria-checked={isSelected}
+                                            aria-checked={isDisplayed}
                                             tabIndex={-1}
                                             key={n.id}
-                                            selected={isSelected}
+                                            selected={isDisplayed}
                                             onMouseEnter={event => this.onMouseEnter(event, n.id)}
                                             onMouseLeave={event => this.onMouseLeave(event, n.id)}
                                         >
                                             <TableCell padding="checkbox">
-                                                <Checkbox checked={isSelected}
-                                                          onClick={event => this.handleClick(event, n.id, data, selected)}/>
+
+                                                <Checkbox checked={isDisplayed} icon={<LabelOutlineIcon/>}
+                                                          checkedIcon={<LabelIcon/>}
+                                                          onClick={event => this.handleClick(event, n.id, data, displayed)}/>
+
                                             </TableCell>
                                             <TableCell component="th" scope="row" padding="none">
                                                 {n.name}
                                             </TableCell>
                                             <TableCell component="th" scope="row" padding="none">
 
-                                                <Tooltip title="Edit">
-                                                    <IconButton className={mouseOverClass} aria-label="Edit"
-                                                                onClick={event => this.onEdit(event, n.id)}>
-                                                        <EditIcon/>
-                                                    </IconButton>
-                                                </Tooltip>
-
-
                                             </TableCell>
                                             <TableCell component="th" scope="row" padding="none">
-                                                <Tooltip title="Delete" className={mouseOverClass}>
-                                                    <IconButton className={mouseOverClass} aria-label="Delete"
-                                                                onClick={event => this.onDelete(event, [n.id], data)}>
-                                                        <DeleteIcon/>
-                                                    </IconButton>
-                                                </Tooltip>
 
                                             </TableCell>
                                         </TableRow>
@@ -239,27 +206,25 @@ function mapStateToProps(state, ownProps) {
 
 function mapDispatchToProps(dispatch, ownProps) {
     return {
-        select: (ann_type, item_id) => {
-            dispatch(selectAnnotation(ownProps.label_id, ann_type, item_id))
+        show: (ann_type, item_id) => {
+            dispatch(showAnnotation(ownProps.user_id, ownProps.label_id, ann_type, item_id))
         },
-        deselect: (ann_type, item_id) => {
-            dispatch(deselectAnnotation(ownProps.label_id, ann_type, item_id))
+        hide: (ann_type, item_id) => {
+            dispatch(hideAnnotation(ownProps.user_id, ownProps.label_id, ann_type, item_id))
         },
         changePage: (page) => {
-            dispatch(changePage(ownProps.label_id, page));
+            dispatch(changePage(ownProps.user_id, ownProps.label_id, page));
         },
-        edit: (ann_type, item_id) => {
-            dispatch(unlockAnnotation(ann_type, ownProps.label_id, item_id));
+        showAll: () => {
+            dispatch(showAllAnnotations(ownProps.user_id, ownProps.label_id));
         },
-        delete: (ann_type, item_id) => {
-            dispatch(deleteAnnotation(ann_type, ownProps.label_id, item_id));
-            dispatch(setSaveStatus("dirty"));
-
-        }
+        hideAll: () => {
+            dispatch(hideAllAnnotations(ownProps.user_id, ownProps.label_id));
+        },
     }
 }
 
-export const EnhancedTable = connect(
+export const AdminTable = connect(
     mapStateToProps,
     mapDispatchToProps
-)(EnhancedTableP);
+)(AdminTableP);

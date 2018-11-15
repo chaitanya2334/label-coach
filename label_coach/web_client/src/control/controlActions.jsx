@@ -1,7 +1,7 @@
 import {restRequest} from "girder/rest";
 
-export function setSize(toolType, value){
-    return{
+export function setSize(toolType, value) {
+    return {
         type: "SET_SIZE",
         value: value,
         toolType: toolType
@@ -29,29 +29,29 @@ export function setThumbnailBarVisibility(state) {
     }
 }
 
-export function selectAllAnnotations(label_id){
+export function selectAllAnnotations(label_id) {
     return {
         type: 'SELECT_ALL_ANN',
         label_id: label_id
     }
 }
 
-export function deselectAllAnnotations(label_id){
+export function deselectAllAnnotations(label_id) {
     return {
         type: 'DESELECT_ALL_ANN',
         label_id: label_id
     }
 }
 
-export function changePage(label_id, page){
-    return{
+export function changePage(label_id, page) {
+    return {
         type: 'CHANGE_PAGE',
         label_id: label_id,
         page: page,
     }
 }
 
-export function selectAnnotation(label_id, ann_type, item_id){
+export function selectAnnotation(label_id, ann_type, item_id) {
     return {
         type: 'SELECT_ANN',
         label_id: label_id,
@@ -60,7 +60,7 @@ export function selectAnnotation(label_id, ann_type, item_id){
     }
 }
 
-export function deselectAnnotation(label_id, ann_type, item_id){
+export function deselectAnnotation(label_id, ann_type, item_id) {
     return {
         type: 'DESELECT_ANN',
         label_id: label_id,
@@ -69,7 +69,7 @@ export function deselectAnnotation(label_id, ann_type, item_id){
     }
 }
 
-export function addAnnotation(ann_type, label_id, item_id, args={}) {
+export function addAnnotation(ann_type, label_id, item_id, args = {}) {
     return {
         type: 'ADD_ANN',
         ann_type: ann_type,
@@ -88,7 +88,7 @@ export function lockAnnotation(ann_type, label_id, item_id) {
     }
 }
 
-export function lockAllAnnotations(ann_type){
+export function lockAllAnnotations(ann_type) {
     return {
         type: 'LOCK_ALL_ANN',
         ann_type: ann_type
@@ -104,7 +104,7 @@ export function unlockAnnotation(ann_type, label_id, item_id) {
     }
 }
 
-export function updateAnnotation(ann_type, label_id, item_id, points, args={}) {
+export function updateAnnotation(ann_type, label_id, item_id, points, args = {}) {
     return {
         type: 'UPDATE_ANN',
         ann_type: ann_type,
@@ -115,7 +115,7 @@ export function updateAnnotation(ann_type, label_id, item_id, points, args={}) {
     }
 }
 
-export function deleteAnnotation(ann_type, label_id, item_id){
+export function deleteAnnotation(ann_type, label_id, item_id) {
     return {
         type: 'DELETE_ANN',
         ann_type: ann_type,
@@ -140,8 +140,8 @@ export function toggleLabelButton(label_id, button_type) {
     };
 }
 
-export function selectLabel(label){
-    return{
+export function selectLabel(label) {
+    return {
         type: "SELECT_LABEL",
         label_id: label.id
     }
@@ -191,10 +191,32 @@ export function replaceLabels(labels) {
     }
 }
 
-export function setCurrentFolder(id) {
+export function setCurrentAssignment(assignment) {
     return {
-        type: 'SET_CURRENT_FOLDER',
-        id: id
+        type: 'SET_CURRENT_ASSIGNMENT',
+        assignment: assignment
+    }
+}
+
+export function fetchCurrentAssignment(id) {
+    return function (dispatch) {
+        return restRequest({
+                               url: "assignment/" + id,
+                               method: 'GET',
+                               data: {
+                                   a_id: id
+                               }
+                           })
+            .then((response) => {
+                if (typeof response === 'string') {
+                    return JSON.parse(response);
+                } else {
+                    return response;
+                }
+            })
+            .then((assignment) => {
+                dispatch(setCurrentAssignment(assignment));
+            })
     }
 }
 
@@ -369,9 +391,16 @@ export function saveLabels(state) {
     }
 }
 
-export function setOutline(state){
+export function setOutline(state) {
     return {
         type: "SET_OUTLINE",
+        state: state,
+    }
+}
+
+export function setNavState(state){
+    return {
+        type: "SET_NAV_STATE",
         state: state,
     }
 }

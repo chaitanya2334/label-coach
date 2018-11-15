@@ -2,6 +2,8 @@ import * as React from "react";
 import "../../styles/LabelContainer.css"
 import {connect} from "react-redux";
 import Label from "../Label";
+import {EnhancedTable} from "../EnhancedTable";
+import {expandLabel} from "../controlActions";
 
 
 export class LabelContainerP extends React.Component {
@@ -15,8 +17,9 @@ export class LabelContainerP extends React.Component {
         if (this.props.labels.length > 0) {
             this.props.labels.forEach((label, i) => {
                 rows.push(
-                    <Label key={label.id} id={label.id} name={label.name} color={label.color} expanded={label.expanded}
-                           polygons={label.ann.polygons} lines={label.ann.lines} brushes={label.ann.brushes}/>
+                    <Label key={i} label={label} expandLabel={this.props.expandLabel}>
+                        <EnhancedTable label_id={label.id} label={label}/>
+                    </Label>
                 );
             });
         }
@@ -42,7 +45,11 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-    return {};
+   return {
+        expandLabel: (label_id, state) => {
+            dispatch(expandLabel(label_id, state));
+        }
+    }
 }
 
 export const LabelContainer = connect(

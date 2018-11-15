@@ -3,6 +3,7 @@ import "../styles/Thumbnail.css";
 import connect from "react-redux/es/connect/connect";
 import {createLabelFile, fetchLabels, selectImage} from "./controlActions";
 import "@material/elevation/dist/mdc.elevation.css";
+import {fetchAdminLabels} from "./Admin/AdminActions";
 
 class ThumbnailP extends React.Component {
     constructor(props) {
@@ -62,7 +63,7 @@ class ThumbnailP extends React.Component {
 
 // ---------- Container ----------
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
 
     return state;
 }
@@ -71,10 +72,16 @@ function mapDispatchToProps(dispatch, ownProps) {
     return {
         onSelect: (event) => {
             dispatch(selectImage(ownProps.id));
-            if (ownProps.labelFileId) {
-                dispatch(fetchLabels(ownProps.labelFileId));
-            } else {
-                dispatch(createLabelFile(ownProps.title + ".json", ownProps.currentFolder.id, ownProps.id));
+            if (ownProps.isAdmin){
+                for(let label_folder of ownProps.currentAssignment.label_folders){
+                    dispatch(fetchAdminLabels(ownProps.title + ".json", label_folder['parentId'], label_folder._id.$oid))
+                }
+            }else {
+                if (ownProps.labelFileId) {
+                    dispatch(fetchLabels(ownProps.labelFileId));
+                } else {
+                    dispatch(createLabelFile(ownProps.title + ".json", ownProps.labelFolderId, ownProps.id));
+                }
             }
         },
     }

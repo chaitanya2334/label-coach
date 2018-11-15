@@ -17,6 +17,9 @@ export default class SideBarP extends React.Component {
             case "images":
                 content = <SearchBar id={this.props.itemType}/>;
                 break;
+            case "annotators":
+                content = <div className={"p-3 mb-2 bg-secondary text-white"}>Annotators Overview</div>;
+                break;
             case "labels":
                 content = <div className={"p-3 mb-2 bg-secondary text-white"}>Labels Overview</div>;
                 break;
