@@ -59,7 +59,7 @@ class ImageResource(Resource):
 
     @staticmethod
     def __set_mime_type(ext):
-        if ext == ".jpg" or ext == ".jpeg":
+        if ext == ".jpg" or ext == ".JPG" or ext == ".jpeg":
             return "image/jpeg"
         elif ext == ".svs":
             return "application/octet-stream"
@@ -87,7 +87,7 @@ class ImageResource(Resource):
             self.user = self.getCurrentUser()
             folder = folderModel.load(folderId, level=AccessType.READ, user=self.getCurrentUser())
             files = folderModel.fileList(doc=folder, user=self.getCurrentUser(), data=False, includeMetadata=False)
-            files = self.__filter(files, file_type=[".jpg", ".jpeg", ".svs"])
+            files = self.__filter(files, file_type=[".jpg",".JPG", ".jpeg", ".svs"])
             ret_files = []
             for filename, file in files:
                 filename = os.path.splitext(filename)[0]
