@@ -1,9 +1,11 @@
 import * as React from "react";
 import "../styles/Thumbnail.css";
-import connect from "react-redux/es/connect/connect";
+import {connect} from 'react-redux';
+import {compose} from 'redux';
 import {createLabelFile, fetchLabels, selectImage} from "./controlActions";
 import "@material/elevation/dist/mdc.elevation.css";
 import {fetchAdminLabels} from "./Admin/AdminActions";
+import SizeMe from 'react-sizeme';
 import {
     cookie,
     getCurrentToken
@@ -18,10 +20,10 @@ class ThumbnailP extends React.Component {
         }
     }
 
-    getThumbnailPath() {
+    getThumbnailPath(w) {
         let girderToken = getCurrentToken() || cookie.find('girderToken');
         if (this.props.mimeType === "image/jpeg" || this.props.mimeType === "image/png") {
-            return "api/v1/image/thumbnail/?image_id=" + this.props.imageId;
+            return "api/v1/image/thumbnail/?image_id=" + this.props.imageId + "&w=" + w;
         } else {
             return "api/v1/image/dzi/" + this.props.imageId + "_files/10/0_0.jpeg";
         }
@@ -34,7 +36,9 @@ class ThumbnailP extends React.Component {
     }
 
     render() {
-        let thumbnailPath = this.getThumbnailPath();
+        const { width, height } = this.props.size;
+
+        let thumbnailPath = this.getThumbnailPath(Math.floor(width));
         let activeClass = this.props.active ? 'active' : "";
         let hoverClass = this.state.isHovered ? "mdc-elevation--z4" : "mdc-elevation--z1";
         let widthClass = this.props.fixedWidth ? "fixed-width" : "";
@@ -96,9 +100,12 @@ function mapDispatchToProps(dispatch, ownProps) {
     }
 }
 
-const Thumbnail = connect(
-    mapStateToProps,
-    mapDispatchToProps
+const Thumbnail = compose(
+    SizeMe(),
+    connect(
+        mapStateToProps,
+        mapDispatchToProps
+    )
 )(ThumbnailP);
 
 export default Thumbnail;

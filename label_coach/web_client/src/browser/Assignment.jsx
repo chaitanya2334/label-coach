@@ -24,10 +24,10 @@ class AssignmentP extends React.Component {
         console.log(this.state);
     }
 
-    static getThumbnailPath(image) {
+    static getThumbnailPath(image, w, h) {
         let girderToken = getCurrentToken() || cookie.find('girderToken');
         if (image.mimeType === "image/jpeg" || image.mimeType === "image/png") {
-            return "api/v1/image/thumbnail/?image_id=" + image.id;
+            return "api/v1/image/thumbnail/?image_id=" + image.id + "&w=" + w + "&h=" + h;
         } else {
             return "api/v1/image/dzi/" + image.id + "_files/10/0_0.jpeg";
         }
@@ -46,7 +46,7 @@ class AssignmentP extends React.Component {
             for (let i = 0; i < n; i++) {
                 let path = "";
                 if (this.props.thumbnails.length > i) {
-                    path = AssignmentP.getThumbnailPath(this.props.thumbnails[i]);
+                    path = AssignmentP.getThumbnailPath(this.props.thumbnails[i], 94, 48);
                 }
                 ret.push(
                     <div className="thumbnail-container" key={i}

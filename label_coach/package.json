@@ -61,6 +61,7 @@
     "react-jss": "^8.6.1",
     "react-redux": "^5.1.0",
     "react-router-dom": "^4.3.1",
+    "react-sizeme": "^2.5.2",
     "react-svg": "^6.0.21",
     "react-time-ago": "^3.0.3",
     "redux": "^4.0.1",

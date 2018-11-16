@@ -172,35 +172,30 @@ class ImageResource(Resource):
 
     @access.public
     @autoDescribeRoute(
-        Description('Get dzi')
-            .param('image_id', 'image file id'))
+        Description('Get thumbnail by size')
+            .param('image_id', 'image file id')
+            .param('w', 'thumbnail width')
+            .param('h', 'thumbnail height', required=False))
     @rest.rawResponse
     @trace
-    def getThumbnail(self, image_id):
+    def getThumbnail(self, image_id, w, h=None):
         item = Item().load(image_id, level=AccessType.READ, user=self.user)
-        file = self.__get_file(item, "thumbnail")
-        if not file:
-            file = self.__create_thumbnail(item)
-            printOk2("thumbnail file just created")
-
+        resp = self.__create_thumbnail(item, w, h)
+        printOk2("thumbnail file just created")
         cherrypy.response.headers["Content-Type"] = "application/jpeg"
-        return File().download(file, headers=False)
+        return resp
 
-    def __create_thumbnail(self, item):
+    def __create_thumbnail(self, item, w, h):
+        w = int(w)
         file = self.__get_file(item, "image")
         with File().open(file) as f:
             image = Image.open(BytesIO(f.read()))
-            image.thumbnail((94, 48))
+            if not h:
+                width, height = image.size
+                h = (height / width) * w
+
+            h = int(h)
+            image.thumbnail((w, h))
             buf = PILBytesIO()
             image.save(buf, "jpeg", quality=100)
-            thumbnailFile = File().createFile(size=0,
-                                              item=item,
-                                              name="thumbnail.jpg",
-                                              creator=self.user,
-                                              assetstore=Assetstore().getCurrent(),
-                                              mimeType="application/jpeg")
-
-            writeBytes(self.user, thumbnailFile, buf.getvalue())
-            thumbnailFile = self.__get_file(item, "thumbnail")
-
-            return thumbnailFile
+            return buf.getvalue()
