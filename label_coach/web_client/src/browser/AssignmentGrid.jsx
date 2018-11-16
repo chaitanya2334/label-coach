@@ -2,10 +2,10 @@ import React from "react";
 import _ from "lodash";
 import RGL, {WidthProvider} from "react-grid-layout";
 import {connect} from "react-redux";
-import Thumbnail from "../control/Thumbnail";
 import "../styles/CollectionGrid.css"
 import Assignment from "./Assignment";
 import {findAssignments} from "./browserActions";
+import ItemViewer from "../control/ItemViewer/ItemViewer";
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -17,7 +17,7 @@ class AssignmentGridP extends React.PureComponent {
 
     }
 
-    generateDOM() {
+    genItems() {
         let rows = [];
         if (this.props.assignments.length > 0) {
             this.props.assignments.forEach((assignment, i) => {
@@ -32,12 +32,9 @@ class AssignmentGridP extends React.PureComponent {
 
     render() {
         return (
-
-            <div className="grid_layout">
-                {this.generateDOM()}
-            </div>
-
-
+            <ItemViewer>
+                {this.genItems()}
+            </ItemViewer>
         );
     }
 }
