@@ -37,7 +37,7 @@
     {
       "id": 2,
       "name": "3rd degree - Full thickness burn",
-      "color": "#660000",
+      "color": "#ff0000",
       "active": false,
       "expanded": false,
       "line_button": true,
@@ -54,7 +54,7 @@
     {
       "id": 3,
       "name": "4th degree - charred and/or burn to bone",
-      "color": "#FF8C00",
+      "color": "#ff8000",
       "active": false,
       "expanded": false,
       "line_button": true,
