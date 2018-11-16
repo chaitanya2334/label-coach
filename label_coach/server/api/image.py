@@ -79,15 +79,6 @@ class ImageResource(Resource):
 
         return ret
 
-    def __renameFiles(self, item, fname):
-        files = Item().fileList(item, user=self.getCurrentUser(), data=False)
-        for filename, file in files:
-            if file['name'] == item['name']:
-                printOk("renaming file")
-                printOk(file)
-                file['name'] = fname + ".jpg"
-                File().updateFile(file)
-
     @access.public
     @autoDescribeRoute(
         Description('Get image list').param('folderId', 'folder id'))
@@ -102,7 +93,6 @@ class ImageResource(Resource):
         ret_files = []
         for item in items:
             # TODO: remove this function
-            self.__renameFiles(item, "image")
             filename = os.path.splitext(item['name'])[0]
             printOk("filename: " + filename)
             ret_files.append(item)
@@ -119,7 +109,7 @@ class ImageResource(Resource):
     def dzi(self, image_id):
         printOk('getDzi() was called!')
         item = Item().load(image_id, level=AccessType.READ, user=self.user)
-        file = self.__get_file(item, "image")
+        file = self.__get_file(item, item['name'])
         slides = self.__load_slides(file)
         resp = slides['slide'].get_dzi('jpeg')
         cherrypy.response.headers["Content-Type"] = "application/xml"
@@ -127,11 +117,8 @@ class ImageResource(Resource):
 
     def __get_file(self, item, fname):
         files = Item().fileList(item, user=self.getCurrentUser(), data=False)
-        for filename, file in files:
-            name, ext = os.path.splitext(file['name'])
-            printOk("get file")
-            printOk(file)
-            if name == fname:
+        for filepath, file in files:
+            if file['name'] == fname:
                 return file
 
     @access.public
@@ -142,7 +129,7 @@ class ImageResource(Resource):
     @trace
     def getImage(self, image_id):
         item = Item().load(image_id, level=AccessType.READ, user=self.user)
-        file = self.__get_file(item, "image")
+        file = self.__get_file(item, item['name'])
         cherrypy.response.headers["Content-Type"] = "application/png"
         return File().download(file, headers=False)
 
@@ -154,7 +141,7 @@ class ImageResource(Resource):
     def tile(self, image_id, level, tfile):
         image_id = re.search(r'(.*)_files', image_id).group(1)
         item = Item().load(image_id, level=AccessType.READ, user=self.user)
-        file = self.__get_file(item, "image")
+        file = self.__get_file(item, item['name'])
         slides = self.__load_slides(file)
         pos, _format = tfile.split('.')
         col, row = pos.split('_')
@@ -187,7 +174,7 @@ class ImageResource(Resource):
 
     def __create_thumbnail(self, item, w, h):
         w = int(w)
-        file = self.__get_file(item, "image")
+        file = self.__get_file(item, item['name'])
         with File().open(file) as f:
             image = Image.open(BytesIO(f.read()))
             if not h:
