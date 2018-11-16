@@ -3,8 +3,10 @@ import os
 import re
 import traceback
 from io import BytesIO
+from random import random
 
 import cherrypy
+from PIL import Image
 from bson.json_util import dumps
 
 from girder.api import access, rest
@@ -14,11 +16,12 @@ from girder.constants import AccessType
 from girder.models.assetstore import Assetstore
 from girder.models.collection import Collection
 from girder.models.file import File
-from girder.models.user import User
+from girder.models.item import Item
 
 from girder.models.folder import Folder
 from ..bcolors import printOk, printFail, printOk2
 from ..deepzoom import load_slide
+from ..utils import trace, writeData, writeBytes
 
 
 class PILBytesIO(BytesIO):
@@ -36,11 +39,13 @@ class ImageResource(Resource):
                           'tools.staticdir.index': 'index.html'}
         self.route('GET', (), handler=self.getImageList)
         self.route('GET', (':image_id',), self.getImage)
+        self.route('GET', ('thumbnail',), self.getThumbnail)
         self.route('GET', ('dzi', ':image_id',), self.dzi)
         self.route('GET', ('dzi', ':image_id', ':level', ':tfile'), self.tile)
 
-    def load_slides(self, image_id):
-        file = File().load(image_id, level=AccessType.READ, user=self.user)
+    @staticmethod
+    def __load_slides(file):
+        printOk2(file)
         assetstore = Assetstore().load(file['assetstoreId'])
         slides, associated_images, slide_properties, slide_mpp = \
             load_slide(os.path.join(assetstore['root'], file['path']))
@@ -64,121 +69,138 @@ class ImageResource(Resource):
         elif ext == ".svs":
             return "application/octet-stream"
 
-    def __filter(self, files, file_type):
+    def __filter(self, items, exts):
         ret = []
-        for filename, file in files:
-            name, ext = os.path.splitext(filename)
-            if ext in file_type:
-                if not file['mimeType']:
-                    file['mimeType'] = self.__set_mime_type(ext)
-                ret.append((filename, file))
+        for item in items:
+            name, ext = os.path.splitext(item['name'])
+            if ext in exts:
+                item['mimeType'] = self.__set_mime_type(ext)
+                ret.append(item)
 
         return ret
+
+    def __renameFiles(self, item, fname):
+        files = Item().fileList(item, user=self.getCurrentUser(), data=False)
+        for filename, file in files:
+            if file['name'] == item['name']:
+                printOk("renaming file")
+                printOk(file)
+                file['name'] = fname + ".jpg"
+                File().updateFile(file)
 
     @access.public
     @autoDescribeRoute(
         Description('Get image list').param('folderId', 'folder id'))
     @rest.rawResponse
+    @trace
     def getImageList(self, folderId):
         printOk('getImageList() was called!')
+        self.user = self.getCurrentUser()
+        folder = Folder().load(folderId, level=AccessType.READ, user=self.getCurrentUser())
+        items = Folder().childItems(folder)
+        items = self.__filter(items, exts=[".jpg", ".jpeg", ".svs"])
+        ret_files = []
+        for item in items:
+            # TODO: remove this function
+            self.__renameFiles(item, "image")
+            filename = os.path.splitext(item['name'])[0]
+            printOk("filename: " + filename)
+            ret_files.append(item)
 
-        try:
-            folderModel = Folder()
-            self.user = self.getCurrentUser()
-            folder = folderModel.load(folderId, level=AccessType.READ, user=self.getCurrentUser())
-            files = folderModel.fileList(doc=folder, user=self.getCurrentUser(), data=False, includeMetadata=False)
-            files = self.__filter(files, file_type=[".jpg", ".jpeg", ".svs"])
-            ret_files = []
-            for filename, file in files:
-                filename = os.path.splitext(filename)[0]
-                printOk("filename: " + filename)
-                ret_files.append(file)
-
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return dumps(ret_files)
-
-        except:
-            printFail(traceback.print_exc)
+        cherrypy.response.headers["Content-Type"] = "application/json"
+        return dumps(ret_files)
 
     @access.public
     @autoDescribeRoute(
         Description('Get dzi')
             .param('image_id', 'image file id'))
     @rest.rawResponse
+    @trace
     def dzi(self, image_id):
         printOk('getDzi() was called!')
+        item = Item().load(image_id, level=AccessType.READ, user=self.user)
+        file = self.__get_file(item, "image")
+        slides = self.__load_slides(file)
+        resp = slides['slide'].get_dzi('jpeg')
+        cherrypy.response.headers["Content-Type"] = "application/xml"
+        return resp
 
-        try:
-            printOk(self.getCurrentToken())
-            printOk(self.getCurrentUser())
-
-            slides = self.load_slides(image_id)
-
-            resp = slides['slide'].get_dzi('jpeg')
-            cherrypy.response.headers["Content-Type"] = "application/xml"
-            return resp
-
-        except:
-            # Unknown slug
-            printFail(traceback.print_exc)
-            cherrypy.response.status = 404
+    def __get_file(self, item, fname):
+        files = Item().fileList(item, user=self.getCurrentUser(), data=False)
+        for filename, file in files:
+            name, ext = os.path.splitext(file['name'])
+            printOk("get file")
+            printOk(file)
+            if name == fname:
+                return file
 
     @access.public
     @autoDescribeRoute(
         Description('Get image')
             .param('image_id', 'image file id'))
     @rest.rawResponse
+    @trace
     def getImage(self, image_id):
-        printOk('getImage() was called!')
-        printOk('params is ' + image_id)
-
-        try:
-            file = File().load(image_id, level=AccessType.READ, user=self.user)
-            cherrypy.response.headers["Content-Type"] = "application/png"
-            return File().download(file, headers=False)
-
-        except:
-            # Unknown slug
-            printFail(traceback.print_exc)
-            cherrypy.response.status = 404
+        item = Item().load(image_id, level=AccessType.READ, user=self.user)
+        file = self.__get_file(item, "image")
+        cherrypy.response.headers["Content-Type"] = "application/png"
+        return File().download(file, headers=False)
 
     @access.public
     @autoDescribeRoute(
         Description('get tiles'))
     @rest.rawResponse
+    @trace
     def tile(self, image_id, level, tfile):
-        resp = ""
-        try:
-            image_id = re.search(r'(.*)_files', image_id).group(1)
-            slides = self.load_slides(image_id)
-            pos, _format = tfile.split('.')
-            col, row = pos.split('_')
-            _format = _format.lower()
-
-            if _format != 'jpeg' and _format != 'png':
-                # Not supported by Deep Zoom
-                cherrypy.response.status = 404
-
-            tile_image = slides['slide'].get_tile(int(level), (int(col), int(row)))
-            buf = PILBytesIO()
-            tile_image.save(buf, _format, quality=100)
-            cherrypy.response.headers["Content-Type"] = 'image/%s' % _format
-            resp = buf.getvalue()
-            print("done")
-
-        except KeyError:
-            # Unknown slug
-            print("keyerror")
+        image_id = re.search(r'(.*)_files', image_id).group(1)
+        item = Item().load(image_id, level=AccessType.READ, user=self.user)
+        file = self.__get_file(item, "image")
+        slides = self.__load_slides(file)
+        pos, _format = tfile.split('.')
+        col, row = pos.split('_')
+        _format = _format.lower()
+        if _format != 'jpeg' and _format != 'png':
+            # Not supported by Deep Zoom
             cherrypy.response.status = 404
 
-        except ValueError:
-            # Invalid level or coordinates
-            print("value error")
-            cherrypy.response.status = 404
-        except Exception as e:
-            print(e)
-            print('-' * 60)
-            traceback.print_exc()
-            print('-' * 60)
-
+        tile_image = slides['slide'].get_tile(int(level), (int(col), int(row)))
+        buf = PILBytesIO()
+        tile_image.save(buf, _format, quality=100)
+        cherrypy.response.headers["Content-Type"] = 'image/%s' % _format
+        resp = buf.getvalue()
         return resp
+
+    @access.public
+    @autoDescribeRoute(
+        Description('Get dzi')
+            .param('image_id', 'image file id'))
+    @rest.rawResponse
+    @trace
+    def getThumbnail(self, image_id):
+        item = Item().load(image_id, level=AccessType.READ, user=self.user)
+        file = self.__get_file(item, "thumbnail")
+        if not file:
+            file = self.__create_thumbnail(item)
+            printOk2("thumbnail file just created")
+
+        cherrypy.response.headers["Content-Type"] = "application/jpeg"
+        return File().download(file, headers=False)
+
+    def __create_thumbnail(self, item):
+        file = self.__get_file(item, "image")
+        with File().open(file) as f:
+            image = Image.open(BytesIO(f.read()))
+            image.thumbnail((94, 48))
+            buf = PILBytesIO()
+            image.save(buf, "jpeg", quality=100)
+            thumbnailFile = File().createFile(size=0,
+                                              item=item,
+                                              name="thumbnail.jpg",
+                                              creator=self.user,
+                                              assetstore=Assetstore().getCurrent(),
+                                              mimeType="application/jpeg")
+
+            writeBytes(self.user, thumbnailFile, buf.getvalue())
+            thumbnailFile = self.__get_file(item, "thumbnail")
+
+            return thumbnailFile

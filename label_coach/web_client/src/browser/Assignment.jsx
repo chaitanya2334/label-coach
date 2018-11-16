@@ -6,6 +6,10 @@ import {fetchThumbnails, selectAssignment} from "./browserActions";
 import {WidthProvider} from "react-grid-layout";
 import RGL from "react-grid-layout";
 import {withRouter} from "react-router";
+import {
+    cookie,
+    getCurrentToken
+} from "girder/auth";
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -21,9 +25,10 @@ class AssignmentP extends React.Component {
     }
 
     static getThumbnailPath(image) {
+        let girderToken = getCurrentToken() || cookie.find('girderToken');
         if (image.mimeType === "image/jpeg" || image.mimeType === "image/png") {
-            return "api/v1/image/" + image.id + "?image_id=" + image.id;
-        }else{
+            return "api/v1/image/thumbnail/?image_id=" + image.id;
+        } else {
             return "api/v1/image/dzi/" + image.id + "_files/10/0_0.jpeg";
         }
     }

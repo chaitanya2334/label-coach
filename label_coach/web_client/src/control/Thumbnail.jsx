@@ -4,6 +4,10 @@ import connect from "react-redux/es/connect/connect";
 import {createLabelFile, fetchLabels, selectImage} from "./controlActions";
 import "@material/elevation/dist/mdc.elevation.css";
 import {fetchAdminLabels} from "./Admin/AdminActions";
+import {
+    cookie,
+    getCurrentToken
+} from "girder/auth";
 
 class ThumbnailP extends React.Component {
     constructor(props) {
@@ -15,9 +19,10 @@ class ThumbnailP extends React.Component {
     }
 
     getThumbnailPath() {
+        let girderToken = getCurrentToken() || cookie.find('girderToken');
         if (this.props.mimeType === "image/jpeg" || this.props.mimeType === "image/png") {
-            return "api/v1/image/" + this.props.imageId + "?image_id=" + this.props.imageId;
-        }else{
+            return "api/v1/image/thumbnail/?image_id=" + this.props.imageId;
+        } else {
             return "api/v1/image/dzi/" + this.props.imageId + "_files/10/0_0.jpeg";
         }
     }
@@ -51,7 +56,8 @@ class ThumbnailP extends React.Component {
                         </div>
                     </div>
                     <div className={"tn-stats"}>
-                        <img className={"tn-icon"} src={"https://image.flaticon.com/icons/svg/8/8784.svg"} width={20} height={20}/>
+                        <img className={"tn-icon"} src={"https://image.flaticon.com/icons/svg/8/8784.svg"} width={20}
+                             height={20}/>
                         {4}
                     </div>
                 </div>
@@ -65,18 +71,21 @@ class ThumbnailP extends React.Component {
 
 function mapStateToProps(state) {
 
-    return state;
+    return {
+        girderToken: state.girderToken
+    };
 }
 
 function mapDispatchToProps(dispatch, ownProps) {
     return {
         onSelect: (event) => {
             dispatch(selectImage(ownProps.id));
-            if (ownProps.isAdmin){
-                for(let label_folder of ownProps.currentAssignment.label_folders){
-                    dispatch(fetchAdminLabels(ownProps.title + ".json", label_folder['parentId'], label_folder._id.$oid))
+            if (ownProps.isAdmin) {
+                for (let label_folder of ownProps.currentAssignment.label_folders) {
+                    dispatch(
+                        fetchAdminLabels(ownProps.title + ".json", label_folder['parentId'], label_folder._id.$oid))
                 }
-            }else {
+            } else {
                 if (ownProps.labelFileId) {
                     dispatch(fetchLabels(ownProps.labelFileId));
                 } else {

@@ -20,6 +20,7 @@ from girder.utility import RequestBodyStream
 
 from ..error import errorMessage
 from ..bcolors import printOk, printFail, printOk2
+from ..utils import writeData
 
 
 class PILBytesIO(BytesIO):
@@ -50,14 +51,6 @@ class LabelResource(Resource):
         self.route('GET', ('create',), self.createLabelFile)
         self.route('GET', ('by_name',), self.getLabelByName)
         self.route('POST', (), self.postLabel)
-
-    def writeToFile(self, file, data):
-        j = json.dumps(data, indent=2, sort_keys=True)
-        stream = BytesIO(str.encode(j))
-        chunk = RequestBodyStream(stream, size=len(j))
-        upload = self.upload_m.createUploadToFile(file, self.getCurrentUser(), len(j))
-        self.upload_m.handleChunk(upload, chunk, filter=True, user=self.getCurrentUser())
-        return upload
 
     def createNewFile(self, folder, file_name):
         item = self.item_m.createItem(file_name,
@@ -145,7 +138,6 @@ class LabelResource(Resource):
     @rest.rawResponse
     def createLabelFile(self, file_name, folder_id):
         try:
-
             folder = self.folder_m.load(folder_id, user=self.getCurrentUser(), level=AccessType.WRITE)
             file = self.__findFile(folder, file_name)
             if not file:
@@ -215,8 +207,6 @@ class LabelResource(Resource):
             printFail(traceback.print_exc)
             cherrypy.response.status = 404
 
-
-
     @access.public
     @autoDescribeRoute(
         Description('Post label by id')
@@ -227,7 +217,8 @@ class LabelResource(Resource):
             file = self.file_m.load(label_id, level=AccessType.WRITE, user=self.getCurrentUser())
             cherrypy.response.headers["Content-Type"] = "application/json"
             params['labels'] = json.loads(params['labels'])
-            upload = self.writeToFile(file, params)
+            data = json.dumps(params, indent=2, sort_keys=True)
+            upload = writeData(self.getCurrentUser(), file, data)
             printOk2(file)
             printOk(upload)
             return dumps(upload)
