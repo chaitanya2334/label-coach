@@ -73,7 +73,7 @@ class ImageResource(Resource):
         ret = []
         for item in items:
             name, ext = os.path.splitext(item['name'])
-            if ext in exts:
+            if ext.lower() in exts:
                 item['mimeType'] = self.__set_mime_type(ext)
                 ret.append(item)
 
