@@ -121,7 +121,7 @@ class ImageResource(Resource):
     def __get_file(self, item, fname):
         files = Item().fileList(item, user=self.getCurrentUser(), data=False)
         for filepath, file in files:
-            if file['name'] == fname:
+            if fname in file['name']:
                 return file
 
     @access.public
@@ -171,7 +171,12 @@ class ImageResource(Resource):
     def getThumbnail(self, image_id, w, h=None):
         item = Item().load(image_id, level=AccessType.READ, user=self.user)
         start_time = timeit.default_timer()
-        file = self.__get_file(item, "thumbnail_{}x{}.jpg".format(w, h))
+        if not h:
+            filename = "thumbnail_{}".format(w)
+        else:
+            filename = "thumbnail_{}x{}".format(w, h)
+
+        file = self.__get_file(item, filename)
         if not file:
             file = self.__create_thumbnail(item, w, h)
 
