@@ -127,40 +127,68 @@ export function currentAssignment(currentAssignment = {}, action) {
 }
 
 export function images(images = [], action) {
-    switch (action.type) {
-        case 'POPULATE_IMAGES':
+    return produce(images, draft => {
+                       switch (action.type) {
+                           case 'POPULATE_IMAGES':
+                               draft = [];
+                               for (let image of action.images) {
+                                   draft.push({
+                                                  id: draft.length,
+                                                  active: false,
+                                                  title: image.title,
+                                                  dbId: image.dbId,
+                                                  mimeType: image.mimeType,
+                                                  labelFileId: image.labelFileId
+                                              })
+                               }
+                               return draft;
+                           case 'PUSH_IMAGES':
+                               for (let image of action.images) {
+                                   draft.push({
+                                                  id: draft.length,
+                                                  active: false,
+                                                  title: image.title,
+                                                  dbId: image.dbId,
+                                                  mimeType: image.mimeType,
+                                                  labelFileId: image.labelFileId
+                                              })
+                               }
+                               return draft;
 
-            return produce(images, draftState => {
-                draftState = [];
-                for (let image of action.images) {
-                    draftState.push({
-                                        id: draftState.length,
-                                        active: false,
-                                        title: image.title,
-                                        dbId: image.dbId,
-                                        mimeType: image.mimeType,
-                                        labelFileId: image.labelFileId
-                                    })
-                }
-                return draftState;
-            });
-        case 'SELECT_IMAGE':
-            return produce(images, (draftState) => {
-                // deselect everybody
-                for (let image of draftState) {
-                    image.active = false;
-                }
+                           case 'RESET_IMAGES':
+                               return [];
 
-                draftState[action.image_id] = imageReducer(draftState[action.image_id], action)
-            });
-        case 'ADD_LABEL_ID':
-            return produce(images, (draftState) => {
-                draftState[action.image_id] = imageReducer(draftState[action.image_id], action)
-            });
-        default:
-            return images;
-    }
-    return images;
+                           case 'SELECT_IMAGE':
+                               // deselect everybody
+                               for (let image of draft) {
+                                   image.active = false;
+                               }
+
+                               draft[action.image_id] = imageReducer(draft[action.image_id], action);
+                               return draft;
+
+                           case 'ADD_LABEL_ID':
+                               draft[action.image_id] = imageReducer(draft[action.image_id], action);
+                               return draft;
+
+                           default:
+                               return images;
+                       }
+                   }
+    );
+
+}
+
+export function hasMoreImages(hasMoreImages = true, action) {
+    return produce(hasMoreImages, draft => {
+                       switch (action.type) {
+                           case 'SET_HAS_MORE_IMAGES':
+                               return action.state;
+                           default:
+                               return draft;
+                       }
+                   }
+    );
 }
 
 export function searchLabels(search = "", action) {
@@ -447,8 +475,8 @@ export function labelReducer(label, action) {
     });
 }
 
-export function navState(navState=false, action){
-    return produce(navState, draft =>{
+export function navState(navState = false, action) {
+    return produce(navState, draft => {
         switch (action.type) {
             case "SET_NAV_STATE":
                 return action.state;

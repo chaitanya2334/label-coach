@@ -25,7 +25,7 @@ class AssignmentGridP extends React.PureComponent {
         if (this.props.assignments.length > 0) {
             this.props.assignments.forEach((assignment, i) => {
                 rows.push(
-                    <Assignment key={assignment.id} id={assignment.id} imageFolder={assignment.imageFolder}
+                    <Assignment key={i} id={assignment.id} imageFolder={assignment.imageFolder}
                                 labelFolders={assignment.labelFolders} title={assignment.name} fixedWidth={true}/>
                 );
             });

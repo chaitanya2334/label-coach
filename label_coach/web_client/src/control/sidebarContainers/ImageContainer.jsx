@@ -2,12 +2,19 @@ import * as React from "react";
 import "../../styles/ImageContainer.css"
 import {connect} from "react-redux";
 import Thumbnail from "../Thumbnail";
+import InfiniteScroll from "../InfiniteScroll";
+import {fetchImages} from "../controlActions";
 
 
 class ImageContainerP extends React.Component {
     constructor(props) {
         super(props);
+        this.loadMore = this.loadMore.bind(this);
+    }
 
+    loadMore(page) {
+        this.props.findImages(this.props.folderId, page);
+        //this.props.setHasMore(false);
     }
 
     render() {
@@ -15,16 +22,28 @@ class ImageContainerP extends React.Component {
         if (this.props.images.length > 0) {
             this.props.images.forEach((image, i) => {
                 rows.push(
-                    <Thumbnail key={image.id} id={image.id} active={image.active} title={image.title}
+                    <Thumbnail key={i} id={image.id} active={image.active} title={image.title}
                                folderId={image.folderId} imageId={image.dbId} mimeType={image.mimeType}
                                labelFileId={image.labelFileId} labelFolderId={this.props.labelFolderId}
                                currentAssignment={this.props.currentAssignment} isAdmin={this.props.isAdmin}/>
                 );
             });
         }
+        const loader = <div className="loader" key={"loader-key"}>Loading ...</div>;
+        this.hasMore = this.props.hasMore;
         return (
-            <ul className="image-container">
-                {rows}
+            <ul className="image-container" ref={el => this.parentElement = el}>
+                <InfiniteScroll
+                    pageStart={0}
+                    loadMore={this.loadMore}
+                    hasMore={this.hasMore}
+                    loader={loader} initialLoad={true} threshold={250}
+                    useWindow={false} isReverse={false} useCapture={false} getScrollParent={() => this.parentElement}
+                >
+
+                    {rows}
+
+                </InfiniteScroll>
             </ul>
         );
     }
@@ -53,17 +72,29 @@ function getLabelFolderId(currentAssignment) {
     }
 }
 
+function getId(currentAssignment) {
+    if (currentAssignment.hasOwnProperty('image_folder')) {
+        return currentAssignment.image_folder._id.$oid
+    }
+    return ""
+}
+
 function mapStateToProps(state) {
     return {
         images: getSearchLabels(state.images, state.searchImages),
         labelFolderId: getLabelFolderId(state.currentAssignment),
         currentAssignment: state.currentAssignment,
-        isAdmin: isAdmin(state.authentication.user, state.currentAssignment)
+        isAdmin: isAdmin(state.authentication.user, state.currentAssignment),
+        hasMore: state.hasMoreImages
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return {};
+function mapDispatchToProps(dispatch, ownProps) {
+    return {
+        findImages: (folderId, page) => {
+            dispatch(fetchImages(folderId, 5, page - 1))
+        }
+    };
 }
 
 const ImageContainer = connect(

@@ -82,14 +82,18 @@ class ImageResource(Resource):
 
     @access.public
     @autoDescribeRoute(
-        Description('Get image list').param('folderId', 'folder id'))
+        Description('Get image list')
+            .param('folderId', 'folder id')
+            .param('limit', 'Number of assignments to return')
+            .param('offset', 'offset from 0th assignment to start looking for assignments'))
     @rest.rawResponse
     @trace
-    def getImageList(self, folderId):
+    def getImageList(self, folderId, limit, offset):
         printOk('getImageList() was called!')
+        limit, offset = int(limit), int(offset)
         self.user = self.getCurrentUser()
         folder = Folder().load(folderId, level=AccessType.READ, user=self.getCurrentUser())
-        items = Folder().childItems(folder)
+        items = Folder().childItems(folder, limit=limit, offset=offset)
         items = self.__filter(items, exts=[".jpg", ".jpeg", ".svs"])
         ret_files = []
         for item in items:

@@ -12,7 +12,7 @@ import {LabelContainer} from "../control/sidebarContainers/LabelContainer";
 
 import {
     fetchCurrentAssignment,
-    fetchImages,
+    fetchImages, resetImages,
 } from "../control/controlActions";
 import {Link} from "react-router-dom";
 import UserControl from "../control/UserControl";
@@ -99,7 +99,7 @@ class LabelTaskerP extends React.Component {
                         <div className={"col-lg-2 hack-sm-2 remove-left-padding"}
                              style={{display: this.props.thumbnailBarVisibility ? 'block' : 'none'}}>
                             <SideBarP itemType="images">
-                                <ImageContainer/>
+                                <ImageContainer folderId={this.props.match.params.id}/>
                             </SideBarP>
                         </div>
                         <div className={"col-lg-8 hack-grow-8 align-self-top"}>
@@ -128,7 +128,6 @@ function getId(currentAssignment) {
 
 function mapStateToProps(state) {
     return {
-        images: state.images,
         currentAssignmentId: getId(state.currentAssignment),
         thumbnailBarVisibility: state.thumbnailBarVisibility,
         rightBar: state.rightBar,
@@ -141,7 +140,7 @@ function mapDispatchToProps(dispatch, ownProps) {
         fetchImages: () => {
             dispatch(fetchCurrentAssignment(ownProps.match.params.id));
             dispatch(fetchAdminData(ownProps.match.params.id));
-            dispatch(fetchImages(ownProps.match.params.id))
+            dispatch(resetImages());
         }
     };
 }

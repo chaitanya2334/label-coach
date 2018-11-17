@@ -97,6 +97,8 @@ export function fetchThumbnails(assignmentId, folderId, n) {
                                method: 'GET',
                                data: {
                                    folderId: folderId,
+                                   limit: 20,
+                                   offset: 0
                                }
                            })
             .then(files => {

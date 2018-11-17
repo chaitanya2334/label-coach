@@ -184,6 +184,26 @@ export function populateImages(images) {
     }
 }
 
+export function pushImages(images) {
+    return {
+        type: 'PUSH_IMAGES',
+        images: images
+    }
+}
+
+export function resetImages() {
+    return {
+        type: 'RESET_IMAGES'
+    }
+}
+
+export function setHasMoreImages(state) {
+    return {
+        type: 'SET_HAS_MORE_IMAGES',
+        state: state
+    }
+}
+
 export function replaceLabels(labels) {
     return {
         type: 'REPLACE_LABELS',
@@ -220,18 +240,20 @@ export function fetchCurrentAssignment(id) {
     }
 }
 
-export function fetchImages(id) {
+export function fetchImages(id, limit, page) {
     return function (dispatch) {
 
         return restRequest({
                                url: "image",
                                method: 'GET',
                                data: {
-                                   folderId: id
+                                   folderId: id,
+                                   limit: limit,
+                                   offset: page * limit,
                                }
                            })
-            .then((json) => {
-                let images = json.map(image => {
+            .then(json => {
+                return json.map(image => {
                     let labelFileId = null;
                     if (image.label_id && image.label_id.$oid) {
                         labelFileId = image.label_id.$oid;
@@ -243,7 +265,22 @@ export function fetchImages(id) {
                         title: image.name.replace(/\.[^/.]+$/, "")
                     }
                 });
-                dispatch(populateImages(images));
+            })
+            .then(images => {
+                if (images.length > 0) {
+                    if (page === 0) {
+                        dispatch(resetImages());
+                        dispatch(pushImages(images));
+                    } else {
+                        dispatch(pushImages(images));
+                    }
+
+                    dispatch(setHasMoreImages(true));
+
+                } else {
+                    dispatch(setHasMoreImages(false));
+                    console.error("No More Images found!!!!");
+                }
             })
     }
 }
@@ -398,7 +435,7 @@ export function setOutline(state) {
     }
 }
 
-export function setNavState(state){
+export function setNavState(state) {
     return {
         type: "SET_NAV_STATE",
         state: state,

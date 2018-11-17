@@ -55,7 +55,7 @@ function mapStateToProps(state) {
     return {
         status: state.saveIndicator.status,
         text: state.saveIndicator.text,
-        state: state,
+        state: state.labels,
         lastUpdated: state.saveIndicator.lastUpdated || Date.now()
     };
 }

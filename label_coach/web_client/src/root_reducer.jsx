@@ -1,6 +1,6 @@
 import {combineReducers} from "redux";
 import {
-    currentAssignment,
+    currentAssignment, hasMoreImages,
     images,
     labels, navState, rightBar,
     saveIndicator,
@@ -27,5 +27,6 @@ export default combineReducers({
                                    searchImages,
                                    searchLabels,
                                    navState,
-                                   hasMoreAssignments
+                                   hasMoreAssignments,
+                                   hasMoreImages,
                                })
