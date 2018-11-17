@@ -19,7 +19,7 @@ from girder.models.item import Item
 
 from ..bcolors import printOk, printOk2
 from ..deepzoom import load_slide
-from ..utils import trace
+from ..utils import trace, writeBytes
 
 
 class PILBytesIO(BytesIO):
@@ -171,11 +171,14 @@ class ImageResource(Resource):
     def getThumbnail(self, image_id, w, h=None):
         item = Item().load(image_id, level=AccessType.READ, user=self.user)
         start_time = timeit.default_timer()
-        resp = self.__create_thumbnail(item, w, h)
+        file = self.__get_file(item, "thumbnail_{}x{}.jpg".format(w, h))
+        if not file:
+            file = self.__create_thumbnail(item, w, h)
+
         elapsed_time = timeit.default_timer() - start_time
         printOk2("thumbnail file just created in {}".format(elapsed_time))
         cherrypy.response.headers["Content-Type"] = "application/jpeg"
-        return resp
+        return File().download(file, headers=False)
 
     def __create_thumbnail(self, item, w, h):
         w = int(w)
@@ -190,4 +193,12 @@ class ImageResource(Resource):
             image.thumbnail((w, h))
             buf = PILBytesIO()
             image.save(buf, "jpeg", quality=100)
-            return buf.getvalue()
+            thumbnailFile = File().createFile(size=0,
+                                              item=item,
+                                              name="thumbnail_{}x{}.jpg".format(w, h),
+                                              creator=self.user,
+                                              assetstore=Assetstore().getCurrent(),
+                                              mimeType="application/jpeg")
+            writeBytes(self.user, thumbnailFile, buf.getvalue())
+            thumbnailFile = self.__get_file(item, "thumbnail_{}x{}.jpg".format(w, h))
+            return thumbnailFile
