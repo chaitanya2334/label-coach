@@ -1,27 +1,25 @@
 import os
 import os
 import re
-import traceback
+import timeit
 from io import BytesIO
-from random import random
 
 import cherrypy
 from PIL import Image
 from bson.json_util import dumps
-
 from girder.api import access, rest
 from girder.api.describe import Description, autoDescribeRoute
-from girder.api.rest import Resource, setCurrentUser
+from girder.api.rest import Resource
 from girder.constants import AccessType
 from girder.models.assetstore import Assetstore
 from girder.models.collection import Collection
 from girder.models.file import File
+from girder.models.folder import Folder
 from girder.models.item import Item
 
-from girder.models.folder import Folder
-from ..bcolors import printOk, printFail, printOk2
+from ..bcolors import printOk, printOk2
 from ..deepzoom import load_slide
-from ..utils import trace, writeData, writeBytes
+from ..utils import trace
 
 
 class PILBytesIO(BytesIO):
@@ -172,8 +170,10 @@ class ImageResource(Resource):
     @trace
     def getThumbnail(self, image_id, w, h=None):
         item = Item().load(image_id, level=AccessType.READ, user=self.user)
+        start_time = timeit.default_timer()
         resp = self.__create_thumbnail(item, w, h)
-        printOk2("thumbnail file just created")
+        elapsed_time = timeit.default_timer() - start_time
+        printOk2("thumbnail file just created in {}".format(elapsed_time))
         cherrypy.response.headers["Content-Type"] = "application/jpeg"
         return resp
 
