@@ -20,10 +20,10 @@ class ThumbnailP extends React.Component {
         }
     }
 
-    getThumbnailPath(w) {
+    getThumbnailPath() {
         let girderToken = getCurrentToken() || cookie.find('girderToken');
         if (this.props.mimeType === "image/jpeg" || this.props.mimeType === "image/png") {
-            return "api/v1/image/thumbnail/?image_id=" + this.props.imageId + "&w=" + w;
+            return "api/v1/image/thumbnail/?image_id=" + this.props.imageId + "&w=" + 208;
         } else {
             return "api/v1/image/dzi/" + this.props.imageId + "_files/10/0_0.jpeg";
         }
@@ -38,7 +38,7 @@ class ThumbnailP extends React.Component {
     render() {
         const { width, height } = this.props.size;
 
-        let thumbnailPath = this.getThumbnailPath(Math.floor(width));
+        let thumbnailPath = this.getThumbnailPath();
         let activeClass = this.props.active ? 'active' : "";
         let hoverClass = this.state.isHovered ? "mdc-elevation--z4" : "mdc-elevation--z1";
         let widthClass = this.props.fixedWidth ? "fixed-width" : "";
