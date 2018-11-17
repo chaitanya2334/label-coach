@@ -106,6 +106,7 @@ class AssignmentResource(Resource):
     @rest.rawResponse
     def list(self, limit, offset):
         try:
+            printOk((limit, offset))
             ret = self.__list(int(limit), int(offset))
             cherrypy.response.headers["Content-Type"] = "application/json"
             return dumps(ret)
