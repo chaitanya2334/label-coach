@@ -340,17 +340,17 @@ export function createLabelFile(fileName, folderId, imageId) {
     }
 }
 
-export function postLabels(state, callback) {
+export function postLabels(images, labels, callback) {
 
     return function (dispatch) {
         let label_id = "";
-        for (let image of state.images) {
+        for (let image of images) {
             if (image.active) {
                 label_id = image.labelFileId;
             }
         }
-        if (label_id && state.labels.length > 0) {
-            postData("label?label_id=" + label_id, state.labels, callback);
+        if (label_id && labels.length > 0) {
+            postData("label?label_id=" + label_id, labels, callback);
         }
     }
 }
@@ -418,10 +418,10 @@ export function setLastUpdated(date) {
     }
 }
 
-export function saveLabels(state) {
+export function saveLabels(images, labels) {
     return (dispatch) => {
         dispatch(editSaveIndicatorText("Saving ..."));
-        dispatch(postLabels(state, (response) => {
+        dispatch(postLabels(images, labels, (response) => {
             dispatch(editSaveIndicatorText("Saved just now"));
             dispatch(setLastUpdated(new Date(response.updated.$date)));
         }));

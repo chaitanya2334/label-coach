@@ -31,7 +31,7 @@ class SaveIndicatorP extends React.Component {
         if (this.props.status === "dirty") {
             this.props.editText("Saving...");
             this.props.setStatus("done");
-            this.props.save(this.props.state);
+            this.props.save(this.props.images, this.props.labels);
 
         }
         else {
@@ -55,7 +55,8 @@ function mapStateToProps(state) {
     return {
         status: state.saveIndicator.status,
         text: state.saveIndicator.text,
-        state: state.labels,
+        images: state.images,
+        labels: state.labels,
         lastUpdated: state.saveIndicator.lastUpdated || Date.now()
     };
 }
@@ -65,8 +66,8 @@ function mapDispatchToProps(dispatch) {
         editText: (text) => {
             dispatch(editSaveIndicatorText(text))
         },
-        save: (state) => {
-            dispatch(saveLabels(state))
+        save: (images, labels) => {
+            dispatch(saveLabels(images, labels))
         },
         setStatus: (status) => {
             dispatch(setSaveStatus(status))
