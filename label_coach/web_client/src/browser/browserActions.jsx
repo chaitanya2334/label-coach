@@ -3,7 +3,7 @@ import {restRequest} from "girder/rest";
 
 function resetAssignments() {
     return {
-        type: "RESET_ASSIGNMENT"
+        type: "RESET_ASSIGNMENTS"
     }
 }
 
