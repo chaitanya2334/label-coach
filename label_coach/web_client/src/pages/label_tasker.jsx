@@ -138,9 +138,9 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch, ownProps) {
     return {
         fetchImages: () => {
+            dispatch(resetImages());
             dispatch(fetchCurrentAssignment(ownProps.match.params.id));
             dispatch(fetchAdminData(ownProps.match.params.id));
-            dispatch(resetImages());
         }
     };
 }
