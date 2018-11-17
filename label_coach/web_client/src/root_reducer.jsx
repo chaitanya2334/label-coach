@@ -9,7 +9,7 @@ import {
     thumbnailBarVisibility, tools,
 } from "./control/controlReducers";
 import {authentication} from "./login/loginReducer";
-import {assignments} from "./browser/browserReducers";
+import {assignments, hasMoreAssignments} from "./browser/browserReducers";
 import {adminData} from "./control/Admin/AdminReducers";
 
 export default combineReducers({
@@ -27,4 +27,5 @@ export default combineReducers({
                                    searchImages,
                                    searchLabels,
                                    navState,
+                                   hasMoreAssignments
                                })

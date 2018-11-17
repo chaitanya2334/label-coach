@@ -76,6 +76,9 @@ class LabelTaskerP extends React.Component {
     }
 
     render() {
+        document.body.classList.remove('overflow');
+        document.body.classList.add('no-overflow');
+
         if (this.props.currentAssignmentId !== this.props.match.params.id) {
             this.props.fetchImages();
         }

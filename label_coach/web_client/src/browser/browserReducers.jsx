@@ -17,12 +17,27 @@ export function assignmentReducer(assignment = {}, action) {
     );
 }
 
+export function hasMoreAssignments(hasMoreAssignment = true, action) {
+    return produce(hasMoreAssignment, draft => {
+                       switch (action.type) {
+                           case "SET_HAS_MORE_ASSIGNMENTS":
+                               draft = action.state;
+                               return draft;
+                           default:
+                               return draft;
+                       }
+                   }
+    );
+}
+
 export function assignments(assignments = [], action) {
     return produce(assignments, draft => {
                        switch (action.type) {
-                           case 'POPULATE_ASSIGNMENTS':
+                           case 'RESET_ASSIGNMENTS':
                                draft = [];
+                               return draft;
 
+                           case 'PUSH_ASSIGNMENTS':
                                for (let assignment of action.assignments) {
                                    let {name, image_folder, label_folders, owner} = assignment;
 

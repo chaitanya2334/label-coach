@@ -1,14 +1,7 @@
 import * as React from "react";
 import {Link} from "react-router-dom";
 import Logo from "../logo";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faUser} from "@fortawesome/free-solid-svg-icons";
-import Provider from "react-redux/es/components/Provider";
-import {applyMiddleware, createStore} from "redux";
-import thunk from "redux-thunk";
-import rootReducer from "../root_reducer"
 import AssignmentGrid from "../browser/AssignmentGrid";
-import {fetchImages} from "../control/controlActions";
 import UserControl from "../control/UserControl";
 
 export default class CollectionBrowserP extends React.Component {
@@ -19,6 +12,8 @@ export default class CollectionBrowserP extends React.Component {
     }
 
     render() {
+        document.body.classList.remove('no-overflow');
+        document.body.classList.add('overflow');
         return (
 
              <div className={"container-fluid"}>

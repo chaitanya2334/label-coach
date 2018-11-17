@@ -1,5 +1,5 @@
 .grid_layout{
     opacity: 1;
     margin-top: 5%;
-    overflow-y: auto;
+    overflow-y: auto!important;
 }

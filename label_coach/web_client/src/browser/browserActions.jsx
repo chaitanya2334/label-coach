@@ -1,9 +1,15 @@
 import {fetchImages, replaceLabels} from "../control/controlActions";
 import {restRequest} from "girder/rest";
 
-function populateAssignments(assignments) {
+function resetAssignments() {
     return {
-        type: 'POPULATE_ASSIGNMENTS',
+        type: "RESET_ASSIGNMENT"
+    }
+}
+
+function pushAssignments(assignments) {
+    return {
+        type: 'PUSH_ASSIGNMENTS',
         assignments: assignments
     }
 }
@@ -22,22 +28,40 @@ export function selectAssignment(id, history) {
     }
 }
 
-export function findAssignments() {
+export function setHasMoreAssignments(state){
+    return {
+        type: "SET_HAS_MORE_ASSIGNMENTS",
+        state: state,
+    }
+}
+
+export function findAssignments(limit, page) {
     return function (dispatch) {
         return restRequest({
                                url: "/assignment/",
                                method: "GET",
                                data: {
-                                   limit: 50,
+                                   limit: limit,
+                                   offset: page*limit,
                                }
-                           }).then(assignments=>{
-                               if(assignments.length > 0){
-                                   dispatch(populateAssignments(assignments));
-                               }else{
-                                   console.error("No assignments found!!!!");
-                               }
+                           })
+            .then(assignments => {
+                if (assignments.length > 0) {
+                    if (page === 0) {
+                        dispatch(resetAssignments());
+                        dispatch(pushAssignments(assignments));
+                    } else {
+                        dispatch(pushAssignments(assignments));
+                    }
 
-        })
+                    dispatch(setHasMoreAssignments(true));
+
+                } else {
+                    dispatch(setHasMoreAssignments(false));
+                    console.error("No assignments found!!!!");
+                }
+
+            })
     }
 }
 

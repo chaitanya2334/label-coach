@@ -52,6 +52,13 @@
 
 body.background{
     background-color: #E7E8E8 !important;
+}
+
+.overflow{
+    overflow-y: scroll!important;
+}
+
+.no-overflow{
     overflow: hidden!important;
 }
 
@@ -85,8 +92,6 @@ body {
     line-height: 1.42857143!important;
     color: #333!important;
     background-color: #fff!important;
-    overflow: hidden!important;
-    overflow-y: auto!important;
 }
 
 .modal-header{

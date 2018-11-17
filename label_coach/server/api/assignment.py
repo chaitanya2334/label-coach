@@ -100,21 +100,23 @@ class AssignmentResource(Resource):
 
     @access.public
     @autoDescribeRoute(
-        Description('Get list of all assignments that it owns or is a part of'))
+        Description('Get list of all assignments that it owns or is a part of')
+            .param('limit', 'Number of assignments to return')
+            .param('offset', 'offset from 0th assignment to start looking for assignments'))
     @rest.rawResponse
-    def list(self):
+    def list(self, limit, offset):
         try:
-            ret = self.__list()
+            ret = self.__list(int(limit), int(offset))
             cherrypy.response.headers["Content-Type"] = "application/json"
             return dumps(ret)
 
         except:
             printFail(traceback.print_exc)
 
-    def __list(self):
+    def __list(self, limit=0, offset=0):
         user = self.getCurrentUser()
         folders = self.folder_m.find({'parentId': user['_id'],
-                                      'parentCollection': 'user'})
+                                      'parentCollection': 'user'}, limit=limit, offset=offset)
         ret = []
         for folder in folders:
             if self.__findName(folder):

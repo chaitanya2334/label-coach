@@ -12,7 +12,6 @@ import {Provider} from "react-redux";
 import {applyMiddleware, createStore} from "redux";
 import rootReducer from "./root_reducer";
 import thunk from "redux-thunk";
-import {postLabels} from "./control/controlActions";
 import {composeWithDevTools} from "remote-redux-devtools";
 
 class Index extends React.Component {
