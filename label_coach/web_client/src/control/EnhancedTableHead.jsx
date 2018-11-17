@@ -105,7 +105,6 @@ function mapDispatchToProps(dispatch, ownProps) {
         },
         deselect: () => {
             dispatch(deselectAnnotation(ownProps.label_id, ownProps.ann_type, ownProps.item_id));
-
         }
     }
 }

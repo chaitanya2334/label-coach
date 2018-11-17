@@ -152,7 +152,7 @@ class EnhancedTableP extends React.Component {
                             label_id={this.props.label_id}
                             selected={selected}
                             onDelete={(event, ids) => {
-                                this.onDelete(event, ids)
+                                this.onDelete(event, ids, data)
                             }}
                             rowCount={data.length}
                         />
