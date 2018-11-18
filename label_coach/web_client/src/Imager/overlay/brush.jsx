@@ -16,7 +16,7 @@ export default class Brush extends Stroke {
                  .attr('id', "MAIN" + "_" + this.id)
                  .attr('stroke-width', this.r * 2)
                  .attr("stroke-linecap", "round")
-                 .attr("opacity", 0.3)
+                 .attr("opacity", 0.7)
                  .attr("mask", "url(#eraser_" + this.label.id + ")");
     }
 
