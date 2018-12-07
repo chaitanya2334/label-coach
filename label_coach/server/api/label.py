@@ -23,12 +23,6 @@ from ..bcolors import printOk, printFail, printOk2
 from ..utils import writeData
 
 
-class PILBytesIO(BytesIO):
-    def fileno(self):
-        """Classic PIL doesn't understand io.UnsupportedOperation."""
-        raise AttributeError('Not supported')
-
-
 class LabelResource(Resource):
 
     def __init__(self):
@@ -210,13 +204,14 @@ class LabelResource(Resource):
     @access.public
     @autoDescribeRoute(
         Description('Post label by id')
-            .param('label_id', 'label file id'))
+            .param('label_id', 'label file id')
+            .param('labels', 'labels to be updated'))
     @rest.rawResponse
-    def postLabel(self, label_id, params):
+    def postLabel(self, label_id, labels):
         try:
             file = self.file_m.load(label_id, level=AccessType.WRITE, user=self.getCurrentUser())
             cherrypy.response.headers["Content-Type"] = "application/json"
-            params['labels'] = json.loads(params['labels'])
+            params = {'labels': json.loads(labels)}
             data = json.dumps(params, indent=2, sort_keys=True)
             upload = writeData(self.getCurrentUser(), file, data)
             printOk2(file)
