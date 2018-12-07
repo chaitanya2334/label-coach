@@ -1,7 +1,4 @@
 import {restRequest} from "girder/rest";
-import {createAsyncAction} from 'redux-promise-middleware-actions';
-import {saveAs} from "file-saver";
-import {createWriteStream} from 'streamsaver';
 
 export function setSize(toolType, value) {
     return {
@@ -51,6 +48,23 @@ export function changePage(label_id, page) {
         type: 'CHANGE_PAGE',
         label_id: label_id,
         page: page,
+    }
+}
+
+export function postBrushCanvas(folder_id, ann_type, label_id, brush_id, jsonObjs, transform) {
+    return function (dispatch) {
+        postData("brush_canvas/upload", {
+                     folder_id: folder_id,
+                     label_id: label_id,
+                     brush_id: brush_id,
+                     svgString: jsonObjs,
+                 }, (response) => {
+                     dispatch(addBrushAnnotation(label_id, brush_id));
+                     dispatch(updateBrushAnnotation(label_id, brush_id, response.fileId, transform));
+                     dispatch(setSaveStatus("dirty"));
+                 }
+        );
+
     }
 }
 
@@ -252,16 +266,15 @@ export function setCurrentAssignment(assignment) {
     }
 }
 
-export function getCurrentAssignment(id) {
-    return {
-        type: 'FETCH_CURRENT_ASSIGNMENT',
-        payload: restRequest({
-                                 url: "assignment/" + id,
-                                 method: 'GET',
-                                 data: {
-                                     a_id: id
-                                 }
-                             })
+export function fetchCurrentAssignment(id) {
+    return function (dispatch) {
+        return restRequest({
+                               url: "assignment/" + id,
+                               method: 'GET',
+                               data: {
+                                   a_id: id
+                               }
+                           })
             .then((response) => {
                 if (typeof response === 'string') {
                     return JSON.parse(response);
@@ -269,31 +282,24 @@ export function getCurrentAssignment(id) {
                     return response;
                 }
             })
-    }
-}
-
-export function fetchCurrentAssignment(id) {
-    return function (dispatch) {
-        return dispatch(getCurrentAssignment(id))
-            .then((response) => {
-                let assignment = response.value;
+            .then((assignment) => {
                 dispatch(setCurrentAssignment(assignment));
             })
     }
 }
 
-export function getImages(id, limit, page) {
-    return {
-        type: 'FETCH_IMAGES',
-        payload: restRequest({
-                                 url: "image",
-                                 method: 'GET',
-                                 data: {
-                                     folderId: id,
-                                     limit: limit,
-                                     offset: page * limit,
-                                 }
-                             })
+export function fetchImages(id, limit, page) {
+    return function (dispatch) {
+
+        return restRequest({
+                               url: "image",
+                               method: 'GET',
+                               data: {
+                                   folderId: id,
+                                   limit: limit,
+                                   offset: page * limit,
+                               }
+                           })
             .then(json => {
                 return json.map(image => {
                     let labelFileId = null;
@@ -308,18 +314,10 @@ export function getImages(id, limit, page) {
                     }
                 });
             })
-    }
-}
-
-export function fetchImages(id, limit, page) {
-    return function (dispatch) {
-
-        return dispatch(getImages(id, limit, page))
-            .then(response => {
-                let images = response.value;
-                console.log(images);
+            .then(images => {
                 if (images.length > 0) {
                     if (page === 0) {
+                        dispatch(resetImages());
                         dispatch(pushImages(images));
                     } else {
                         dispatch(pushImages(images));
@@ -335,8 +333,7 @@ export function fetchImages(id, limit, page) {
     }
 }
 
-function postData(url = ``, data = {}, callback = () => {
-}) {
+function postData(url = ``, data = {}, callback) {
     // Default options are marked with *
     return restRequest({
                            url: url,
@@ -363,17 +360,16 @@ export function addLabelId(image_id, label_id) {
     }
 }
 
-export function getLabelFile(fileName, folderId) {
-    return {
-        type: 'FETCH_LABEL_FILE',
-        payload: restRequest({
-                                 url: "/label/create",
-                                 method: 'GET',
-                                 data: {
-                                     name: fileName,
-                                     assign_id: folderId,
-                                 }
-                             })
+export function createLabelFile(fileName, folderId, imageId) {
+    return function (dispatch) {
+        return restRequest({
+                               url: "/label/create",
+                               method: 'GET',
+                               data: {
+                                   file_name: fileName,
+                                   folder_id: folderId,
+                               }
+                           })
             .then(response => {
                 if (typeof response === 'string') {
                     return JSON.parse(response);
@@ -381,15 +377,7 @@ export function getLabelFile(fileName, folderId) {
                     return response;
                 }
             })
-    }
-}
-
-export function createLabelFile(fileName, folderId, imageId) {
-    return function (dispatch) {
-        console.log("folder id before create label_file: ", folderId);
-        return dispatch(getLabelFile(fileName, folderId))
-            .then(response => {
-                let json = response.value;
+            .then(json => {
                 // TODO move it out of this action. Not really happy about dispatching this action here.
                 let labelId = json.label_id.$oid;
                 dispatch(addLabelId(imageId, labelId));
@@ -413,57 +401,16 @@ export function postLabels(images, labels, callback) {
     }
 }
 
-export function postLabelImage(labelName, imageName, folderId, labelImg) {
-
-    return (dispatch) => {
-        postData("labelImage",
-                 {label_name: labelName, image_name: imageName, assign_id: folderId, image: labelImg});
-    }
-}
-
-export function getLabels(label_id) {
-    return {
-        type: 'FETCH_LABELS',
-        payload: restRequest({
-                                 url: "/label/" + label_id,
-                                 method: 'GET',
-                                 data: {
-                                     label_id: label_id
-                                 }
-                             })
-    }
-}
-
-export function download(assign_id, image_name) {
-    return {
-        type: 'DOWNLOAD',
-        payload: restRequest({
-                                 url: "/labelImage/download",
-                                 method: 'GET',
-                                 data: {
-                                     assign_id: assign_id,
-                                     image_name: image_name
-                                 }
-                             })
-    }
-}
-
-export function downloadImageLabels(assign_id, image_name) {
-    return function (dispatch) {
-        return dispatch(download(assign_id, image_name))
-            .then(response => response.value)
-            .then(data => {
-                let blob = new Blob([data], {type: "octet/stream"});
-                saveAs(blob, "labels.zip")
-            });
-    }
-}
-
 export function fetchLabels(label_id) {
     return function (dispatch) {
-        return dispatch(getLabels(label_id))
-            .then(response => {
-                let json = response.value;
+        return restRequest({
+                               url: "/label/" + label_id,
+                               method: 'GET',
+                               data: {
+                                   label_id: label_id
+                               }
+                           })
+            .then(json => {
                 let labels = json.labels;
                 labels = labels.map(label => ({
                     name: label.name,
@@ -503,15 +450,10 @@ export function editSaveIndicatorText(text) {
     }
 }
 
-export function setDoneStatus() {
+export function setSaveStatus(status) {
     return {
-        type: 'SET_DONE_STATUS',
-    }
-}
-
-export function setDirtyStatus() {
-    return {
-        type: 'SET_DIRTY_STATUS',
+        type: 'SET_SAVE_STATUS',
+        status: status
     }
 }
 
@@ -543,17 +485,5 @@ export function setNavState(state) {
     return {
         type: "SET_NAV_STATE",
         state: state,
-    }
-}
-
-export function imageIsReady() {
-    return {
-        type: "IMAGE_READY"
-    }
-}
-
-export function imageNotReady() {
-    return {
-        type: "IMAGE_NOT_READY"
     }
 }

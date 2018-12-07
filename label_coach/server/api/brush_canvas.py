@@ -1,6 +1,9 @@
+import base64
+import re
 from io import BytesIO
 
 import cherrypy
+from PIL import Image
 from girder.api import access
 from girder.api.describe import Description, autoDescribeRoute
 from girder.api.rest import Resource, getCurrentToken
@@ -12,7 +15,7 @@ from girder.models.item import Item
 from girder.models.user import User
 
 from ..bcolors import printOk2
-from ..utils.file_management import writeBytes
+from ..utils import writeBytes, PILBytesIO
 
 
 class BrushCanvasResource(Resource):

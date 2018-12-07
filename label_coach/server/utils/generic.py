@@ -1,13 +1,31 @@
 import base64
 import functools
+import json
 import re
 import traceback
 from io import BytesIO
-
-from girder.models.assetstore import Assetstore
+from girder.utility import RequestBodyStream
+from girder.models.upload import Upload
 from girder.models.file import File
+from girder.models.assetstore import Assetstore
 
-from ..bcolors import printFail
+from .bcolors import printFail
+
+
+def writeData(currentUser, file, data):
+    stream = BytesIO(str.encode(data))
+    chunk = RequestBodyStream(stream, size=len(data))
+    upload = Upload().createUploadToFile(file, currentUser, len(data))
+    Upload().handleChunk(upload, chunk, filter=True, user=currentUser)
+    return upload
+
+
+def writeBytes(currentUser, file, bytes):
+    stream = BytesIO(bytes)
+    chunk = RequestBodyStream(stream, size=len(bytes))
+    upload = Upload().createUploadToFile(file, currentUser, len(bytes))
+    Upload().handleChunk(upload, chunk, filter=True, user=currentUser)
+    return upload
 
 
 def createThumbnail(currentUser, item):
@@ -45,8 +63,8 @@ def decode_base64(data, altchars=b'+/'):
     :returns: The decoded byte string.
 
     """
-    data = re.sub(r'[^a-zA-Z0-9{}]+'.format(altchars), '', data)  # normalize
+    data = re.sub(rb'[^a-zA-Z0-9{}]+'.format(altchars), b'', data)  # normalize
     missing_padding = len(data) % 4
     if missing_padding:
-        data += '=' * (4 - missing_padding)
+        data += b'=' * (4 - missing_padding)
     return base64.b64decode(data, altchars)

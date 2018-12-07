@@ -82,11 +82,8 @@ export function saveIndicator(saveIndicator = {text: "", status: "done", lastUpd
             case 'EDIT_SAVE_INDICATOR_TEXT':
                 draft.text = action.text;
                 return draft;
-            case 'SET_DIRTY_STATUS':
-                draft.status = "dirty";
-                return draft;
-            case 'SET_DONE_STATUS':
-                draft.status = "done";
+            case 'SET_SAVE_STATUS':
+                draft.status = action.status;
                 return draft;
             case 'SET_LAST_UPDATED':
                 draft.lastUpdated = action.date;
@@ -245,7 +242,15 @@ export function labels(labels = [], action) {
                                            points: line.points,
                                            selected: false,
                                        })),
-                                       brushes: label.ann.brushes,
+                                       brushes: label.ann.brushes.map((brush, index) => ({
+                                           id: index,
+                                           drawState: "read-only",
+                                           text: brush.text,
+                                           file_id: brush.file_id,
+                                           transform: brush.transform,
+                                           selected: false,
+                                           jsonObj: brush.jsonObj,
+                                       })),
                                        erasers: label.ann.erasers.map((eraser, index) => ({
                                            id: index,
                                            drawState: "read-only",
@@ -513,19 +518,6 @@ export function navState(navState = false, action) {
         switch (action.type) {
             case "SET_NAV_STATE":
                 return action.state;
-            default:
-                return draft;
-        }
-    });
-}
-
-export function imageReady(imageReady = false, action){
-    return produce(imageReady, draft=>{
-        switch (action.type) {
-            case "IMAGE_READY":
-                return true;
-            case "IMAGE_NOT_READY":
-                return false;
             default:
                 return draft;
         }
