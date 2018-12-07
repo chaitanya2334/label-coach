@@ -51,6 +51,44 @@ export function changePage(label_id, page) {
     }
 }
 
+export function postBrushCanvas(folder_id, ann_type, label_id, brush_id, jsonObjs, transform) {
+    return function (dispatch) {
+        postData("brush_canvas/upload", {
+                     folder_id: folder_id,
+                     label_id: label_id,
+                     brush_id: brush_id,
+                     svgString: jsonObjs,
+                 }, (response) => {
+                     dispatch(addBrushAnnotation(label_id, brush_id));
+                     dispatch(updateBrushAnnotation(label_id, brush_id, response.fileId, transform));
+                     dispatch(setSaveStatus("dirty"));
+                 }
+        );
+
+    }
+}
+
+export function addBrushAnnotation(label_id, item_id) {
+    return {
+        type: 'ADD_BRUSH_ANN',
+        ann_type: "brushes",
+        label_id: label_id,
+        item_id: item_id
+    }
+}
+
+
+export function updateBrushAnnotation(label_id, brush_id, fileId, transform) {
+    return {
+        type: 'UPDATE_BRUSH_ANN',
+        label_id: label_id,
+        ann_type: "brushes",
+        item_id: brush_id,
+        file_id: fileId,
+        transform: transform
+    }
+}
+
 export function selectAnnotation(label_id, ann_type, item_id) {
     return {
         type: 'SELECT_ANN',
@@ -72,6 +110,16 @@ export function deselectAnnotation(label_id, ann_type, item_id) {
 export function addAnnotation(ann_type, label_id, item_id, args = {}) {
     return {
         type: 'ADD_ANN',
+        ann_type: ann_type,
+        label_id: label_id,
+        item_id: item_id,
+        args: args,
+    }
+}
+
+export function replaceAnnotation(ann_type, label_id, item_id, args = {}) {
+    return {
+        type: 'REPLACE_ANN',
         ann_type: ann_type,
         label_id: label_id,
         item_id: item_id,
@@ -104,13 +152,13 @@ export function unlockAnnotation(ann_type, label_id, item_id) {
     }
 }
 
-export function updateAnnotation(ann_type, label_id, item_id, points, args = {}) {
+export function updateAnnotation(ann_type, label_id, item_id, path, args = {}) {
     return {
         type: 'UPDATE_ANN',
         ann_type: ann_type,
         label_id: label_id,
         item_id: item_id,
-        points: points,
+        path: path,
         args: args,
     }
 }
@@ -290,9 +338,7 @@ function postData(url = ``, data = {}, callback) {
     return restRequest({
                            url: url,
                            method: 'POST',
-                           data: {
-                               labels: JSON.stringify(data)
-                           }
+                           data: data
                        })
         .then(response => {
             callback(response)
@@ -350,7 +396,7 @@ export function postLabels(images, labels, callback) {
             }
         }
         if (label_id && labels.length > 0) {
-            postData("label?label_id=" + label_id, labels, callback);
+            postData("label?label_id=" + label_id, {labels: JSON.stringify(labels)}, callback);
         }
     }
 }

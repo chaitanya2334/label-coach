@@ -45,6 +45,7 @@
     "compression-webpack-plugin": "^1.1.12",
     "config": "^2.0.1",
     "d3": "^5.7.0",
+    "fabric": "^2.4.4",
     "graceful-fs": "^4.1.15",
     "history": "^4.7.2",
     "immer": "^1.7.4",

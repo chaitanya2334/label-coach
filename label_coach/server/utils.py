@@ -1,5 +1,7 @@
+import base64
 import functools
 import json
+import re
 import traceback
 from io import BytesIO
 from girder.utility import RequestBodyStream
@@ -46,3 +48,23 @@ def trace(func):
             printFail(traceback.print_exc)
 
     return wrapper_decorator
+
+
+class PILBytesIO(BytesIO):
+    def fileno(self):
+        """Classic PIL doesn't understand io.UnsupportedOperation."""
+        raise AttributeError('Not supported')
+
+
+def decode_base64(data, altchars=b'+/'):
+    """Decode base64, padding being optional.
+
+    :param data: Base64 data as an ASCII byte string
+    :returns: The decoded byte string.
+
+    """
+    data = re.sub(rb'[^a-zA-Z0-9{}]+'.format(altchars), b'', data)  # normalize
+    missing_padding = len(data) % 4
+    if missing_padding:
+        data += b'=' * (4 - missing_padding)
+    return base64.b64decode(data, altchars)
