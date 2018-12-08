@@ -1,6 +1,6 @@
 import {combineReducers} from "redux";
 import {
-    currentAssignment, hasMoreImages, imageReady,
+    currentAssignment, hasMoreImages,
     images,
     labels, navState, rightBar,
     saveIndicator,
@@ -30,6 +30,5 @@ export default combineReducers({
                                    navState,
                                    hasMoreAssignments,
                                    hasMoreImages,
-                                   imageReady,
                                    loadingBar: loadingBarReducer,
                                })
