@@ -197,7 +197,7 @@ class OSDCanvasP extends React.Component {
 
     static isEmptyOrSame(prevLabel, currLabel) {
         if (!prevLabel && currLabel) {
-            return true;
+            return false;
         }
 
         return currLabel && prevLabel && currLabel.id === prevLabel.id;
@@ -223,6 +223,7 @@ class OSDCanvasP extends React.Component {
         }
 
         if ((prevProps.activeTool !== this.props.activeTool) ||
+            prevProps.toolRadius !== this.props.toolRadius ||
             !OSDCanvasP.isEmptyOrSame(prevProps.activeLabel, this.props.activeLabel)) {
             this.updateOverlay();
         }
