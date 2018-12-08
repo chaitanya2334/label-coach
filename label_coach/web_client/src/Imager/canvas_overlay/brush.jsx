@@ -62,7 +62,8 @@ export default class Brush {
                 this.mousecursor.set({
                                          top: -100,
                                          left: -100
-                                     }).setCoords();
+                                     })
+                    .setCoords();
                 this.canvas.renderAll();
             }
         });
@@ -83,7 +84,8 @@ export default class Brush {
             }
             this.saveToImage();
             this.canvas.__eventListeners["mouse:up"] = [];
-        })
+        });
+
     }
 
     deactivate() {
@@ -92,16 +94,24 @@ export default class Brush {
         this.canvas.isDrawingMode = false;
         this.canvas.__eventListeners["mouse:up"] = [];
         this.canvas.__eventListeners["mouse:created"] = [];
+        this.canvas.__eventListeners["object:added"] = [];
+        this.canvas.__eventListeners["mouse:out"] = [];
+        this.canvas.__eventListeners["mouse:move"] = [];
+        this.canvas.__eventListeners["mouse:move"] = [];
     }
 
     saveToImage() {
         let transform = this.canvas.viewportTransform.slice();
         this.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
-        let jsonObj = this.canvas.item(this.canvas.size() - 2);
+        // Do something here
+        let objects = this.canvas.toJSON().objects;
+        let jsonObj = objects[objects.length - 2];
         this.canvas.viewportTransform = transform;
         this.canvas.renderAll();
         this.updateStrokes(this.labelFolderId, "brushes", this.label.id, this.id, jsonObj, transform);
         this.id++;
+
+
     }
 
     loadFromImage(imgSrc, transform) {
