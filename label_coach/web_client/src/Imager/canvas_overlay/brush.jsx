@@ -97,10 +97,11 @@ export default class Brush {
     saveToImage() {
         let transform = this.canvas.viewportTransform.slice();
         this.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
-        let dataurl = this.canvas.toJSON();
+        let jsonObj = this.canvas.item(this.canvas.size() - 2);
         this.canvas.viewportTransform = transform;
         this.canvas.renderAll();
-        this.updateStrokes(this.labelFolderId, "brushes", this.label.id, this.id, dataurl, transform);
+        this.updateStrokes(this.labelFolderId, "brushes", this.label.id, this.id, jsonObj, transform);
+        this.id++;
     }
 
     loadFromImage(imgSrc, transform) {

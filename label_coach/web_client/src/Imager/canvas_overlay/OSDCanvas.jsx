@@ -293,13 +293,11 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch, ownProps) {
     return {
-        updateStrokes: (folder_id, ann_type, label_id, brush_id, jsonObjs, transform) => {
+        updateStrokes: (folder_id, ann_type, label_id, brush_id, jsonObj, transform) => {
             //dispatch(postBrushCanvas(folder_id, ann_type, label_id, brush_id, jsonObjs, transform));
-            let i = 0;
-            for (let jsonObj of jsonObjs.objects) {
-                dispatch(replaceAnnotation(ann_type, label_id, i, {jsonObj: jsonObj, transform: transform}));
-                i++;
-            }
+
+            dispatch(replaceAnnotation(ann_type, label_id, brush_id, {jsonObj: jsonObj, transform: transform}));
+
             dispatch(setDirtyStatus());
         }
     }
