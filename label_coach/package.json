@@ -74,6 +74,7 @@
     "redux-promise-middleware": "^5.1.1",
     "redux-promise-middleware-actions": "^2.1.0",
     "redux-thunk": "^2.3.0",
+    "redux-timeout": "^2.0.0",
     "remote-redux-devtools": "^0.5.13",
     "svg-inline-loader": "^0.8.0",
     "svg-intersections": "^0.4.0",

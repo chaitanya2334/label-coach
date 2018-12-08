@@ -52,23 +52,6 @@ export function changePage(label_id, page) {
     }
 }
 
-export function postBrushCanvas(folder_id, ann_type, label_id, brush_id, jsonObjs, transform) {
-    return function (dispatch) {
-        postData("brush_canvas/upload", {
-                     folder_id: folder_id,
-                     label_id: label_id,
-                     brush_id: brush_id,
-                     svgString: jsonObjs,
-                 }, (response) => {
-                     dispatch(addBrushAnnotation(label_id, brush_id));
-                     dispatch(updateBrushAnnotation(label_id, brush_id, response.fileId, transform));
-                     dispatch(setSaveStatus("dirty"));
-                 }
-        );
-
-    }
-}
-
 export function addBrushAnnotation(label_id, item_id) {
     return {
         type: 'ADD_BRUSH_ANN',
@@ -484,10 +467,15 @@ export function editSaveIndicatorText(text) {
     }
 }
 
-export function setSaveStatus(status) {
+export function setDoneStatus() {
     return {
-        type: 'SET_SAVE_STATUS',
-        status: status
+        type: 'SET_DONE_STATUS',
+    }
+}
+
+export function setDirtyStatus() {
+    return {
+        type: 'SET_DIRTY_STATUS',
     }
 }
 
