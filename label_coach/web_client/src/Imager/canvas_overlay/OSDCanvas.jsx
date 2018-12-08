@@ -297,7 +297,6 @@ function mapDispatchToProps(dispatch, ownProps) {
             //dispatch(postBrushCanvas(folder_id, ann_type, label_id, brush_id, jsonObjs, transform));
 
             dispatch(replaceAnnotation(ann_type, label_id, brush_id, {jsonObj: jsonObj, transform: transform}));
-
             dispatch(setDirtyStatus());
         }
     }
