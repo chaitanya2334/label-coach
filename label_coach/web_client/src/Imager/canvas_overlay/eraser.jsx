@@ -23,7 +23,9 @@ export default class Eraser extends Stroke{
     saveToImage() {
         let transform = this.canvas.viewportTransform.slice();
         this.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
-        let jsonObj = this.canvas.item(this.canvas.size() - 2);
+        // Do something here
+        let objects = this.canvas.toJSON().objects;
+        let jsonObj = objects[objects.length - 2];
         this.canvas.viewportTransform = transform;
         this.canvas.renderAll();
         this.updateStrokes(this.labelFolderId, "brushes", this.label.id, this.id, jsonObj, transform);
