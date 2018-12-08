@@ -92,6 +92,10 @@ export default class Stroke {
         this.canvas.isDrawingMode = false;
         this.canvas.__eventListeners["mouse:up"] = [];
         this.canvas.__eventListeners["mouse:created"] = [];
+        this.canvas.__eventListeners["object:added"] = [];
+        this.canvas.__eventListeners["mouse:out"] = [];
+        this.canvas.__eventListeners["mouse:move"] = [];
+        this.canvas.__eventListeners["mouse:move"] = [];
     }
 
     saveToImage() {
