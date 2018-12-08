@@ -82,8 +82,11 @@ export function saveIndicator(saveIndicator = {text: "", status: "done", lastUpd
             case 'EDIT_SAVE_INDICATOR_TEXT':
                 draft.text = action.text;
                 return draft;
-            case 'SET_SAVE_STATUS':
-                draft.status = action.status;
+            case 'SET_DIRTY_STATUS':
+                draft.status = "dirty";
+                return draft;
+            case 'SET_DONE_STATUS':
+                draft.status = "done";
                 return draft;
             case 'SET_LAST_UPDATED':
                 draft.lastUpdated = action.date;
@@ -242,15 +245,7 @@ export function labels(labels = [], action) {
                                            points: line.points,
                                            selected: false,
                                        })),
-                                       brushes: label.ann.brushes.map((brush, index) => ({
-                                           id: index,
-                                           drawState: "read-only",
-                                           text: brush.text,
-                                           file_id: brush.file_id,
-                                           transform: brush.transform,
-                                           selected: false,
-                                           jsonObj: brush.jsonObj,
-                                       })),
+                                       brushes: label.ann.brushes,
                                        erasers: label.ann.erasers.map((eraser, index) => ({
                                            id: index,
                                            drawState: "read-only",

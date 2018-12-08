@@ -9,13 +9,24 @@ export default class Brush {
         this.updateStrokes = updateStrokes;
         this.id = id;
         this.labelFolderId = labelFolderId;
+        var cursorOpacity = .5;
+        this.mousecursor = new fabric.Circle({
+                                                 left: -100,
+                                                 top: -100,
+                                                 radius: radius / 2,
+                                                 fill: label.color,
+                                                 stroke: "black",
+                                                 originX: 'center',
+                                                 originY: 'center'
+                                             });
+        this.canvas.add(this.mousecursor);
 
     }
 
     activate() {
         this.canvas.freeDrawingBrush.color = this.label.color;
         this.canvas.freeDrawingBrush.width = this.radius;
-        this.canvas.globalCompositeOperation="source-over";
+        this.canvas.globalCompositeOperation = "source-over";
         this.viewer.setMouseNavEnabled(false);
         this.viewer.outerTracker.setTracking(false);
         this.canvas.isDrawingMode = true;
@@ -25,7 +36,51 @@ export default class Brush {
             // erasures in object list
             this.canvas.renderAll();
         });
+        this.canvas.on("mouse:down", () => {
+            if (!this.drawing) {
+                this.canvas.remove(this.mousecursor);
+                this.mousecursor = null;
+
+                this.canvas.renderAll();
+                this.drawing = 1;
+            }
+        });
+        this.canvas.on("mouse:move", (evt) => {
+            if (!this.drawing) {
+                let mouse = this.canvas.getPointer(evt.e);
+                this.mousecursor
+                    .set({
+                             top: mouse.y,
+                             left: mouse.x
+                         })
+                    .setCoords();
+                this.canvas.renderAll();
+            }
+        });
+        this.canvas.on("mouse:out", () => {
+            if (!this.drawing) {
+                this.mousecursor.set({
+                                         top: -100,
+                                         left: -100
+                                     }).setCoords();
+                this.canvas.renderAll();
+            }
+        });
         this.canvas.on("mouse:up", () => {
+            if (this.drawing) {
+                this.mousecursor = new fabric.Circle({
+                                                         left: -100,
+                                                         top: -100,
+                                                         radius: this.radius / 2,
+                                                         fill: this.label.color,
+                                                         stroke: "black",
+                                                         originX: 'center',
+                                                         originY: 'center'
+                                                     });
+                this.canvas.add(this.mousecursor);
+                this.canvas.renderAll();
+                this.drawing = 0;
+            }
             this.saveToImage();
             this.canvas.__eventListeners["mouse:up"] = [];
         })

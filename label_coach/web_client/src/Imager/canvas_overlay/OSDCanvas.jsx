@@ -7,11 +7,7 @@ import './osdCanvasOverlay';
 import connect from "react-redux/es/connect/connect";
 import Brush from "./brush";
 import {
-    addAnnotation,
-    lockAnnotation,
-    setSaveStatus,
-    updateAnnotation,
-    postBrushCanvas, replaceAnnotation
+    replaceAnnotation, replaceLabels, setDirtyStatus, setDoneStatus
 } from "../../control/controlActions";
 import Eraser from "./eraser";
 
@@ -37,6 +33,7 @@ class OSDCanvasP extends React.Component {
         this.viewer = null;
         this.zoom = 1;
         this.id = 'ocd-viewer';
+        this.handleUpdateStrokes = this.handleUpdateStrokes.bind(this);
     }
 
     render() {
@@ -75,8 +72,8 @@ class OSDCanvasP extends React.Component {
 
     onViewerReady() {
         this.fabOverlay = this.viewer.fabricjsOverlay({scale: 1000});
-        this.viewer.addHandler('tile-loaded', ()=>{
-             this.props.hideLoading();
+        this.viewer.addHandler('tile-loaded', () => {
+            this.props.hideLoading();
         })
     }
 
@@ -88,32 +85,60 @@ class OSDCanvasP extends React.Component {
         this.viewer.open(tile_source);
     }
 
+    handleUpdateStrokes(folderId, ann_type, labelId, brushId, jsonObj, transform) {
+        let {labels} = this.props;
+        labels = Object.assign({}, labels);
+        let brushes = labels.find(x => x.id === labelId).ann.brushes;
+
+        for (let jsonObj of jsonObjs.objects) {
+            let brush = brushes.find(x => x.id === brushId);
+
+            if (brush !== undefined) {
+                brush.jsonObj = jsonObj;
+                brush.transform = transform;
+
+            } else {
+                let newbrush = Object.assign({}, {id: brushes.length});
+                newbrush.text = "brush" + newbrush.id;
+                newbrush.path = [];
+                newbrush.drawState = "create";
+                newbrush.jsonObj = jsonObj;
+                newbrush.transform = transform;
+
+                labels.find(x => x.id === labelId)
+                      .ann
+                      .brushes
+                      .push(newbrush);
+
+            }
+        }
+        this.props.updateStrokes(labels);
+    }
+
     setActiveTool(activeTool, activeLabel) {
         switch (activeTool) {
             case "brush":
-                if (!this.activeTool) {
-                    this.activeTool = new Brush(this.fabOverlay,
-                                                this.viewer,
-                                                activeLabel.ann.brushes.length,
-                                                activeLabel,
-                                                this.props.toolRadius,
-                                                this.props.labelFolderId,
-                                                this.props.updateStrokes);
-                    this.activeTool.activate();
-                }
+                this.activeTool = new Brush(this.fabOverlay,
+                                            this.viewer,
+                                            activeLabel.ann.brushes.length,
+                                            activeLabel,
+                                            this.props.toolRadius,
+                                            this.props.labelFolderId,
+                                            this.props.updateStrokes);
+                this.activeTool.activate();
                 break;
+
             case "eraser":
-                if (!this.activeTool) {
-                    this.activeTool = new Eraser(this.fabOverlay,
-                                                 this.viewer,
-                                                 activeLabel.ann.brushes.length,
-                                                 activeLabel,
-                                                 this.props.toolRadius,
-                                                 this.props.labelFolderId,
-                                                 this.props.updateStrokes);
-                    this.activeTool.activate();
-                }
+                this.activeTool = new Eraser(this.fabOverlay,
+                                             this.viewer,
+                                             activeLabel.ann.brushes.length,
+                                             activeLabel,
+                                             this.props.toolRadius,
+                                             this.props.labelFolderId,
+                                             this.props.updateStrokes);
+                this.activeTool.activate();
                 break;
+
             default:
                 if (this.activeTool) {
                     this.activeTool.deactivate();
@@ -130,7 +155,10 @@ class OSDCanvasP extends React.Component {
             json.objects.push(newObj);
             this.fabOverlay.fabricCanvas().viewportTransform = brush.transform;
         }
-        if (json.objects.length > 0) {
+        if (json.objects.length !== this.fabOverlay.fabricCanvas()
+                                        .toJSON().objects.length) {
+            // clear the canvas
+            this.fabOverlay.clear();
             this.fabOverlay.fabricCanvas()
                 .loadFromJSON(json, () => {
                     this.fabOverlay.fabricCanvas()
@@ -149,19 +177,31 @@ class OSDCanvasP extends React.Component {
             this.activeTool.deactivate();
             this.activeTool = null;
         }
-        // clear the canvas
-        this.fabOverlay.clear();
 
         this.redraw();
 
         // allow for new annotation to be added through activeTool
-        if (activeLabel) {
+        if (activeTool && activeLabel) {
             this.setActiveTool(activeTool, activeLabel);
+            this.prevTool = activeTool;
+            this.prevLabelId = activeLabel.id;
         }
+
     }
 
     componentDidMount() {
         this.initSeaDragon();
+        this.prevTool = "";
+        this.prevLabelId = -1;
+    }
+
+    static isEmptyOrSame(prevLabel, currLabel) {
+        if (!prevLabel && currLabel) {
+            return true;
+        }
+
+        return currLabel && prevLabel && currLabel.id === prevLabel.id;
+
 
     }
 
@@ -181,10 +221,15 @@ class OSDCanvasP extends React.Component {
             this.updateOverlay = this.updateOverlay.bind(this);
             this.viewer.addOnceHandler('open', this.updateOverlay);
         }
+
+        if ((prevProps.activeTool !== this.props.activeTool) ||
+            !OSDCanvasP.isEmptyOrSame(prevProps.activeLabel, this.props.activeLabel)) {
+            this.updateOverlay();
+        }
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        this.updateOverlay();
+        //this.updateOverlay();
     }
 
 }
@@ -241,7 +286,8 @@ function mapStateToProps(state) {
         toolRadius: getToolRadius(state.tools, state.rightBar),
         activeTool: state.rightBar,
         brushes: brushes,
-        labelFolderId: getLabelFolderId(state.currentAssignment)
+        labelFolderId: getLabelFolderId(state.currentAssignment),
+        labels: state.labels,
     };
 }
 
@@ -254,7 +300,7 @@ function mapDispatchToProps(dispatch, ownProps) {
                 dispatch(replaceAnnotation(ann_type, label_id, i, {jsonObj: jsonObj, transform: transform}));
                 i++;
             }
-            dispatch(setSaveStatus("dirty"));
+            dispatch(setDirtyStatus());
         }
     }
 }
