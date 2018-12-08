@@ -75,7 +75,9 @@ class OSDCanvasP extends React.Component {
 
     onViewerReady() {
         this.fabOverlay = this.viewer.fabricjsOverlay({scale: 1000});
-
+        this.viewer.addHandler('tile-loaded', ()=>{
+             this.props.hideLoading();
+        })
     }
 
     open_slide(url, mpp) {
