@@ -17,7 +17,14 @@ import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
-import {addAnnotation, setHeader, selectRightBar, setThumbnailBarVisibility, setNavState} from "./controlActions";
+import {
+    addAnnotation,
+    setHeader,
+    selectRightBar,
+    setThumbnailBarVisibility,
+    setNavState,
+    setDirtyStatus
+} from "./controlActions";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import BrushIcon from "../../../node_modules/@material-ui/icons/Brush";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -175,7 +182,7 @@ function mapDispatchToProps(dispatch) {
         },
         save: () => {
             dispatch(lockAllAnnotations("brushes"));
-            dispatch(setSaveStatus("dirty"));
+            dispatch(setDirtyStatus());
         },
         setNavState: (state) =>{
             dispatch(setNavState(state));

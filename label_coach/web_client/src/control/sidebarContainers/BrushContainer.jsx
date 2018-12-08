@@ -10,7 +10,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Button from "@material-ui/core/Button";
 import LabelSelector from "../LabelSelector";
 import SizeControl from "../SizeControl";
-import {lockAllAnnotations, setOutline, setSaveStatus} from "../controlActions";
+import {lockAllAnnotations, setDirtyStatus, setOutline} from "../controlActions";
 
 
 export class BrushContainerP extends React.Component {
@@ -82,7 +82,7 @@ function mapDispatchToProps(dispatch) {
     return {
         save: () => {
             dispatch(lockAllAnnotations("brush"));
-            dispatch(setSaveStatus("dirty"));
+            dispatch(setDirtyStatus());
         },
 
         setOutline: () => (event) => {

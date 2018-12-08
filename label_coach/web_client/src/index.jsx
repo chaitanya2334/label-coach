@@ -14,13 +14,13 @@ import rootReducer from "./root_reducer";
 import thunk from "redux-thunk";
 import {composeWithDevTools} from "remote-redux-devtools";
 import promiseMiddleware from "redux-promise-middleware";
-import {LoadingBar} from "react-redux-loading-bar";
+import {reduxTimeout} from "redux-timeout";
 
 class Index extends React.Component {
     constructor(props) {
         super(props);
         this.store = createStore(rootReducer,
-                                 composeWithDevTools(applyMiddleware(thunk, promiseMiddleware())));
+                                 composeWithDevTools(applyMiddleware(thunk, promiseMiddleware(), reduxTimeout())));
     }
 
     render() {
