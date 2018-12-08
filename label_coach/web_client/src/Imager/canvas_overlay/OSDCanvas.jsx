@@ -155,16 +155,15 @@ class OSDCanvasP extends React.Component {
             json.objects.push(newObj);
             this.fabOverlay.fabricCanvas().viewportTransform = brush.transform;
         }
-        if (json.objects.length !== this.fabOverlay.fabricCanvas()
-                                        .toJSON().objects.length) {
-            // clear the canvas
-            this.fabOverlay.clear();
-            this.fabOverlay.fabricCanvas()
-                .loadFromJSON(json, () => {
-                    this.fabOverlay.fabricCanvas()
-                        .renderAll();
-                });
-        }
+
+        // clear the canvas
+
+        this.fabOverlay.fabricCanvas()
+            .loadFromJSON(json, () => {
+                this.fabOverlay.fabricCanvas()
+                    .renderAll();
+            });
+
 
     }
 
@@ -177,7 +176,8 @@ class OSDCanvasP extends React.Component {
             this.activeTool.deactivate();
             this.activeTool = null;
         }
-
+        this.fabOverlay.clear();
+        this.fabOverlay.fabricCanvas().renderAll();
         this.redraw();
 
         // allow for new annotation to be added through activeTool
@@ -225,6 +225,7 @@ class OSDCanvasP extends React.Component {
         if ((prevProps.activeTool !== this.props.activeTool) ||
             prevProps.toolRadius !== this.props.toolRadius ||
             !OSDCanvasP.isEmptyOrSame(prevProps.activeLabel, this.props.activeLabel)) {
+            this.updateOverlay();
             this.updateOverlay();
         }
     }
