@@ -6,6 +6,7 @@ import OSDCanvas from "./canvas_overlay/OSDCanvas";
 import ToolBar from "../control/ToolBar";
 import SaveIndicator from "../control/SaveIndicator";
 import Divider from "@material-ui/core/Divider";
+import {hideLoading} from "react-redux-loading-bar";
 
 // helper function to load image using promises
 function loadImage(src) {
@@ -42,7 +43,7 @@ class ImageViewerP extends React.Component {
                 <ToolBar/>
                 <Divider/>
                 <div className={"gap1em"}/>
-                <OSDCanvas dbId={this.props.dbId} mimeType={this.props.mimeType}/>
+                <OSDCanvas dbId={this.props.dbId} mimeType={this.props.mimeType} hideLoading={this.props.hideLoading}/>
             </div>
         )
     }
@@ -80,7 +81,11 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-    return {};
+    return {
+        hideLoading: ()=>{
+            dispatch(hideLoading());
+        }
+    };
 }
 
 const SvgImageViewer = connect(

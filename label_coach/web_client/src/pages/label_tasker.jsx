@@ -23,6 +23,7 @@ import {LabelSelectorContainer} from "../control/sidebarContainers/LabelSelector
 import {AnnotatorContainer} from "../control/Admin/AnnotatorContainer";
 import {isEmpty} from "../utils";
 import {fetchAdminData} from "../control/Admin/AdminActions";
+import {LoadingBar} from "react-redux-loading-bar";
 
 class LabelTaskerP extends React.Component {
     constructor(props) {
@@ -94,6 +95,15 @@ class LabelTaskerP extends React.Component {
                     </Link>
                     <UserControl/>
                 </nav>
+                <header>
+                    <LoadingBar loading={this.props.progress} showFastActions scope={'loadingE'} style={{
+                        backgroundColor: 'red',
+                        height: '3px',
+                        opacity: '1',
+                        zIndex: '100000',
+                        position: 'absolute'
+                    }}/>
+                </header>
                 <div className={"container-fluid"}>
                     <div className={"row"}>
                         <div className={"col-lg-2 hack-sm-2 remove-left-padding"}
@@ -103,6 +113,7 @@ class LabelTaskerP extends React.Component {
                             </SideBarP>
                         </div>
                         <div className={"col-lg-8 hack-grow-8 align-self-top"}>
+
                             <ImageViewer/>
                         </div>
                         <div className={"col-lg-2 remove-right-padding"} style={{display: rightBar ? 'block' : 'none'}}>
@@ -131,7 +142,8 @@ function mapStateToProps(state) {
         currentAssignmentId: getId(state.currentAssignment),
         thumbnailBarVisibility: state.thumbnailBarVisibility,
         rightBar: state.rightBar,
-        isAdmin: !isEmpty(state.adminData)
+        isAdmin: !isEmpty(state.adminData),
+        progress: state.loadingBar.default
     };
 }
 

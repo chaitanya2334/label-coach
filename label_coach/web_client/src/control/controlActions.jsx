@@ -1,4 +1,5 @@
 import {restRequest} from "girder/rest";
+import {createAsyncAction} from 'redux-promise-middleware-actions';
 
 export function setSize(toolType, value) {
     return {
@@ -266,15 +267,16 @@ export function setCurrentAssignment(assignment) {
     }
 }
 
-export function fetchCurrentAssignment(id) {
-    return function (dispatch) {
-        return restRequest({
-                               url: "assignment/" + id,
-                               method: 'GET',
-                               data: {
-                                   a_id: id
-                               }
-                           })
+export function getCurrentAssignment(id) {
+    return {
+        type: 'FETCH_CURRENT_ASSIGNMENT',
+        payload: restRequest({
+                                 url: "assignment/" + id,
+                                 method: 'GET',
+                                 data: {
+                                     a_id: id
+                                 }
+                             })
             .then((response) => {
                 if (typeof response === 'string') {
                     return JSON.parse(response);
@@ -282,24 +284,31 @@ export function fetchCurrentAssignment(id) {
                     return response;
                 }
             })
-            .then((assignment) => {
+    }
+}
+
+export function fetchCurrentAssignment(id) {
+    return function (dispatch) {
+        return dispatch(getCurrentAssignment(id))
+            .then((response) => {
+                let assignment = response.value;
                 dispatch(setCurrentAssignment(assignment));
             })
     }
 }
 
-export function fetchImages(id, limit, page) {
-    return function (dispatch) {
-
-        return restRequest({
-                               url: "image",
-                               method: 'GET',
-                               data: {
-                                   folderId: id,
-                                   limit: limit,
-                                   offset: page * limit,
-                               }
-                           })
+export function getImages(id, limit, page) {
+    return {
+        type: 'FETCH_IMAGES',
+        payload: restRequest({
+                                 url: "image",
+                                 method: 'GET',
+                                 data: {
+                                     folderId: id,
+                                     limit: limit,
+                                     offset: page * limit,
+                                 }
+                             })
             .then(json => {
                 return json.map(image => {
                     let labelFileId = null;
@@ -314,7 +323,16 @@ export function fetchImages(id, limit, page) {
                     }
                 });
             })
-            .then(images => {
+    }
+}
+
+export function fetchImages(id, limit, page) {
+    return function (dispatch) {
+
+        return dispatch(getImages(id, limit, page))
+            .then(response => {
+                let images = response.value;
+                console.log(images);
                 if (images.length > 0) {
                     if (page === 0) {
                         dispatch(resetImages());
@@ -360,16 +378,17 @@ export function addLabelId(image_id, label_id) {
     }
 }
 
-export function createLabelFile(fileName, folderId, imageId) {
-    return function (dispatch) {
-        return restRequest({
-                               url: "/label/create",
-                               method: 'GET',
-                               data: {
-                                   file_name: fileName,
-                                   folder_id: folderId,
-                               }
-                           })
+export function getLabelFile(fileName, folderId) {
+    return {
+        type: 'FETCH_LABEL_FILE',
+        payload: restRequest({
+                                 url: "/label/create",
+                                 method: 'GET',
+                                 data: {
+                                     file_name: fileName,
+                                     folder_id: folderId,
+                                 }
+                             })
             .then(response => {
                 if (typeof response === 'string') {
                     return JSON.parse(response);
@@ -377,7 +396,14 @@ export function createLabelFile(fileName, folderId, imageId) {
                     return response;
                 }
             })
-            .then(json => {
+    }
+}
+
+export function createLabelFile(fileName, folderId, imageId) {
+    return function (dispatch) {
+        return dispatch(getLabelFile(fileName, folderId))
+            .then(response => {
+                let json = response.value;
                 // TODO move it out of this action. Not really happy about dispatching this action here.
                 let labelId = json.label_id.$oid;
                 dispatch(addLabelId(imageId, labelId));
@@ -401,16 +427,24 @@ export function postLabels(images, labels, callback) {
     }
 }
 
+export function getLabels(label_id) {
+    return {
+        type: 'FETCH_LABELS',
+        payload: restRequest({
+                                 url: "/label/" + label_id,
+                                 method: 'GET',
+                                 data: {
+                                     label_id: label_id
+                                 }
+                             })
+    }
+}
+
 export function fetchLabels(label_id) {
     return function (dispatch) {
-        return restRequest({
-                               url: "/label/" + label_id,
-                               method: 'GET',
-                               data: {
-                                   label_id: label_id
-                               }
-                           })
-            .then(json => {
+        return dispatch(getLabels(label_id))
+            .then( response => {
+                let json = response.value;
                 let labels = json.labels;
                 labels = labels.map(label => ({
                     name: label.name,

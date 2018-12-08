@@ -11,6 +11,7 @@ import {
 import {authentication} from "./login/loginReducer";
 import {assignments, hasMoreAssignments} from "./browser/browserReducers";
 import {adminData} from "./control/Admin/AdminReducers";
+import {loadingBarReducer} from 'react-redux-loading-bar';
 
 export default combineReducers({
                                    tools,
@@ -29,4 +30,5 @@ export default combineReducers({
                                    navState,
                                    hasMoreAssignments,
                                    hasMoreImages,
+                                   loadingBar: loadingBarReducer,
                                })

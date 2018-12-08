@@ -10,6 +10,7 @@ import {
     cookie,
     getCurrentToken
 } from "girder/auth";
+import {hideLoading, showLoading} from "react-redux-loading-bar";
 
 class ThumbnailP extends React.Component {
     constructor(props) {
@@ -83,6 +84,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch, ownProps) {
     return {
         onSelect: (event) => {
+            dispatch(showLoading());
             dispatch(selectImage(ownProps.id));
             if (ownProps.isAdmin) {
                 for (let label_folder of ownProps.currentAssignment.label_folders) {
