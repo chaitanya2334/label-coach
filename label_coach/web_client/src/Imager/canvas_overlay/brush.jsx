@@ -12,6 +12,7 @@ export default class Brush extends Stroke{
         // Do something here
         let objects = this.canvas.toJSON().objects;
         let jsonObj = objects[objects.length - 2];
+        jsonObj.id = objects.length - 2;
         this.canvas.viewportTransform = transform;
         this.canvas.renderAll();
         this.updateStrokes(this.labelFolderId, "brushes", this.label.id, this.id, jsonObj, transform);

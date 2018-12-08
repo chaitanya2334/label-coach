@@ -153,16 +153,20 @@ class OSDCanvasP extends React.Component {
             let newObj = Object.assign({}, brush.jsonObj);
             //newObj.globalCompositeOperation = "xor";
             json.objects.push(newObj);
-            this.fabOverlay.fabricCanvas().viewportTransform = brush.transform;
+            //this.fabOverlay.fabricCanvas().viewportTransform = brush.transform;
         }
 
-        // clear the canvas
+        json.objects.sort((a, b) => (a.id > b.id) ? 1 : ((a.id < b.id) ? -1 : 0));
 
+        // clear the canvas
+        let viewport = this.fabOverlay.fabricCanvas().viewportTransform;
+        this.fabOverlay.fabricCanvas().viewportTransform = [1, 0, 0, 1, 0, 0];
         this.fabOverlay.fabricCanvas()
             .loadFromJSON(json, () => {
                 this.fabOverlay.fabricCanvas()
                     .renderAll();
             });
+        this.fabOverlay.fabricCanvas().viewportTransform = viewport;
 
 
     }
@@ -177,7 +181,8 @@ class OSDCanvasP extends React.Component {
             this.activeTool = null;
         }
         this.fabOverlay.clear();
-        this.fabOverlay.fabricCanvas().renderAll();
+        this.fabOverlay.fabricCanvas()
+            .renderAll();
         this.redraw();
 
         // allow for new annotation to be added through activeTool
