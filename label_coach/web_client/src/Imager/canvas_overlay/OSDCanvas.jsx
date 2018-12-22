@@ -7,7 +7,7 @@ import './osdCanvasOverlay';
 import connect from "react-redux/es/connect/connect";
 import Brush from "./brush";
 import {
-    replaceAnnotation, replaceLabels, setDirtyStatus, setDoneStatus
+    replaceAnnotation, setDirtyStatus
 } from "../../control/controlActions";
 import Eraser from "./eraser";
 
@@ -160,7 +160,7 @@ class OSDCanvasP extends React.Component {
 
         // clear the canvas
         let viewport = this.fabOverlay.fabricCanvas().viewportTransform;
-        this.fabOverlay.fabricCanvas().viewportTransform = [1, 0, 0, 1, 0, 0];
+        //this.fabOverlay.fabricCanvas().viewportTransform = [1, 0, 0, 1, 0, 0];
         this.fabOverlay.fabricCanvas()
             .loadFromJSON(json, () => {
                 this.fabOverlay.fabricCanvas()
