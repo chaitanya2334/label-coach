@@ -2,7 +2,7 @@ import * as React from "react";
 import "../styles/Thumbnail.css";
 import {connect} from 'react-redux';
 import {compose} from 'redux';
-import {createLabelFile, fetchLabels, selectImage} from "./controlActions";
+import {createLabelFile, fetchLabels, imageNotReady, selectImage} from "./controlActions";
 import "@material/elevation/dist/mdc.elevation.css";
 import {fetchAdminLabels} from "./Admin/AdminActions";
 import SizeMe from 'react-sizeme';
@@ -85,6 +85,7 @@ function mapDispatchToProps(dispatch, ownProps) {
     return {
         onSelect: (event) => {
             dispatch(showLoading());
+            dispatch(imageNotReady());
             dispatch(selectImage(ownProps.id));
             if (ownProps.isAdmin) {
                 for (let label_folder of ownProps.currentAssignment.label_folders) {

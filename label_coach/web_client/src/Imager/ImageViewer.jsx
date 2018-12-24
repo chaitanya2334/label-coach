@@ -7,6 +7,7 @@ import ToolBar from "../control/ToolBar";
 import SaveIndicator from "../control/SaveIndicator";
 import Divider from "@material-ui/core/Divider";
 import {hideLoading} from "react-redux-loading-bar";
+import {imageIsReady, imageReady} from "../control/controlActions";
 
 // helper function to load image using promises
 function loadImage(src) {
@@ -43,7 +44,8 @@ class ImageViewerP extends React.Component {
                 <ToolBar/>
                 <Divider/>
                 <div className={"gap1em"}/>
-                <OSDCanvas dbId={this.props.dbId} mimeType={this.props.mimeType} hideLoading={this.props.hideLoading}/>
+                <OSDCanvas dbId={this.props.dbId} mimeType={this.props.mimeType} hideLoading={this.props.hideLoading}
+                           imageIsReady={this.props.imageIsReady}/>
             </div>
         )
     }
@@ -84,6 +86,9 @@ function mapDispatchToProps(dispatch) {
     return {
         hideLoading: ()=>{
             dispatch(hideLoading());
+        },
+        imageIsReady: ()=>{
+            dispatch(imageIsReady());
         }
     };
 }
