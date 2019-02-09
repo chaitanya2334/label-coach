@@ -57,6 +57,8 @@ class ImageResource(Resource):
     def __set_mime_type(ext):
         if ext == ".jpg" or ext == ".jpeg":
             return "image/jpeg"
+        elif ext == ".png" or ext == ".PNG":
+            return "image/png"
         elif ext == ".svs":
             return "application/octet-stream"
 
@@ -85,7 +87,7 @@ class ImageResource(Resource):
         self.user = self.getCurrentUser()
         folder = Folder().load(folderId, level=AccessType.READ, user=self.getCurrentUser())
         items = Folder().childItems(folder, limit=limit, offset=offset)
-        items = self.__filter(items, exts=[".jpg", ".jpeg", ".svs"])
+        items = self.__filter(items, exts=[".jpg", ".jpeg", ".png", ".PNG", ".svs"])
         ret_files = []
         for item in items:
             # TODO: remove this function
