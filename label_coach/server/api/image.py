@@ -185,6 +185,9 @@ class ImageResource(Resource):
         file = self.__get_file(item, item['name'])
         with File().open(file) as f:
             image = Image.open(BytesIO(f.read()))
+            # incase we are currently processing png images, which have RGBA.
+            # we convert to RGB, cos we save the thumbnail into a .jpg which cannot handle A channel
+            image = image.convert("RGB")
             if not h:
                 width, height = image.size
                 h = (height / width) * w
