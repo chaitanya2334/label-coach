@@ -509,3 +509,15 @@ export function setNavState(state) {
         state: state,
     }
 }
+
+export function imageIsReady(){
+    return{
+        type: "IMAGE_READY"
+    }
+}
+
+export function imageNotReady() {
+    return{
+        type: "IMAGE_NOT_READY"
+    }
+}

@@ -7,7 +7,7 @@ import './osdCanvasOverlay';
 import connect from "react-redux/es/connect/connect";
 import Brush from "./brush";
 import {
-    replaceAnnotation, replaceLabels, setDirtyStatus, setDoneStatus
+    replaceAnnotation, setDirtyStatus
 } from "../../control/controlActions";
 import Eraser from "./eraser";
 
@@ -74,6 +74,7 @@ class OSDCanvasP extends React.Component {
         this.fabOverlay = this.viewer.fabricjsOverlay({scale: 1000});
         this.viewer.addHandler('tile-loaded', () => {
             this.props.hideLoading();
+            this.props.imageIsReady();
         })
     }
 
@@ -160,7 +161,7 @@ class OSDCanvasP extends React.Component {
 
         // clear the canvas
         let viewport = this.fabOverlay.fabricCanvas().viewportTransform;
-        this.fabOverlay.fabricCanvas().viewportTransform = [1, 0, 0, 1, 0, 0];
+        //this.fabOverlay.fabricCanvas().viewportTransform = [1, 0, 0, 1, 0, 0];
         this.fabOverlay.fabricCanvas()
             .loadFromJSON(json, () => {
                 this.fabOverlay.fabricCanvas()
@@ -183,7 +184,10 @@ class OSDCanvasP extends React.Component {
         this.fabOverlay.clear();
         this.fabOverlay.fabricCanvas()
             .renderAll();
-        this.redraw();
+
+        if(this.props.imageReady) {
+            this.redraw();
+        }
 
         // allow for new annotation to be added through activeTool
         if (activeTool && activeLabel) {
@@ -295,6 +299,7 @@ function mapStateToProps(state) {
         brushes: brushes,
         labelFolderId: getLabelFolderId(state.currentAssignment),
         labels: state.labels,
+        imageReady: state.imageReady
     };
 }
 

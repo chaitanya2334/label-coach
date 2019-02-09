@@ -518,3 +518,16 @@ export function navState(navState = false, action) {
         }
     });
 }
+
+export function imageReady(imageReady = false, action){
+    return produce(imageReady, draft=>{
+        switch (action.type) {
+            case "IMAGE_READY":
+                return true;
+            case "IMAGE_NOT_READY":
+                return false;
+            default:
+                return draft;
+        }
+    });
+}
