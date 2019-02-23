@@ -172,6 +172,7 @@ class ImageResource(Resource):
             filename = "thumbnail_{}x{}".format(w, h)
 
         file = self.__get_file(item, filename)
+        print(file)
         if not file:
             file = self.__create_thumbnail(item, w, h)
 
