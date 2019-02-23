@@ -3,7 +3,7 @@ import "../../styles/ImageContainer.css"
 import {connect} from "react-redux";
 import Thumbnail from "../Thumbnail";
 import InfiniteScroll from "../InfiniteScroll";
-import {fetchImages} from "../controlActions";
+import {fetchImages, resetImages} from "../controlActions";
 
 
 class ImageContainerP extends React.Component {
@@ -92,6 +92,9 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch, ownProps) {
     return {
         findImages: (folderId, page) => {
+            if (page === 1) {
+                dispatch(resetImages());
+            }
             dispatch(fetchImages(folderId, 5, page - 1))
         }
     };

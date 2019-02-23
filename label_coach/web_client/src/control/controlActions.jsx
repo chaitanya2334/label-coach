@@ -318,7 +318,6 @@ export function fetchImages(id, limit, page) {
                 console.log(images);
                 if (images.length > 0) {
                     if (page === 0) {
-                        dispatch(resetImages());
                         dispatch(pushImages(images));
                     } else {
                         dispatch(pushImages(images));
@@ -384,6 +383,7 @@ export function getLabelFile(fileName, folderId) {
 
 export function createLabelFile(fileName, folderId, imageId) {
     return function (dispatch) {
+        console.log("folder id before create label_file: ", folderId);
         return dispatch(getLabelFile(fileName, folderId))
             .then(response => {
                 let json = response.value;
