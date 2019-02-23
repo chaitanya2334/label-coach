@@ -19,7 +19,10 @@ class ImageContainerP extends React.Component {
 
     render() {
         let rows = [];
-        if (this.props.images.length > 0) {
+        if (this.props.images.length > 0
+            && this.props.labelFolderId !== undefined
+            && this.props.currentAssignment !== undefined) {
+
             this.props.images.forEach((image, i) => {
                 rows.push(
                     <Thumbnail key={i} id={image.id} active={image.active} title={image.title}
