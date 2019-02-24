@@ -8,7 +8,7 @@ import {fetchCurrentAssignment, resetImages} from "../control/controlActions";
 import {withRouter} from "react-router";
 import {connect} from "react-redux";
 
-class CollectionBrowserP extends React.Component {
+export default class CollectionBrowserP extends React.Component {
     constructor(props) {
         super(props);
         // make sure the user is logged in
@@ -21,7 +21,7 @@ class CollectionBrowserP extends React.Component {
 
         if (this.props.areImagesDangling){
             // if there are images still present in the state from the previous collection, then reset.
-            this.props.resetImages();
+            this.resetImages();
         }
         return (
 
