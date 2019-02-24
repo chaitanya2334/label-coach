@@ -21,7 +21,7 @@ class CollectionBrowserP extends React.Component {
 
         if (this.props.areImagesDangling){
             // if there are images still present in the state from the previous collection, then reset.
-            this.resetImages();
+            this.props.resetImages();
         }
         return (
 
