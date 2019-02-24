@@ -8,7 +8,7 @@ import {fetchCurrentAssignment, resetImages} from "../control/controlActions";
 import {withRouter} from "react-router";
 import {connect} from "react-redux";
 
-export default class CollectionBrowserP extends React.Component {
+class CollectionBrowserP extends React.Component {
     constructor(props) {
         super(props);
         // make sure the user is logged in
