@@ -30,7 +30,6 @@ import BrushIcon from "../../../node_modules/@material-ui/icons/Brush";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import SaveIcon from '@material-ui/icons/Save';
 import {lockAllAnnotations, setOutline, setSaveStatus} from "./controlActions";
-import {DLMenu} from "./DLMenu";
 
 
 class ToolBarP extends React.Component {
@@ -107,7 +106,7 @@ class ToolBarP extends React.Component {
                                       size="small"><BrushIcon/></ToggleButton>
                         <ToggleButton disabled id="line" value="line" className="btn-small"
                                       size="small"><CreateIcon/></ToggleButton>
-                        <ToggleButton disabled id="poly" value="poly" className="btn-small"
+                        <ToggleButton disabled={this.props.disable} id="poly" value="poly" className="btn-small"
                                       size="large"><FontAwesomeIcon
                             className='icon-medium' icon={faDrawPolygon}/></ToggleButton>
                         <ToggleButton disabled={this.props.disable} value="eraser" id="erazer" size="small">
@@ -120,19 +119,14 @@ class ToolBarP extends React.Component {
                     </ToggleButtonGroup>
                     <Divider className={"vertical-divider"}/>
 
-                    <ToggleButton disabled={this.props.disable} value="save" id="save" size="small"
-                                  onClick={this.props.save}><SaveIcon/></ToggleButton>
-                    <DLMenu assign_id={this.props.currentAssignmentId} image_name={this.props.imageName}/>
-                    <Divider className={"vertical-divider"}/>
-
                     <ToggleButtonGroup value={this.props.overview} onChange={this.handleSidebars}>
                         <ToggleButton value="thumbnail" id="thumbnail" size="small"
                                       className="text-btn">Thumbnail</ToggleButton>
                         <ToggleButton value="review" id="review" size="small" className="text-btn">Review</ToggleButton>
                     </ToggleButtonGroup>
 
-                    <Divider className={"vertical-divider"}/>
-
+                    <ToggleButton disabled={this.props.disable} value="save" id="save" size="small"
+                                  onClick={this.props.save}><SaveIcon/> Save</ToggleButton>
 
                 </div>
                 <Button size={"small"} id="showHeader" className={"btn-small"} onClick={this.toggleHeader}
@@ -154,30 +148,6 @@ function isAdmin(currentUser, currentAssignment) {
     return false;
 }
 
-function getId(currentAssignment) {
-    if (currentAssignment.hasOwnProperty('label_folders') && currentAssignment.label_folders.length > 0) {
-        return currentAssignment.label_folders[0]._id.$oid
-    }
-    return ""
-}
-
-function getActiveImageInfo(images) {
-    let dbId = "";
-    let mimeType = "";
-    let title = "Untitled";
-
-    for (let image of images) {
-        if (image.active) {
-            title = image.title;
-            mimeType = image.mimeType;
-            dbId = image.dbId;
-
-            break;
-        }
-    }
-    return {dbId, mimeType, title}
-}
-
 function mapStateToProps(state) {
     let overview = [];
     let drawTool = null;
@@ -192,13 +162,9 @@ function mapStateToProps(state) {
         overview.push("thumbnail");
     }
 
-    let {dbId, mimeType, title} = getActiveImageInfo(state.images);
-
     return {
         showHeader: state.showHeader,
         rightBar: state.rightBar,
-        currentAssignmentId: getId(state.currentAssignment),
-        imageName: title,
         overview: overview,
         drawTool: drawTool,
         disable: isAdmin(state.authentication.user, state.currentAssignment)

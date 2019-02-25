@@ -1,24 +1,27 @@
 import base64
-from collections import defaultdict
+import json
+import traceback
+from io import BytesIO, StringIO
 
 import cherrypy
 from bson.json_util import dumps
+
 from girder.api import access, rest
 from girder.api.describe import autoDescribeRoute, Description
-from girder.api.rest import Resource, setContentDisposition, setResponseHeader
-from girder.constants import AccessType, TokenScope
-from girder.exceptions import RestException
+from girder.api.rest import Resource, setCurrentUser
+from girder.constants import AccessType
 from girder.models.assetstore import Assetstore
 from girder.models.collection import Collection
 from girder.models.file import File
 from girder.models.folder import Folder
 from girder.models.item import Item
 from girder.models.upload import Upload
-from girder.utility import RequestBodyStream, ziputil
+from girder.models.user import User
+from girder.utility import RequestBodyStream
 
-from ..bcolors import printOk, printOk2
-from ..utils.file_management import writeBytes, find_file, find_folder
-from ..utils.generic import trace
+from ..error import errorMessage
+from ..bcolors import printOk, printFail, printOk2
+from ..utils import writeData, trace, writeBytes, decode_base64
 
 
 class LabelImageResource(Resource):
@@ -34,14 +37,36 @@ class LabelImageResource(Resource):
         self.upload_m = Upload()
         self.asset_m = Assetstore()
 
-        self.label_image_folder_name = "LabelImages"
-
         self.setupRoutes()
 
     def setupRoutes(self):
         self.route('GET', (), handler=self.getList)
+        self.route('GET', (':label_id',), handler=self.get)
+        self.route('GET', ('meta',), handler=self.getMeta)
+        self.route('GET', ('by_name',), handler=self.getByName)
         self.route('POST', (), handler=self.post)
-        self.route('GET', ("download",), handler=self.download)
+
+    def __createNewFile(self, folder, file_name):
+        item = self.item_m.createItem(file_name,
+                                      creator=self.getCurrentUser(),
+                                      folder=folder,
+                                      description='label file',
+                                      reuseExisting=False)
+
+        file = self.file_m.createFile(size=0,
+                                      item=item,
+                                      name=file_name,
+                                      creator=self.getCurrentUser(),
+                                      assetstore=self.asset_m.getCurrent(),
+                                      mimeType="application/json")
+        return file
+
+    def copy(self, srcFile, destFile):
+        upload = self.upload_m.createUploadToFile(destFile, self.getCurrentUser(), srcFile['size'])
+        self.upload_m.handleChunk(upload=upload,
+                                  chunk=RequestBodyStream(self.file_m.open(srcFile), size=destFile['size']),
+                                  user=self.getCurrentUser())
+        return upload
 
     @access.public
     @autoDescribeRoute(
@@ -83,37 +108,34 @@ class LabelImageResource(Resource):
             if file['name'] == "config.json":
                 return file
 
+    def __findFile(self, folder, file_name, create=False):
+        item = list(self.item_m.find({'folderId': folder['_id'], 'name': file_name}).limit(1))
+        if not item:
+            # check if you are allowed to create, else return nothing
+            if create:
+                file = self.__createNewFile(folder, file_name)
+            else:
+                return None
+        else:
+            item = item[0]
+            file = list(self.file_m.find({'itemId': item['_id']}).limit(1))[0]
+
+        return file
+
     @access.public
     @autoDescribeRoute(
         Description('Create a new label image file if it doesnt exist, else update')
             .param('label_name', 'label name')
             .param('image_name', 'The original image that this belongs to')
-            .param('assign_id', 'the assignment folder id')
+            .param('folder_id', 'the image id')
             .param('image', 'image in string64'))
     @rest.rawResponse
     @trace
-    def post(self, label_name, image_name, assign_id, image):
-        p_folder = self.folder_m.load(assign_id,
-                                      user=self.getCurrentUser(),
-                                      level=AccessType.WRITE)
-
-        label_folder = find_folder(p_folder=p_folder,
-                                   name=image_name,
-                                   user=self.getCurrentUser(),
-                                   create=True)
-
-        label_image_folder = find_folder(p_folder=label_folder,
-                                         name=self.label_image_folder_name,
-                                         user=self.getCurrentUser(),
-                                         create=True)
-        safe_label_name = label_name.replace("/", "_")
-        file_name = ".".join([safe_label_name, 'png'])
-        file = find_file(p_folder=label_image_folder,
-                         name=file_name,
-                         user=self.getCurrentUser(),
-                         assetstore=self.asset_m.getCurrent(),
-                         create=True)
-
+    def post(self, label_name, image_name, folder_id, image):
+        printOk2("post label image")
+        folder = self.folder_m.load(folder_id, user=self.getCurrentUser(), level=AccessType.WRITE)
+        file_name = "_".join([label_name, image_name, '.png'])
+        file = self.__findFile(folder, file_name, create=True)
         # remove data:image/png;base64,
         image = image.split(',')[1]
         image = base64.b64decode(image)
@@ -123,75 +145,40 @@ class LabelImageResource(Resource):
             "label_image_file": upload['fileId']
         })
 
-    def __downloadFolder(self, folder):
-        pass
+    @access.public
+    @autoDescribeRoute(
+        Description('Get labels by file_name')
+            .param('file_name', 'label file name')
+            .param('folder_id', 'the parent folder id'))
+    @rest.rawResponse
+    @trace
+    def getByName(self, label_name, image_name, folder_id):
+        folder = self.folder_m.load(folder_id, user=self.getCurrentUser(), level=AccessType.READ)
+        file_name = "_".join([label_name, image_name])
+        file = self.__findFile(folder, file_name, create=False)
+        cherrypy.response.headers["Content-Type"] = "application/png"
+        if file:
+            return self.file_m.download(file)
+        else:
+            return dumps({})
 
     @access.public
     @autoDescribeRoute(
-        Description("download label images using image id. Returns a stream to the zip file. ")
-            .param('assign_id', 'id of the assignment')
-            .param('image_name', 'name of the images whose label images you want to download'))
+        Description('Get label image by id')
+            .param('label_image_id', 'label image file id'))
     @rest.rawResponse
     @trace
-    def downloadAssignment(self, assign_id):
-        assignment = self.folder_m.load(assign_id,
-                                        user=self.getCurrentUser(),
-                                        level=AccessType.WRITE)
-        # find the label image folder
-
-        return self.__downloadFolder(assignment)
+    def get(self, label_image_id):
+        file = self.file_m.load(label_image_id, level=AccessType.READ, user=self.getCurrentUser())
+        cherrypy.response.headers["Content-Type"] = "application/png"
+        return self.file_m.download(file)
 
     @access.public
     @autoDescribeRoute(
-        Description("download the full collection. Returns a stream to the zip file. ")
-            .param('assign_id', 'id of the assignment')
-            .param('image_name', 'name of the images whose label images you want to download'))
-    @rest.rawResponse
+        Description('Get label by id')
+            .param('label_image_id', 'label file id'))
     @trace
-    def downloadCollection(self):
-        collection = list(self.coll_m.list(user=self.getCurrentUser(), offset=0, limit=1))[0]
-
-        # find the label image folder
-
-        return self.__downloadFolder(collection)
-
-    @access.cookie
-    @access.public(scope=TokenScope.DATA_READ)
-    @autoDescribeRoute(
-        Description("download label images using image id. Returns a stream to the zip file. ")
-            .param('assign_id', 'id of the assignment')
-            .param('image_name', 'name of the images whose label images you want to download')
-            .produces('application/zip'))
-    @rest.rawResponse
-    @trace
-    def download(self, assign_id, image_name):
-
-        assignment = self.folder_m.load(assign_id,
-                                        user=self.getCurrentUser(),
-                                        level=AccessType.READ)
-
-        label_folder = find_folder(p_folder=assignment,
-                                   name=image_name,
-                                   user=self.getCurrentUser(),
-                                   create=True)
-
-        folder = find_folder(p_folder=label_folder,
-                             name=self.label_image_folder_name,
-                             user=self.getCurrentUser(),
-                             create=True)
-
-        printOk(folder)
-
-        setResponseHeader('Content-Type', 'application/zip')
-        setContentDisposition(folder['name'] + '.zip')
-        user = self.getCurrentUser()
-
-        def stream():
-            zip = ziputil.ZipGenerator(folder['name'])
-            for (path, file) in self.folder_m.fileList(
-                    folder, user=user, subpath=False):
-                for data in zip.addFile(file, path):
-                    yield data
-            yield zip.footer()
-
-        return stream
+    def getMeta(self, label_image_id):
+        file = self.file_m.load(label_image_id, level=AccessType.READ, user=self.getCurrentUser())
+        cherrypy.response.headers["Content-Type"] = "application/json"
+        return dumps(file)

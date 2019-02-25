@@ -20,7 +20,7 @@ from girder.utility import RequestBodyStream
 
 from ..error import errorMessage
 from ..bcolors import printOk, printFail, printOk2
-from ..utils import writeData
+from ..utils import writeData, trace
 
 
 class LabelResource(Resource):
@@ -72,19 +72,14 @@ class LabelResource(Resource):
     @autoDescribeRoute(
         Description('Get label list'))
     @rest.rawResponse
+    @trace
     def getLabelList(self):
-        printOk('getLabelsList() was called!')
-
-        try:
-            collection = list(self.coll_m.list(user=self.getCurrentUser(), offset=0, limit=1))[0]
-            files = self.coll_m.fileList(collection, user=self.getCurrentUser(), data=False,
-                                         includeMetadata=True, mimeFilter=['application/json'])
-            files = list(files)
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return dumps(files)
-
-        except:
-            printFail(traceback.print_exc)
+        collection = list(self.coll_m.list(user=self.getCurrentUser(), offset=0, limit=1))[0]
+        files = self.coll_m.fileList(collection, user=self.getCurrentUser(), data=False,
+                                     includeMetadata=True, mimeFilter=['application/json'])
+        files = list(files)
+        cherrypy.response.headers["Content-Type"] = "application/json"
+        return dumps(files)
 
     @staticmethod
     def getOwnerId(folder):
@@ -130,76 +125,62 @@ class LabelResource(Resource):
         Description('Create a new label file if it doesnt exist')
             .param('file_name', 'label file name').param('folder_id', 'the parent folder id'))
     @rest.rawResponse
+    @trace
     def createLabelFile(self, file_name, folder_id):
-        try:
-            folder = self.folder_m.load(folder_id, user=self.getCurrentUser(), level=AccessType.WRITE)
-            file = self.__findFile(folder, file_name)
-            if not file:
-                file = self.createNewFile(folder, file_name)
-                config_file = self.findConfig(folder_id)
-                if not config_file:
-                    printFail("No config file found")
-                    return errorMessage("No config file found")
-                else:
-                    res = self.copy(config_file, file)
-                    return dumps({
-                        "label_id": res['fileId']
-                    })
+        folder = self.folder_m.load(folder_id, user=self.getCurrentUser(), level=AccessType.WRITE)
+        file = self.__findFile(folder, file_name)
+        if not file:
+            file = self.createNewFile(folder, file_name)
+            config_file = self.findConfig(folder_id)
+            if not config_file:
+                printFail("No config file found")
+                return errorMessage("No config file found")
+            else:
+                res = self.copy(config_file, file)
+                return dumps({
+                    "label_id": res['fileId']
+                })
 
-            return dumps({
-                "label_id": file['_id']
-            })
-        except:
-            printFail(traceback.print_exc)
-            cherrypy.response.status = 500
+        return dumps({
+            "label_id": file['_id']
+        })
 
     @access.public
     @autoDescribeRoute(
         Description('Get labels by file_name')
             .param('file_name', 'label file name').param('folder_id', 'the parent folder id'))
     @rest.rawResponse
+    @trace
     def getLabelByName(self, file_name, folder_id):
-        try:
-            folder = self.folder_m.load(folder_id, user=self.getCurrentUser(), level=AccessType.READ)
-            file = self.__findFile(folder, file_name)
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            if file:
-                return self.file_m.download(file)
-            else:
-                return dumps({})
-        except:
-            printFail(traceback.print_exc)
-            cherrypy.response.status = 500
+        folder = self.folder_m.load(folder_id, user=self.getCurrentUser(), level=AccessType.READ)
+        file = self.__findFile(folder, file_name)
+        cherrypy.response.headers["Content-Type"] = "application/json"
+        if file:
+            return self.file_m.download(file)
+        else:
+            return dumps({})
 
     @access.public
     @autoDescribeRoute(
         Description('Get label by id')
             .param('label_id', 'label file id'))
     @rest.rawResponse
+    @trace
     def getLabel(self, label_id):
-        try:
-            file = self.file_m.load(label_id, level=AccessType.READ, user=self.getCurrentUser())
-            printOk2(file)
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return self.file_m.download(file)
-        except:
-            # Unknown slug
-            printFail(traceback.print_exc)
-            cherrypy.response.status = 404
+        file = self.file_m.load(label_id, level=AccessType.READ, user=self.getCurrentUser())
+        printOk2(file)
+        cherrypy.response.headers["Content-Type"] = "application/json"
+        return self.file_m.download(file)
 
     @access.public
     @autoDescribeRoute(
         Description('Get label by id')
             .param('label_id', 'label file id'))
+    @trace
     def getLabelMeta(self, label_id):
-        try:
-            file = self.file_m.load(label_id, level=AccessType.READ, user=self.getCurrentUser())
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return dumps(file)
-        except:
-            # Unknown slug
-            printFail(traceback.print_exc)
-            cherrypy.response.status = 404
+        file = self.file_m.load(label_id, level=AccessType.READ, user=self.getCurrentUser())
+        cherrypy.response.headers["Content-Type"] = "application/json"
+        return dumps(file)
 
     @access.public
     @autoDescribeRoute(
@@ -207,21 +188,16 @@ class LabelResource(Resource):
             .param('label_id', 'label file id')
             .param('labels', 'labels to be updated'))
     @rest.rawResponse
+    @trace
     def postLabel(self, label_id, labels):
-        try:
-            file = self.file_m.load(label_id, level=AccessType.WRITE, user=self.getCurrentUser())
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            params = {'labels': json.loads(labels)}
-            data = json.dumps(params, indent=2, sort_keys=True)
-            upload = writeData(self.getCurrentUser(), file, data)
-            printOk2(file)
-            printOk(upload)
-            return dumps(upload)
-
-        except:
-            # Unknown slug
-            printFail(traceback.print_exc)
-            cherrypy.response.status = 404
+        file = self.file_m.load(label_id, level=AccessType.WRITE, user=self.getCurrentUser())
+        cherrypy.response.headers["Content-Type"] = "application/json"
+        params = {'labels': json.loads(labels)}
+        data = json.dumps(params, indent=2, sort_keys=True)
+        upload = writeData(self.getCurrentUser(), file, data)
+        printOk2(file)
+        printOk(upload)
+        return dumps(upload)
 
     @access.public
     @autoDescribeRoute(

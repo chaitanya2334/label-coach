@@ -63,8 +63,8 @@ def decode_base64(data, altchars=b'+/'):
     :returns: The decoded byte string.
 
     """
-    data = re.sub(rb'[^a-zA-Z0-9{}]+'.format(altchars), b'', data)  # normalize
+    data = re.sub(r'[^a-zA-Z0-9{}]+'.format(altchars), '', data)  # normalize
     missing_padding = len(data) % 4
     if missing_padding:
-        data += b'=' * (4 - missing_padding)
+        data += '=' * (4 - missing_padding)
     return base64.b64decode(data, altchars)
