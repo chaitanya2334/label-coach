@@ -7,6 +7,7 @@ import './osdCanvasOverlay';
 import connect from "react-redux/es/connect/connect";
 import Brush from "./brush";
 import {
+    postLabelImage,
     replaceAnnotation, setDirtyStatus
 } from "../../control/controlActions";
 import Eraser from "./eraser";
@@ -125,7 +126,8 @@ class OSDCanvasP extends React.Component {
                                             activeLabel,
                                             this.props.toolRadius,
                                             this.props.labelFolderId,
-                                            this.props.updateStrokes);
+                                            this.props.updateStrokes,
+                                            this.props.updateLabelImage);
                 this.activeTool.activate();
                 break;
 
@@ -136,7 +138,8 @@ class OSDCanvasP extends React.Component {
                                              activeLabel,
                                              this.props.toolRadius,
                                              this.props.labelFolderId,
-                                             this.props.updateStrokes);
+                                             this.props.updateStrokes,
+                                             this.props.updateLabelImage);
                 this.activeTool.activate();
                 break;
 
@@ -185,7 +188,7 @@ class OSDCanvasP extends React.Component {
         this.fabOverlay.fabricCanvas()
             .renderAll();
 
-        if(this.props.imageReady) {
+        if (this.props.imageReady) {
             this.redraw();
         }
 
@@ -310,6 +313,11 @@ function mapDispatchToProps(dispatch, ownProps) {
 
             dispatch(replaceAnnotation(ann_type, label_id, brush_id, {jsonObj: jsonObj, transform: transform}));
             dispatch(setDirtyStatus());
+        },
+        updateLabelImage: (labelName, folderId, labelImg) => {
+            if (ownProps.title !== undefined) {
+                dispatch(postLabelImage(labelName, ownProps.title, folderId, labelImg));
+            }
         }
     }
 }

@@ -333,7 +333,8 @@ export function fetchImages(id, limit, page) {
     }
 }
 
-function postData(url = ``, data = {}, callback) {
+function postData(url = ``, data = {}, callback = () => {
+}) {
     // Default options are marked with *
     return restRequest({
                            url: url,
@@ -410,6 +411,14 @@ export function postLabels(images, labels, callback) {
     }
 }
 
+export function postLabelImage(labelName, imageName, folderId, labelImg) {
+
+    return (dispatch) => {
+        postData("labelImage",
+                 {label_name: labelName, image_name: imageName, folder_id: folderId, image: labelImg});
+    }
+}
+
 export function getLabels(label_id) {
     return {
         type: 'FETCH_LABELS',
@@ -426,7 +435,7 @@ export function getLabels(label_id) {
 export function fetchLabels(label_id) {
     return function (dispatch) {
         return dispatch(getLabels(label_id))
-            .then( response => {
+            .then(response => {
                 let json = response.value;
                 let labels = json.labels;
                 labels = labels.map(label => ({
@@ -510,14 +519,14 @@ export function setNavState(state) {
     }
 }
 
-export function imageIsReady(){
-    return{
+export function imageIsReady() {
+    return {
         type: "IMAGE_READY"
     }
 }
 
 export function imageNotReady() {
-    return{
+    return {
         type: "IMAGE_NOT_READY"
     }
 }

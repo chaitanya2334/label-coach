@@ -48,9 +48,9 @@ class ToolBarP extends React.Component {
     }
 
     handleDrawTool(event, drawTool) {
-        if(drawTool) {
+        if (drawTool) {
             this.props.setNavState(false);
-        }else{
+        } else {
             this.props.setNavState(true);
         }
         this.props.selectRightBar(drawTool);
@@ -100,12 +100,14 @@ class ToolBarP extends React.Component {
                     </ToggleButtonGroup>
                     <Divider className={"vertical-divider"}/>
 
-                    <ToggleButtonGroup exclusive value={this.props.drawTool} justified="true" onChange={this.handleDrawTool}>
+                    <ToggleButtonGroup exclusive value={this.props.drawTool} justified="true"
+                                       onChange={this.handleDrawTool}>
                         <ToggleButton disabled={this.props.disable} id="brush" value="brush" className="btn-small"
                                       size="small"><BrushIcon/></ToggleButton>
                         <ToggleButton disabled id="line" value="line" className="btn-small"
                                       size="small"><CreateIcon/></ToggleButton>
-                        <ToggleButton disabled={this.props.disable} id="poly" value="poly" className="btn-small" size="large"><FontAwesomeIcon
+                        <ToggleButton disabled={this.props.disable} id="poly" value="poly" className="btn-small"
+                                      size="large"><FontAwesomeIcon
                             className='icon-medium' icon={faDrawPolygon}/></ToggleButton>
                         <ToggleButton disabled={this.props.disable} value="eraser" id="erazer" size="small">
                             <SvgIcon>
@@ -156,7 +158,7 @@ function mapStateToProps(state) {
         default:
             drawTool = state.rightBar;
     }
-    if (state.thumbnailBarVisibility){
+    if (state.thumbnailBarVisibility) {
         overview.push("thumbnail");
     }
 
@@ -184,7 +186,7 @@ function mapDispatchToProps(dispatch) {
             dispatch(lockAllAnnotations("brushes"));
             dispatch(setDirtyStatus());
         },
-        setNavState: (state) =>{
+        setNavState: (state) => {
             dispatch(setNavState(state));
         }
     };

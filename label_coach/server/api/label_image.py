@@ -1,3 +1,4 @@
+import base64
 import json
 import traceback
 from io import BytesIO, StringIO
@@ -20,14 +21,14 @@ from girder.utility import RequestBodyStream
 
 from ..error import errorMessage
 from ..bcolors import printOk, printFail, printOk2
-from ..utils import writeData, trace
+from ..utils import writeData, trace, writeBytes, decode_base64
 
 
-class LabelResource(Resource):
+class LabelImageResource(Resource):
 
     def __init__(self):
         super().__init__()
-        self.resourceName = 'label'
+        self.resourceName = 'labelImage'
 
         self.coll_m = Collection()
         self.file_m = File()
@@ -39,14 +40,13 @@ class LabelResource(Resource):
         self.setupRoutes()
 
     def setupRoutes(self):
-        self.route('GET', (), handler=self.getLabelList)
-        self.route('GET', (':label_id',), self.getLabel)
-        self.route('GET', ('meta',), self.getLabelMeta)
-        self.route('GET', ('create',), self.createLabelFile)
-        self.route('GET', ('by_name',), self.getLabelByName)
-        self.route('POST', (), self.postLabel)
+        self.route('GET', (), handler=self.getList)
+        self.route('GET', (':label_id',), handler=self.get)
+        self.route('GET', ('meta',), handler=self.getMeta)
+        self.route('GET', ('by_name',), handler=self.getByName)
+        self.route('POST', (), handler=self.post)
 
-    def createNewFile(self, folder, file_name):
+    def __createNewFile(self, folder, file_name):
         item = self.item_m.createItem(file_name,
                                       creator=self.getCurrentUser(),
                                       folder=folder,
@@ -70,15 +70,16 @@ class LabelResource(Resource):
 
     @access.public
     @autoDescribeRoute(
-        Description('Get label list'))
+        Description('Get label Image list'))
     @rest.rawResponse
     @trace
-    def getLabelList(self):
+    def getList(self):
+        printOk2("get label image called")
         collection = list(self.coll_m.list(user=self.getCurrentUser(), offset=0, limit=1))[0]
         files = self.coll_m.fileList(collection, user=self.getCurrentUser(), data=False,
-                                     includeMetadata=True, mimeFilter=['application/json'])
+                                     includeMetadata=True, mimeFilter=['application/png'])
         files = list(files)
-        cherrypy.response.headers["Content-Type"] = "application/json"
+        cherrypy.response.headers["Content-Type"] = "application/png"
         return dumps(files)
 
     @staticmethod
@@ -107,54 +108,55 @@ class LabelResource(Resource):
             if file['name'] == "config.json":
                 return file
 
-    def __findFile(self, folder, file_name):
+    def __findFile(self, folder, file_name, create=False):
         item = list(self.item_m.find({'folderId': folder['_id'], 'name': file_name}).limit(1))
         if not item:
-            return None
+            # check if you are allowed to create, else return nothing
+            if create:
+                file = self.__createNewFile(folder, file_name)
+            else:
+                return None
+        else:
+            item = item[0]
+            file = list(self.file_m.find({'itemId': item['_id']}).limit(1))[0]
 
-        item = item[0]
-        file = list(self.file_m.find({'itemId': item['_id']}).limit(1))
-
-        if not file:
-            return None
-
-        return file[0]
+        return file
 
     @access.public
     @autoDescribeRoute(
-        Description('Create a new label file if it doesnt exist')
-            .param('file_name', 'label file name').param('folder_id', 'the parent folder id'))
+        Description('Create a new label image file if it doesnt exist, else update')
+            .param('label_name', 'label name')
+            .param('image_name', 'The original image that this belongs to')
+            .param('folder_id', 'the image id')
+            .param('image', 'image in string64'))
     @rest.rawResponse
     @trace
-    def createLabelFile(self, file_name, folder_id):
+    def post(self, label_name, image_name, folder_id, image):
+        printOk2("post label image")
         folder = self.folder_m.load(folder_id, user=self.getCurrentUser(), level=AccessType.WRITE)
-        file = self.__findFile(folder, file_name)
-        if not file:
-            file = self.createNewFile(folder, file_name)
-            config_file = self.findConfig(folder_id)
-            if not config_file:
-                printFail("No config file found")
-                return errorMessage("No config file found")
-            else:
-                res = self.copy(config_file, file)
-                return dumps({
-                    "label_id": res['fileId']
-                })
-
+        file_name = "_".join([label_name, image_name, '.png'])
+        file = self.__findFile(folder, file_name, create=True)
+        # remove data:image/png;base64,
+        image = image.split(',')[1]
+        image = base64.b64decode(image)
+        # image = decode_base64(image)
+        upload = writeBytes(self.getCurrentUser(), file, image)
         return dumps({
-            "label_id": file['_id']
+            "label_image_file": upload['fileId']
         })
 
     @access.public
     @autoDescribeRoute(
         Description('Get labels by file_name')
-            .param('file_name', 'label file name').param('folder_id', 'the parent folder id'))
+            .param('file_name', 'label file name')
+            .param('folder_id', 'the parent folder id'))
     @rest.rawResponse
     @trace
-    def getLabelByName(self, file_name, folder_id):
+    def getByName(self, label_name, image_name, folder_id):
         folder = self.folder_m.load(folder_id, user=self.getCurrentUser(), level=AccessType.READ)
-        file = self.__findFile(folder, file_name)
-        cherrypy.response.headers["Content-Type"] = "application/json"
+        file_name = "_".join([label_name, image_name])
+        file = self.__findFile(folder, file_name, create=False)
+        cherrypy.response.headers["Content-Type"] = "application/png"
         if file:
             return self.file_m.download(file)
         else:
@@ -162,47 +164,21 @@ class LabelResource(Resource):
 
     @access.public
     @autoDescribeRoute(
-        Description('Get label by id')
-            .param('label_id', 'label file id'))
+        Description('Get label image by id')
+            .param('label_image_id', 'label image file id'))
     @rest.rawResponse
     @trace
-    def getLabel(self, label_id):
-        file = self.file_m.load(label_id, level=AccessType.READ, user=self.getCurrentUser())
-        printOk2(file)
-        cherrypy.response.headers["Content-Type"] = "application/json"
+    def get(self, label_image_id):
+        file = self.file_m.load(label_image_id, level=AccessType.READ, user=self.getCurrentUser())
+        cherrypy.response.headers["Content-Type"] = "application/png"
         return self.file_m.download(file)
 
     @access.public
     @autoDescribeRoute(
         Description('Get label by id')
-            .param('label_id', 'label file id'))
+            .param('label_image_id', 'label file id'))
     @trace
-    def getLabelMeta(self, label_id):
-        file = self.file_m.load(label_id, level=AccessType.READ, user=self.getCurrentUser())
+    def getMeta(self, label_image_id):
+        file = self.file_m.load(label_image_id, level=AccessType.READ, user=self.getCurrentUser())
         cherrypy.response.headers["Content-Type"] = "application/json"
         return dumps(file)
-
-    @access.public
-    @autoDescribeRoute(
-        Description('Post label by id')
-            .param('label_id', 'label file id')
-            .param('labels', 'labels to be updated'))
-    @rest.rawResponse
-    @trace
-    def postLabel(self, label_id, labels):
-        file = self.file_m.load(label_id, level=AccessType.WRITE, user=self.getCurrentUser())
-        cherrypy.response.headers["Content-Type"] = "application/json"
-        params = {'labels': json.loads(labels)}
-        data = json.dumps(params, indent=2, sort_keys=True)
-        upload = writeData(self.getCurrentUser(), file, data)
-        printOk2(file)
-        printOk(upload)
-        return dumps(upload)
-
-    @access.public
-    @autoDescribeRoute(
-        Description('Post label by id')
-            .param('label_id', 'label file id'))
-    @rest.rawResponse
-    def strokeToOutline(self, strokes):
-        pass

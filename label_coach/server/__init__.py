@@ -9,6 +9,7 @@ from girder.utility.server import staticFile
 
 from girder.utility.plugin_utilities import registerPluginWebroot
 
+from .api.label_image import LabelImageResource
 from .api.brush_canvas import BrushCanvasResource
 from .api.assignment import AssignmentResource
 from .api.label import LabelResource
@@ -20,6 +21,7 @@ def load(info):
     index = IndexAPIHandler()
     image = ImageResource()
     label = LabelResource()
+    labelImage = LabelImageResource()
     assignment = AssignmentResource()
     brush_canvas = BrushCanvasResource()
     print("asdfasdfsdafasdgsadgasg" + PLUGIN_ROOT_DIR)
@@ -30,6 +32,7 @@ def load(info):
     info['apiRoot'].label = label
     info['apiRoot'].assignment = assignment
     info['apiRoot'].brush_canvas = brush_canvas
+    info['apiRoot'].labelImage = labelImage
 
 
 

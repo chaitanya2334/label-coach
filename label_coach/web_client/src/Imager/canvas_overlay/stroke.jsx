@@ -1,5 +1,6 @@
 export default class Stroke {
-    constructor(overlay, viewer, id, cursorColor, radius = null, labelFolderId = null, updateStrokes = null) {
+    constructor(overlay, viewer, id, cursorColor, radius = null, labelFolderId = null, updateStrokes = null,
+                updateLabelImage = null) {
         this.path = [];
         this.overlay = overlay;
         this.viewer = viewer;
@@ -10,6 +11,7 @@ export default class Stroke {
         this.id = id;
         this.maskImage = this.maskify();
         this.labelFolderId = labelFolderId;
+        this.updateLabelImage = updateLabelImage;
         this.mousecursor = new fabric.Circle({
                                                  left: -100,
                                                  top: -100,
@@ -32,12 +34,20 @@ export default class Stroke {
         } : null;
     }
 
+    static toBase64(img, width, height){
+        let canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").putImageData(img, 0, 0);
+        return canvas.toDataURL();
+    }
+
     maskify() {
-        let ctx = this.canvas.getContext();
-        let srcImg = this.canvas.getContext()
-                         .getImageData(0, 0, this.canvas.width, this.canvas.height);
+        let canvas = this.overlay.getFullCanvas();
+        let ctx = canvas.getContext();
+        let srcImg = canvas.getContext()
+                         .getImageData(0, 0, canvas.width, canvas.height);
         let dstImg = ctx.createImageData(srcImg);
-        let dstData = dstImg.data;
         let srcData = srcImg.data;
         let strokeColor = Stroke.hexToRgb(this.cursorColor);
         console.log(strokeColor);
@@ -47,16 +57,15 @@ export default class Stroke {
                 srcData[i + 2] === strokeColor.b &&
                 srcData[i + 3] === 255) {
                 //white
-                dstData[i] = dstData[i + 1] = dstData[i + 2] = 255;
+                dstImg.data[i] = dstImg.data[i + 1] = dstImg.data[i + 2] = 255;
             } else {
                 //black
-                dstData[i] = dstData[i + 1] = dstData[i + 2] = 0;
+                dstImg.data[i] = dstImg.data[i + 1] = dstImg.data[i + 2] = 0;
             }
             //no transparency
-            dstData[i + 3] = 255
+            dstImg.data[i + 3] = 255;
         }
-
-        return dstImg
+        return Stroke.toBase64(dstImg, canvas.width, canvas.height);
     }
 
     activate() {
@@ -71,9 +80,6 @@ export default class Stroke {
             // This will not add an SVG CSS class, but at least will allow us to identify
             // erasures in object list
             this.canvas.renderAll();
-            this.maskImage = this.maskify();
-
-
         });
         this.canvas.on("mouse:down", () => {
             if (!this.drawing) {
@@ -122,6 +128,7 @@ export default class Stroke {
                 this.drawing = 0;
             }
             this.saveToImage();
+
             this.canvas.__eventListeners["mouse:up"] = [];
         })
     }
