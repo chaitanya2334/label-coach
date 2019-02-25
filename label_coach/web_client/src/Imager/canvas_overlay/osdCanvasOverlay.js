@@ -93,7 +93,7 @@
         });
 
         this._viewer.addHandler('resize', function () {
-            setTimeout(()=>{
+            setTimeout(() => {
                 self.resize();
                 self.resizecanvas();
             }, 1);
@@ -146,16 +146,35 @@
             this._fabricCanvas.setHeight(this._containerHeight);
 
             var zoom = this._viewer.viewport._containerInnerSize.x * viewportZoom / this._scale;
+
             this._fabricCanvas.setZoom(zoom);
             var viewportWindowPoint = this._viewer.viewport.viewportToWindowCoordinates(origin);
             var x = viewportWindowPoint.x;
             var y = viewportWindowPoint.y;
             var canvasOffset = this._canvasdiv.getBoundingClientRect();
-
             var pageScroll = $o.getPageScroll();
+            console.log(this._fabricCanvas.viewportTransform);
             this._fabricCanvas.absolutePan(
                 new fabric.Point(canvasOffset.left - x + pageScroll.x, canvasOffset.top - y + pageScroll.y));
             this._fabricCanvas.renderAll();
+        },
+
+        getFullCanvas: function () {
+            var canvas = new fabric.Canvas();
+            canvas.loadFromJSON(JSON.stringify(this._fabricCanvas.toJSON()), () => {
+                canvas.renderAll()
+            });
+            var viewportZoom = this._viewer.viewport.getZoom(true);
+            var zoom = this._viewer.viewport._containerInnerSize.x * viewportZoom / this._scale;
+            zoom = zoom / this._viewer.viewport.viewportToImageZoom(viewportZoom);
+            canvas.setWidth(this._viewer.viewport._contentSizeNoRotate.x);
+            canvas.setHeight(this._viewer.viewport._contentSizeNoRotate.y);
+            canvas.absolutePan(new fabric.Point(0, 0));
+            canvas.renderAll();
+            canvas.setZoom(zoom);
+
+            canvas.renderAll();
+            return canvas;
         },
 
         fakePan: function () {
@@ -166,7 +185,7 @@
             this._fabricCanvas.setHeight(this._containerHeight);
 
             var zoom = this._viewer.viewport._containerInnerSize.x * viewportZoom / this._scale;
-            this._fabricCanvas.setZoom(zoom+1);
+            this._fabricCanvas.setZoom(zoom + 1);
             var viewportWindowPoint = this._viewer.viewport.viewportToWindowCoordinates(origin);
             var x = viewportWindowPoint.x;
             var y = viewportWindowPoint.y;
@@ -174,7 +193,8 @@
 
             var pageScroll = $o.getPageScroll();
             this._fabricCanvas.absolutePan(
-                new fabric.Point(canvasOffset.left - x + pageScroll.x -1000, canvasOffset.top - y + pageScroll.y - 1000));
+                new fabric.Point(canvasOffset.left - x + pageScroll.x - 1000,
+                                 canvasOffset.top - y + pageScroll.y - 1000));
             this._fabricCanvas.renderAll();
         }
 
