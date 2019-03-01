@@ -15,8 +15,8 @@ class DLMenuP extends React.Component {
                         size="small"
                         aria-owns={open ? 'menu-list-grow' : undefined}
                         aria-haspopup="true"
-                        href={"api/v1/labelImage/download?assign_id=" + this.props.assign_id + "&image_name=" +
-                        this.props.image_name}
+                        href={"api/v1/labelImage/download?assign_id=" + encodeURIComponent(this.props.assign_id) + "&image_name=" +
+                        encodeURIComponent(this.props.image_name)}
                     >
                         <GetAppIcon/>
                     </ToggleButton>
