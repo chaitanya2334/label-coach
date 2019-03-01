@@ -18,7 +18,8 @@ from girder.models.item import Item
 
 from ..bcolors import printOk, printOk2
 from ..deepzoom import load_slide
-from ..utils import trace, writeBytes, PILBytesIO
+from ..utils.generic import trace, PILBytesIO
+from ..utils.file_management import writeBytes
 
 
 class ImageResource(Resource):

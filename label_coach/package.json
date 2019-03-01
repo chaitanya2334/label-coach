@@ -46,6 +46,7 @@
     "config": "^2.0.1",
     "d3": "^5.7.0",
     "fabric": "^2.4.4",
+    "file-saver": "^2.0.1",
     "graceful-fs": "^4.1.15",
     "history": "^4.7.2",
     "immer": "^1.7.4",
@@ -76,6 +77,7 @@
     "redux-thunk": "^2.3.0",
     "redux-timeout": "^2.0.0",
     "remote-redux-devtools": "^0.5.13",
+    "streamsaver": "^1.0.1",
     "svg-inline-loader": "^0.8.0",
     "svg-intersections": "^0.4.0",
     "webpack-bundle-analyzer": "^2.13.1"
