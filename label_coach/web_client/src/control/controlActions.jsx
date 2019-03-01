@@ -1,5 +1,7 @@
 import {restRequest} from "girder/rest";
 import {createAsyncAction} from 'redux-promise-middleware-actions';
+import {saveAs} from "file-saver";
+import {createWriteStream} from 'streamsaver';
 
 export function setSize(toolType, value) {
     return {
@@ -368,8 +370,8 @@ export function getLabelFile(fileName, folderId) {
                                  url: "/label/create",
                                  method: 'GET',
                                  data: {
-                                     file_name: fileName,
-                                     folder_id: folderId,
+                                     name: fileName,
+                                     assign_id: folderId,
                                  }
                              })
             .then(response => {
@@ -415,7 +417,7 @@ export function postLabelImage(labelName, imageName, folderId, labelImg) {
 
     return (dispatch) => {
         postData("labelImage",
-                 {label_name: labelName, image_name: imageName, folder_id: folderId, image: labelImg});
+                 {label_name: labelName, image_name: imageName, assign_id: folderId, image: labelImg});
     }
 }
 
@@ -429,6 +431,31 @@ export function getLabels(label_id) {
                                      label_id: label_id
                                  }
                              })
+    }
+}
+
+export function download(assign_id, image_name) {
+    return {
+        type: 'DOWNLOAD',
+        payload: restRequest({
+                                 url: "/labelImage/download",
+                                 method: 'GET',
+                                 data: {
+                                     assign_id: assign_id,
+                                     image_name: image_name
+                                 }
+                             })
+    }
+}
+
+export function downloadImageLabels(assign_id, image_name) {
+    return function (dispatch) {
+        return dispatch(download(assign_id, image_name))
+            .then(response => response.value)
+            .then(data => {
+                let blob = new Blob([data], {type: "octet/stream"});
+                saveAs(blob, "labels.zip")
+            });
     }
 }
 
