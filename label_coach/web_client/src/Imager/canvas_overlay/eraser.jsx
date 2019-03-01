@@ -1,9 +1,10 @@
 import Stroke from "./stroke";
 
-export default class Eraser extends Stroke{
-    constructor(overlay, viewer, id, label = null, radius = null, labelFolderId = null, updateStrokes = null) {
+export default class Eraser extends Stroke {
+    constructor(overlay, viewer, id, label = null, radius = null, labelFolderId = null, updateStrokes = null,
+                updateLabelImage = null) {
         let cursorColor = "rgba(255,255,255,1)";
-        super(overlay, viewer, id, cursorColor, radius, labelFolderId, updateStrokes);
+        super(overlay, viewer, id, label.color, cursorColor, radius, labelFolderId, updateStrokes, updateLabelImage);
         this.label = label;
 
 
@@ -31,5 +32,7 @@ export default class Eraser extends Stroke{
         this.canvas.renderAll();
         this.updateStrokes(this.labelFolderId, "brushes", this.label.id, this.id, jsonObj, transform);
         this.id++;
+        this.maskImage = this.maskify();
+        this.updateLabelImage(this.label.name, this.labelFolderId, this.maskImage);
     }
 }

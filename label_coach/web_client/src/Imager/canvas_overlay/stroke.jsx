@@ -1,11 +1,12 @@
 export default class Stroke {
-    constructor(overlay, viewer, id, cursorColor, radius = null, labelFolderId = null, updateStrokes = null,
+    constructor(overlay, viewer, id, repColor, cursorColor, radius = null, labelFolderId = null, updateStrokes = null,
                 updateLabelImage = null) {
         this.path = [];
         this.overlay = overlay;
         this.viewer = viewer;
         this.canvas = overlay.fabricCanvas();
         this.cursorColor = cursorColor;
+        this.repColor = repColor;
         this.radius = radius;
         this.updateStrokes = updateStrokes;
         this.id = id;
@@ -22,6 +23,7 @@ export default class Stroke {
                                                  originY: 'center'
                                              });
         this.canvas.add(this.mousecursor);
+        this.maskImage = this.maskify();
 
     }
 
@@ -34,14 +36,40 @@ export default class Stroke {
         } : null;
     }
 
-    static toBase64(img, width, height){
+    static toBase64(img, width, height) {
         let canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
-        canvas.getContext("2d").putImageData(img, 0, 0);
+        canvas.getContext("2d")
+              .putImageData(img, 0, 0);
         return canvas.toDataURL();
     }
 
+    maskify() {
+        let canvas = this.overlay.getFullCanvas();
+        let ctx = canvas.getContext();
+        let srcImg = canvas.getContext()
+                           .getImageData(0, 0, canvas.width, canvas.height);
+        let dstImg = ctx.createImageData(srcImg);
+        let srcData = srcImg.data;
+        let strokeColor = Stroke.hexToRgb(this.repColor);
+        console.log(strokeColor);
+        for (let i = 0, maxI = srcData.length; i < maxI; i += 4) {
+            if (srcData[i] === strokeColor.r &&
+                srcData[i + 1] === strokeColor.g &&
+                srcData[i + 2] === strokeColor.b &&
+                srcData[i + 3] === 255) {
+                //white
+                dstImg.data[i] = dstImg.data[i + 1] = dstImg.data[i + 2] = 255;
+            } else {
+                //black
+                dstImg.data[i] = dstImg.data[i + 1] = dstImg.data[i + 2] = 0;
+            }
+            //no transparency
+            dstImg.data[i + 3] = 255;
+        }
+        return Stroke.toBase64(dstImg, canvas.width, canvas.height);
+    }
 
 
     activate() {
