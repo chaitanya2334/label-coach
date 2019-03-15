@@ -1,13 +1,15 @@
 export default class Stroke {
     constructor(overlay, viewer, id, repColor, cursorColor, radius = null, labelFolderId = null, updateStrokes = null,
-                updateLabelImage = null) {
+                updateLabelImage = null, genMask = false) {
         this.path = [];
+        this.genMask = genMask;
         this.overlay = overlay;
         this.viewer = viewer;
         this.canvas = overlay.fabricCanvas();
         this.cursorColor = cursorColor;
         this.repColor = repColor;
-        this.radius = radius;
+        this.zoom = this.viewer.viewport.getZoom(true);
+        this.radius = radius / this.zoom;
         this.updateStrokes = updateStrokes;
         this.id = id;
 
@@ -16,14 +18,17 @@ export default class Stroke {
         this.mousecursor = new fabric.Circle({
                                                  left: -100,
                                                  top: -100,
-                                                 radius: radius / 2,
+                                                 radius: this.radius,
                                                  fill: this.cursorColor,
                                                  stroke: "black",
+                                                 strokeWidth: 2 / this.zoom,
                                                  originX: 'center',
                                                  originY: 'center'
                                              });
         this.canvas.add(this.mousecursor);
-        this.maskImage = this.maskify();
+        if (this.genMask) {
+            this.maskImage = this.maskify();
+        }
 
     }
 
@@ -74,7 +79,7 @@ export default class Stroke {
 
     activate() {
         this.canvas.freeDrawingBrush.color = this.cursorColor;
-        this.canvas.freeDrawingBrush.width = this.radius;
+        this.canvas.freeDrawingBrush.width = this.radius*2;
         this.canvas.globalCompositeOperation = "source-over";
         this.viewer.setMouseNavEnabled(false);
         this.viewer.outerTracker.setTracking(false);
@@ -121,9 +126,10 @@ export default class Stroke {
                 this.mousecursor = new fabric.Circle({
                                                          left: -100,
                                                          top: -100,
-                                                         radius: this.radius / 2,
+                                                         radius: this.radius,
                                                          fill: this.cursorColor,
                                                          stroke: "black",
+                                                         strokeWidth: 2 / this.zoom,
                                                          originX: 'center',
                                                          originY: 'center'
                                                      });
