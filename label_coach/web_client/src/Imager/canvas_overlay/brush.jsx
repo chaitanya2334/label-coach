@@ -2,12 +2,11 @@ import Stroke from "./stroke";
 
 export default class Brush extends Stroke {
     constructor(overlay, viewer, id, label = null, radius = null, labelFolderId = null, updateStrokes = null,
-                updateLabelImage = null) {
-        super(overlay, viewer, id, label.color, label.color, radius, labelFolderId, updateStrokes, updateLabelImage);
+                updateLabelImage = null, genMask = false) {
+        super(overlay, viewer, id, label.color, label.color, radius, labelFolderId, updateStrokes, updateLabelImage, genMask);
         this.label = label;
 
     }
-
 
 
     saveToImage() {
@@ -21,7 +20,9 @@ export default class Brush extends Stroke {
         this.canvas.renderAll();
         this.updateStrokes(this.labelFolderId, "brushes", this.label.id, this.id, jsonObj, transform);
         this.id++;
-        this.maskImage = this.maskify();
+        if (this.genMask) {
+            this.maskImage = this.maskify();
+        }
         this.updateLabelImage(this.label.name, this.labelFolderId, this.maskImage);
 
     }
