@@ -214,16 +214,23 @@ class OSDCanvasP extends React.Component {
 
         return currLabel && prevLabel && currLabel.id === prevLabel.id;
 
+    }
 
+    static isAnnChanged(prevLabel, currLabel){
+        return !OSDCanvasP.isEmptyOrSame(prevLabel, currLabel) ||
+            prevLabel.ann.brushes.length !== currLabel.ann.brushes.length ||
+            prevLabel.ann.polygons.length !== currLabel.ann.polygons.length;
     }
 
     getSnapshotBeforeUpdate(prevProps) {
         if (prevProps.dbId !== this.props.dbId) {
             if (this.props.mimeType === "application/octet-stream") {
+                this.genMask = false;
                 let dziPath = "api/v1/image/dzi/" + this.props.dbId;
                 this.open_slide(dziPath, 0.2505);
             } else {
                 let imagePath = "api/v1/image/" + this.props.dbId;
+                this.genMask = true;
                 this.viewer.open({
                                      type: 'image',
                                      url: imagePath,
@@ -236,7 +243,8 @@ class OSDCanvasP extends React.Component {
 
         if ((prevProps.activeTool !== this.props.activeTool) ||
             prevProps.toolRadius !== this.props.toolRadius ||
-            !OSDCanvasP.isEmptyOrSame(prevProps.activeLabel, this.props.activeLabel)) {
+            OSDCanvasP.isAnnChanged(prevProps.activeLabel, this.props.activeLabel)
+        ) {
             this.updateOverlay();
             this.updateOverlay();
         }
