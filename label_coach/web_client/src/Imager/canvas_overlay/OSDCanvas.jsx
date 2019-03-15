@@ -127,7 +127,8 @@ class OSDCanvasP extends React.Component {
                                             this.props.toolRadius,
                                             this.props.labelFolderId,
                                             this.props.updateStrokes,
-                                            this.props.updateLabelImage);
+                                            this.props.updateLabelImage,
+                                            this.genMask);
                 this.activeTool.activate();
                 break;
 
@@ -139,7 +140,8 @@ class OSDCanvasP extends React.Component {
                                              this.props.toolRadius,
                                              this.props.labelFolderId,
                                              this.props.updateStrokes,
-                                             this.props.updateLabelImage);
+                                             this.props.updateLabelImage,
+                                             this.genMask);
                 this.activeTool.activate();
                 break;
 

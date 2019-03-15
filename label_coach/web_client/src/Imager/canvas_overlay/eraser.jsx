@@ -34,7 +34,8 @@ export default class Eraser extends Stroke {
         this.id++;
         if (this.genMask) {
             this.maskImage = this.maskify();
+            this.updateLabelImage(this.label.name, this.labelFolderId, this.maskImage);
         }
-        this.updateLabelImage(this.label.name, this.labelFolderId, this.maskImage);
+
     }
 }
