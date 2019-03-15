@@ -11,6 +11,7 @@ import {
     replaceAnnotation, setDirtyStatus
 } from "../../control/controlActions";
 import Eraser from "./eraser";
+import {isEmpty} from "../../utils";
 
 
 // helper function to load image using promises
@@ -289,6 +290,27 @@ function mapLabelsToAnns(labels) {
     return [brushes];
 }
 
+function mapAnnotatorsToAnns(annotators) {
+    let brushes = [];
+
+    for (let annotator of annotators) {
+        let labels = [];
+        if (annotator.hasOwnProperty('labels')){
+            labels = annotator.labels;
+        }
+        for (let label of labels) {
+            let newBrushes = label.ann.brushes.map((brush) => {
+                let newBrush = Object.assign({}, brush);
+                newBrush.label = label;
+                newBrush.id = brush.id;
+                return newBrush;
+            });
+            brushes = brushes.concat(newBrushes);
+        }
+    }
+    return brushes;
+}
+
 function showAll(arr) {
     arr.forEach((item, i) => {
         item.displayed = true
@@ -303,9 +325,17 @@ function getLabelFolderId(currentAssignment) {
 }
 
 function mapStateToProps(state) {
-    let [brushes] = mapLabelsToAnns(state.labels);
-    brushes = showAll(brushes);
+    let isAdmin = !isEmpty(state.adminData);
+    let brushes;
+    if (!isAdmin) {
+        brushes = mapLabelsToAnns(state.labels);
+        brushes = showAll(brushes);
+    }else{
+        brushes = mapAnnotatorsToAnns(state.adminData.annotators);
+    }
+
     return {
+        isAdmin: isAdmin,
         activeLabel: getActiveLabel(state.labels),
         toolRadius: getToolRadius(state.tools, state.rightBar),
         activeTool: state.rightBar,

@@ -13,6 +13,7 @@ class DLMenuP extends React.Component {
                 <Tooltip title="Download Label Annotations" enterDelay={500} leaveDelay={200}>
                     <ToggleButton
                         size="small"
+                        value="DLMenu"
                         aria-owns={open ? 'menu-list-grow' : undefined}
                         aria-haspopup="true"
                         href={"api/v1/labelImage/download?assign_id=" + encodeURIComponent(this.props.assign_id) + "&image_name=" +

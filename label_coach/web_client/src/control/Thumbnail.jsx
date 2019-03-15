@@ -90,7 +90,7 @@ function mapDispatchToProps(dispatch, ownProps) {
             if (ownProps.isAdmin) {
                 for (let label_folder of ownProps.currentAssignment.label_folders) {
                     dispatch(
-                        fetchAdminLabels(ownProps.title + ".json", label_folder['parentId'], label_folder._id.$oid))
+                        fetchAdminLabels(ownProps.title, label_folder['parentId'], label_folder._id.$oid))
                 }
             } else {
                 if (ownProps.labelFileId) {

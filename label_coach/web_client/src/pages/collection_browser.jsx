@@ -58,6 +58,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         resetImages: () => {
+            console.log("collection_browser");
             dispatch(resetImages());
         }
     };

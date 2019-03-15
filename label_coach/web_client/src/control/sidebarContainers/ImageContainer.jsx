@@ -96,6 +96,7 @@ function mapDispatchToProps(dispatch, ownProps) {
     return {
         findImages: (folderId, page) => {
             if (page === 1) {
+                console.log("image_container");
                 dispatch(resetImages());
             }
             dispatch(fetchImages(folderId, 5, page - 1))

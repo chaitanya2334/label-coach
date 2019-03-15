@@ -101,8 +101,8 @@ export function fetchAdminLabels(label_name, user, folder_id) {
                                url: "/label/by_name",
                                method: 'GET',
                                data: {
-                                   file_name: label_name,
-                                   folder_id: folder_id
+                                   name: label_name,
+                                   assign_id: folder_id
                                }
                            })
             .then(response => {
