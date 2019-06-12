@@ -329,7 +329,7 @@ export function fetchImages(id, limit, page) {
 
                 } else {
                     dispatch(setHasMoreImages(false));
-                    console.error("No More Images found!!!!");
+                    console.log("No More Images found!!!!");
                 }
             })
     }

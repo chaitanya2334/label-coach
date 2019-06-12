@@ -84,6 +84,7 @@ class AssignmentGridP extends React.PureComponent {
         this.hasMore = this.props.hasMore;
         return (
             <InfiniteScroll
+                key={1}
                 pageStart={0}
                 loadMore={this.loadMore}
                 hasMore={this.hasMore}

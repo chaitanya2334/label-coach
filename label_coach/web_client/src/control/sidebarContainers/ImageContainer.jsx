@@ -3,7 +3,7 @@ import "../../styles/ImageContainer.css"
 import {connect} from "react-redux";
 import Thumbnail from "../Thumbnail";
 import InfiniteScroll from "../InfiniteScroll";
-import {fetchImages, resetImages} from "../controlActions";
+import {fetchImages, resetImages, setHasMoreImages} from "../controlActions";
 
 
 class ImageContainerP extends React.Component {
@@ -97,8 +97,11 @@ function mapDispatchToProps(dispatch, ownProps) {
         findImages: (folderId, page) => {
             if (page === 1) {
                 dispatch(resetImages());
+                dispatch(fetchImages(folderId, 4, page - 1));
+                dispatch(setHasMoreImages(true));
+
             }
-            dispatch(fetchImages(folderId, 5, page - 1))
+            dispatch(fetchImages(folderId, 8, page - 1))
         }
     };
 }

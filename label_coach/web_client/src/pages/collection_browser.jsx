@@ -4,7 +4,7 @@ import Logo from "../logo";
 import AssignmentGrid from "../browser/AssignmentGrid";
 import UserControl from "../control/UserControl";
 import {isEmpty} from "../utils";
-import {fetchCurrentAssignment, resetImages} from "../control/controlActions";
+import {fetchCurrentAssignment, resetImages, setHasMoreImages} from "../control/controlActions";
 import {withRouter} from "react-router";
 import {connect} from "react-redux";
 
@@ -59,6 +59,7 @@ function mapDispatchToProps(dispatch) {
     return {
         resetImages: () => {
             dispatch(resetImages());
+            dispatch(setHasMoreImages(true));
         }
     };
 }

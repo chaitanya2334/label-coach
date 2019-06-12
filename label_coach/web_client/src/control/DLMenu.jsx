@@ -1,5 +1,6 @@
 import * as React from "react";
 import {connect} from "react-redux";
+import Button from '@material-ui/core/Button';
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -11,7 +12,7 @@ class DLMenuP extends React.Component {
         return (
             <div>
                 <Tooltip title="Download Label Annotations" enterDelay={500} leaveDelay={200}>
-                    <ToggleButton
+                    <Button
                         size="small"
                         aria-owns={open ? 'menu-list-grow' : undefined}
                         aria-haspopup="true"
@@ -19,7 +20,7 @@ class DLMenuP extends React.Component {
                         encodeURIComponent(this.props.image_name)}
                     >
                         <GetAppIcon/>
-                    </ToggleButton>
+                    </Button>
                 </Tooltip>
             </div>
         );

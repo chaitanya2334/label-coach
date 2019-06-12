@@ -12,7 +12,7 @@ import {LabelContainer} from "../control/sidebarContainers/LabelContainer";
 
 import {
     fetchCurrentAssignment,
-    fetchImages, resetImages,
+    fetchImages, resetImages, setHasMoreImages,
 } from "../control/controlActions";
 import {Link} from "react-router-dom";
 import UserControl from "../control/UserControl";
@@ -153,6 +153,7 @@ function mapDispatchToProps(dispatch, ownProps) {
             dispatch(resetImages());
             dispatch(fetchCurrentAssignment(ownProps.match.params.id));
             dispatch(fetchAdminData(ownProps.match.params.id));
+            dispatch(setHasMoreImages(true));
         }
     };
 }
