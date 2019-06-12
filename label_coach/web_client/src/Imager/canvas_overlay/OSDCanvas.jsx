@@ -43,9 +43,7 @@ class OSDCanvasP extends React.Component {
             <div className="ocd-div" ref={node => {
                 this.el = node;
             }}>
-                <div className="navigator-wrapper c-shadow">
-                    <div id="navigator"/>
-                </div>
+
                 <div className="openseadragon" id={this.id}/>
             </div>
         )
@@ -64,7 +62,7 @@ class OSDCanvasP extends React.Component {
                                             zoomOutButton: 'zoom-out',
                                             homeButton: 'reset',
                                             fullPageButton: 'full-page',
-                                            showNavigator: true,
+                                            showNavigator: false,
                                             navigatorId: 'navigator',
                                             //navigatorAutoFade: true,
                                         });
