@@ -20,7 +20,7 @@ class AssignmentP extends React.Component {
         this.state = {
             isHovered: false
         };
-        this.props.getThumbnails(4);
+
         console.log(this.state);
     }
 
@@ -67,6 +67,10 @@ class AssignmentP extends React.Component {
     render() {
         let hoverClass = this.state.isHovered ? "mdc-elevation--z2" : "mdc-elevation--z1";
         let widthClass = this.props.fixedWidth ? "fixed-width" : "";
+
+        if (this.props.thumbnails.length < 4){
+            this.props.getThumbnails(4);
+        }
 
         return (
 
