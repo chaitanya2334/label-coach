@@ -3,7 +3,7 @@ import {restRequest} from "girder/rest";
 
 function resetAssignments() {
     return {
-        type: "RESET_ASSIGNMENT"
+        type: "RESET_ASSIGNMENTS"
     }
 }
 
@@ -102,8 +102,7 @@ export function fetchThumbnails(assignmentId, folderId, n) {
                                }
                            })
             .then(files => {
-                let thumbnails = files.sort(() => .5 - Math.random())
-                                      .slice(0, n);
+                let thumbnails = files.slice(0, n);
                 dispatch(updateFolderThumbnails(assignmentId, thumbnails))
             })
     }

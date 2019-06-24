@@ -2,7 +2,7 @@ import * as React from "react";
 import "../styles/Thumbnail.css";
 import {connect} from 'react-redux';
 import {compose} from 'redux';
-import {createLabelFile, fetchLabels, selectImage} from "./controlActions";
+import {createLabelFile, fetchLabels, imageNotReady, selectImage} from "./controlActions";
 import "@material/elevation/dist/mdc.elevation.css";
 import {fetchAdminLabels} from "./Admin/AdminActions";
 import SizeMe from 'react-sizeme';
@@ -10,6 +10,7 @@ import {
     cookie,
     getCurrentToken
 } from "girder/auth";
+import {hideLoading, showLoading} from "react-redux-loading-bar";
 
 class ThumbnailP extends React.Component {
     constructor(props) {
@@ -83,6 +84,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch, ownProps) {
     return {
         onSelect: (event) => {
+            dispatch(showLoading());
+            dispatch(imageNotReady());
             dispatch(selectImage(ownProps.id));
             if (ownProps.isAdmin) {
                 for (let label_folder of ownProps.currentAssignment.label_folders) {
@@ -93,7 +96,7 @@ function mapDispatchToProps(dispatch, ownProps) {
                 if (ownProps.labelFileId) {
                     dispatch(fetchLabels(ownProps.labelFileId));
                 } else {
-                    dispatch(createLabelFile(ownProps.title + ".json", ownProps.labelFolderId, ownProps.id));
+                    dispatch(createLabelFile(ownProps.title, ownProps.labelFolderId, ownProps.id));
                 }
             }
         },

@@ -22,12 +22,6 @@ from ..error import errorMessage
 from ..bcolors import printOk, printFail, printOk2
 
 
-class PILBytesIO(BytesIO):
-    def fileno(self):
-        """Classic PIL doesn't understand io.UnsupportedOperation."""
-        raise AttributeError('Not supported')
-
-
 class AssignmentResource(Resource):
     def __init__(self):
         super().__init__()

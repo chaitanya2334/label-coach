@@ -17,12 +17,20 @@ import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
-import {addAnnotation, setHeader, selectRightBar, setThumbnailBarVisibility, setNavState} from "./controlActions";
+import {
+    addAnnotation,
+    setHeader,
+    selectRightBar,
+    setThumbnailBarVisibility,
+    setNavState,
+    setDirtyStatus
+} from "./controlActions";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import BrushIcon from "../../../node_modules/@material-ui/icons/Brush";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import SaveIcon from '@material-ui/icons/Save';
 import {lockAllAnnotations, setOutline, setSaveStatus} from "./controlActions";
+import {DLMenu} from "./DLMenu";
 
 
 class ToolBarP extends React.Component {
@@ -41,9 +49,9 @@ class ToolBarP extends React.Component {
     }
 
     handleDrawTool(event, drawTool) {
-        if(drawTool) {
+        if (drawTool) {
             this.props.setNavState(false);
-        }else{
+        } else {
             this.props.setNavState(true);
         }
         this.props.selectRightBar(drawTool);
@@ -93,12 +101,14 @@ class ToolBarP extends React.Component {
                     </ToggleButtonGroup>
                     <Divider className={"vertical-divider"}/>
 
-                    <ToggleButtonGroup exclusive value={this.props.drawTool} justified="true" onChange={this.handleDrawTool}>
+                    <ToggleButtonGroup exclusive value={this.props.drawTool} justified="true"
+                                       onChange={this.handleDrawTool}>
                         <ToggleButton disabled={this.props.disable} id="brush" value="brush" className="btn-small"
                                       size="small"><BrushIcon/></ToggleButton>
                         <ToggleButton disabled id="line" value="line" className="btn-small"
                                       size="small"><CreateIcon/></ToggleButton>
-                        <ToggleButton disabled={this.props.disable} id="poly" value="poly" className="btn-small" size="large"><FontAwesomeIcon
+                        <ToggleButton disabled id="poly" value="poly" className="btn-small"
+                                      size="large"><FontAwesomeIcon
                             className='icon-medium' icon={faDrawPolygon}/></ToggleButton>
                         <ToggleButton disabled={this.props.disable} value="eraser" id="erazer" size="small">
                             <SvgIcon>
@@ -110,14 +120,19 @@ class ToolBarP extends React.Component {
                     </ToggleButtonGroup>
                     <Divider className={"vertical-divider"}/>
 
+                    <ToggleButton disabled={this.props.disable} value="save" id="save" size="small"
+                                  onClick={this.props.save}><SaveIcon/></ToggleButton>
+                    <DLMenu assign_id={this.props.currentAssignmentId} image_name={this.props.imageName}/>
+                    <Divider className={"vertical-divider"}/>
+
                     <ToggleButtonGroup value={this.props.overview} onChange={this.handleSidebars}>
                         <ToggleButton value="thumbnail" id="thumbnail" size="small"
                                       className="text-btn">Thumbnail</ToggleButton>
                         <ToggleButton value="review" id="review" size="small" className="text-btn">Review</ToggleButton>
                     </ToggleButtonGroup>
 
-                    <ToggleButton disabled={this.props.disable} value="save" id="save" size="small"
-                                  onClick={this.props.save}><SaveIcon/> Save</ToggleButton>
+                    <Divider className={"vertical-divider"}/>
+
 
                 </div>
                 <Button size={"small"} id="showHeader" className={"btn-small"} onClick={this.toggleHeader}
@@ -139,6 +154,30 @@ function isAdmin(currentUser, currentAssignment) {
     return false;
 }
 
+function getId(currentAssignment) {
+    if (currentAssignment.hasOwnProperty('label_folders') && currentAssignment.label_folders.length > 0) {
+        return currentAssignment.label_folders[0]._id.$oid
+    }
+    return ""
+}
+
+function getActiveImageInfo(images) {
+    let dbId = "";
+    let mimeType = "";
+    let title = "Untitled";
+
+    for (let image of images) {
+        if (image.active) {
+            title = image.title;
+            mimeType = image.mimeType;
+            dbId = image.dbId;
+
+            break;
+        }
+    }
+    return {dbId, mimeType, title}
+}
+
 function mapStateToProps(state) {
     let overview = [];
     let drawTool = null;
@@ -149,13 +188,17 @@ function mapStateToProps(state) {
         default:
             drawTool = state.rightBar;
     }
-    if (state.thumbnailBarVisibility){
+    if (state.thumbnailBarVisibility) {
         overview.push("thumbnail");
     }
+
+    let {dbId, mimeType, title} = getActiveImageInfo(state.images);
 
     return {
         showHeader: state.showHeader,
         rightBar: state.rightBar,
+        currentAssignmentId: getId(state.currentAssignment),
+        imageName: title,
         overview: overview,
         drawTool: drawTool,
         disable: isAdmin(state.authentication.user, state.currentAssignment)
@@ -175,9 +218,9 @@ function mapDispatchToProps(dispatch) {
         },
         save: () => {
             dispatch(lockAllAnnotations("brushes"));
-            dispatch(setSaveStatus("dirty"));
+            dispatch(setDirtyStatus());
         },
-        setNavState: (state) =>{
+        setNavState: (state) => {
             dispatch(setNavState(state));
         }
     };

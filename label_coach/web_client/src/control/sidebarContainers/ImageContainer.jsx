@@ -3,7 +3,7 @@ import "../../styles/ImageContainer.css"
 import {connect} from "react-redux";
 import Thumbnail from "../Thumbnail";
 import InfiniteScroll from "../InfiniteScroll";
-import {fetchImages} from "../controlActions";
+import {fetchImages, resetImages, setHasMoreImages} from "../controlActions";
 
 
 class ImageContainerP extends React.Component {
@@ -19,7 +19,10 @@ class ImageContainerP extends React.Component {
 
     render() {
         let rows = [];
-        if (this.props.images.length > 0) {
+        if (this.props.images.length > 0
+            && this.props.labelFolderId !== undefined
+            && this.props.currentAssignment !== undefined) {
+
             this.props.images.forEach((image, i) => {
                 rows.push(
                     <Thumbnail key={i} id={image.id} active={image.active} title={image.title}
@@ -92,7 +95,13 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch, ownProps) {
     return {
         findImages: (folderId, page) => {
-            dispatch(fetchImages(folderId, 5, page - 1))
+            if (page === 1) {
+                dispatch(resetImages());
+                dispatch(fetchImages(folderId, 4, page - 1));
+                dispatch(setHasMoreImages(true));
+
+            }
+            dispatch(fetchImages(folderId, 8, page - 1))
         }
     };
 }

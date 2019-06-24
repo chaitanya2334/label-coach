@@ -82,8 +82,11 @@ export function saveIndicator(saveIndicator = {text: "", status: "done", lastUpd
             case 'EDIT_SAVE_INDICATOR_TEXT':
                 draft.text = action.text;
                 return draft;
-            case 'SET_SAVE_STATUS':
-                draft.status = action.status;
+            case 'SET_DIRTY_STATUS':
+                draft.status = "dirty";
+                return draft;
+            case 'SET_DONE_STATUS':
+                draft.status = "done";
                 return draft;
             case 'SET_LAST_UPDATED':
                 draft.lastUpdated = action.date;
@@ -242,14 +245,7 @@ export function labels(labels = [], action) {
                                            points: line.points,
                                            selected: false,
                                        })),
-                                       brushes: label.ann.brushes.map((brush, index) => ({
-                                           id: index,
-                                           drawState: "read-only",
-                                           text: brush.text,
-                                           points: brush.points,
-                                           brush_radius: brush.brush_radius,
-                                           selected: false,
-                                       })),
+                                       brushes: label.ann.brushes,
                                        erasers: label.ann.erasers.map((eraser, index) => ({
                                            id: index,
                                            drawState: "read-only",
@@ -263,10 +259,13 @@ export function labels(labels = [], action) {
                 }
                 return draft;
             case 'ADD_ANN':
+            case 'REPLACE_ANN':
+            case 'ADD_BRUSH_ANN':
             case 'LOCK_ANN':
             case 'UNLOCK_ANN':
             case 'DELETE_ANN':
             case 'UPDATE_ANN':
+            case 'UPDATE_BRUSH_ANN':
             case 'CANCEL_ANN':
             case 'TOGGLE_BUTTON':
             case "CHANGE_PAGE":
@@ -321,7 +320,7 @@ export function annotationReducer(ann, action) {
             case 'ADD_ANN':
                 let newAnn = {id: action.item_id};
                 newAnn.text = action.ann_type + newAnn.id;
-                newAnn.points = [];
+                newAnn.path = [];
                 newAnn.drawState = "create";
                 for (let key in action.args) {
                     newAnn[key] = action.args[key];
@@ -329,9 +328,35 @@ export function annotationReducer(ann, action) {
                 draft.push(newAnn);
                 return draft;
 
+            case 'ADD_BRUSH_ANN':
+                let brushAnn = {id: action.item_id};
+                brushAnn.text = action.ann_type + brushAnn.id;
+                brushAnn.file_id = '';
+                brushAnn.drawState = "create";
+                brushAnn.transform = [];
+                draft.push(brushAnn);
+                return draft;
+
             case 'LOCK_ALL_ANN':
                 for (let ann of draft) {
                     draft.find(x => x.id === ann.id).drawState = "read-only";
+                }
+                return draft;
+            case 'REPLACE_ANN':
+
+                if (draft.find(x => x.id === action.item_id) !== undefined) {
+                    for (let key in action.args) {
+                        draft.find(x => x.id === action.item_id)[key] = action.args[key];
+                    }
+                } else {
+                    let newAnn = {id: action.item_id};
+                    newAnn.text = action.ann_type + newAnn.id;
+                    newAnn.path = [];
+                    newAnn.drawState = "create";
+                    for (let key in action.args) {
+                        newAnn[key] = action.args[key];
+                    }
+                    draft.push(newAnn);
                 }
                 return draft;
 
@@ -343,11 +368,16 @@ export function annotationReducer(ann, action) {
                 draft.find(x => x.id === action.item_id).drawState = "edit";
                 return draft;
 
+            case 'UPDATE_BRUSH_ANN':
+                draft.find(x => x.id === action.item_id).file_id = action.file_id;
+                draft.find(x => x.id === action.item_id).transform = action.transform;
+                return draft;
+
             case 'UPDATE_ANN':
                 if (draft.find(x => x.id === action.item_id).drawState === "edit" ||
                     draft.find(x => x.id === action.item_id).drawState === "create") {
 
-                    draft.find(x => x.id === action.item_id).points = action.points;
+                    draft.find(x => x.id === action.item_id).path = action.path;
                     for (let key in action.args) {
                         draft.find(x => x.id === action.item_id)[key] = action.args[key];
                     }
@@ -422,11 +452,14 @@ export function labelReducer(label, action) {
     return produce(label, draft => {
         switch (action.type) {
             case 'ADD_ANN':
+            case 'REPLACE_ANN':
+            case 'ADD_BRUSH_ANN':
             case 'LOCK_ANN':
             case 'LOCK_ALL_ANN':
             case 'UNLOCK_ANN':
             case 'DELETE_ANN':
             case 'UPDATE_ANN':
+            case 'UPDATE_BRUSH_ANN':
             case 'SELECT_ANN':
             case 'DESELECT_ANN':
             case 'SHOW_ANN':
@@ -480,6 +513,19 @@ export function navState(navState = false, action) {
         switch (action.type) {
             case "SET_NAV_STATE":
                 return action.state;
+            default:
+                return draft;
+        }
+    });
+}
+
+export function imageReady(imageReady = false, action){
+    return produce(imageReady, draft=>{
+        switch (action.type) {
+            case "IMAGE_READY":
+                return true;
+            case "IMAGE_NOT_READY":
+                return false;
             default:
                 return draft;
         }

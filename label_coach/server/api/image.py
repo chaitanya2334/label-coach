@@ -1,5 +1,4 @@
 import os
-import os
 import re
 import timeit
 from io import BytesIO
@@ -19,13 +18,8 @@ from girder.models.item import Item
 
 from ..bcolors import printOk, printOk2
 from ..deepzoom import load_slide
-from ..utils import trace, writeBytes
-
-
-class PILBytesIO(BytesIO):
-    def fileno(self):
-        """Classic PIL doesn't understand io.UnsupportedOperation."""
-        raise AttributeError('Not supported')
+from ..utils.generic import trace, PILBytesIO
+from ..utils.file_management import writeBytes
 
 
 class ImageResource(Resource):
@@ -64,6 +58,8 @@ class ImageResource(Resource):
     def __set_mime_type(ext):
         if ext == ".jpg" or ext == ".jpeg":
             return "image/jpeg"
+        elif ext == ".png" or ext == ".PNG":
+            return "image/png"
         elif ext == ".svs":
             return "application/octet-stream"
 
@@ -92,7 +88,7 @@ class ImageResource(Resource):
         self.user = self.getCurrentUser()
         folder = Folder().load(folderId, level=AccessType.READ, user=self.getCurrentUser())
         items = Folder().childItems(folder, limit=limit, offset=offset)
-        items = self.__filter(items, exts=[".jpg", ".jpeg", ".svs"])
+        items = self.__filter(items, exts=[".jpg", ".jpeg", ".png", ".PNG", ".svs"])
         ret_files = []
         for item in items:
             # TODO: remove this function
@@ -177,6 +173,7 @@ class ImageResource(Resource):
             filename = "thumbnail_{}x{}".format(w, h)
 
         file = self.__get_file(item, filename)
+        print(file)
         if not file:
             file = self.__create_thumbnail(item, w, h)
 
@@ -190,6 +187,9 @@ class ImageResource(Resource):
         file = self.__get_file(item, item['name'])
         with File().open(file) as f:
             image = Image.open(BytesIO(f.read()))
+            # incase we are currently processing png images, which have RGBA.
+            # we convert to RGB, cos we save the thumbnail into a .jpg which cannot handle A channel
+            image = image.convert("RGB")
             if not h:
                 width, height = image.size
                 h = (height / width) * w
