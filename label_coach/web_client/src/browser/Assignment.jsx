@@ -68,8 +68,8 @@ class AssignmentP extends React.Component {
         let hoverClass = this.state.isHovered ? "mdc-elevation--z2" : "mdc-elevation--z1";
         let widthClass = this.props.fixedWidth ? "fixed-width" : "";
 
-        if (this.props.thumbnails.length < 4){
-            this.props.getThumbnails(4);
+        if (this.props.thumbnails.length < 1){
+            this.props.getThumbnails(2);
         }
 
         return (
@@ -81,7 +81,7 @@ class AssignmentP extends React.Component {
                 <div className="l-img-thumbnail">
                     <ReactGridLayout className="layout" autoSize={true} isDraggable={false} isResizable={false}
                                  rowHeight={50} responsive={false} margin={[2, 2]}>
-                    {this.displayThumbnails(4)}
+                    {this.displayThumbnails(2)}
                     </ReactGridLayout>
                 </div>
                 <div className={"tn-container"}>

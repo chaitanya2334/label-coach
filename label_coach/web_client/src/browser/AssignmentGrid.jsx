@@ -116,7 +116,11 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         findAssignments: (page) => {
-            dispatch(findAssignments(25, page - 1))
+            if(page == 1) {
+                dispatch(findAssignments(28, page - 1))
+            } else {
+                dispatch(findAssignments(8, page - 1))
+            }
         },
         setHasMore: (state) => {
             dispatch(setHasMoreAssignments(state))

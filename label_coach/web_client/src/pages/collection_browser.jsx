@@ -37,7 +37,7 @@ class CollectionBrowserP extends React.Component {
                 </nav>
 
                 <div className={"row"}>
-                    <div className={"col-lg-8 offset-lg-2"}>
+                    <div className={"col-lg-7 offset-lg-3"}>
                         <AssignmentGrid className={"layout"} isDraggable={false} isResizable={false} items={50}/>
 
                     </div>

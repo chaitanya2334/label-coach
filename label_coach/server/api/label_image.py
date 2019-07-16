@@ -183,7 +183,7 @@ class LabelImageResource(Resource):
         printOk(folder)
 
         setResponseHeader('Content-Type', 'application/zip')
-        setContentDisposition(folder['name'] + '.zip')
+        setContentDisposition(label_folder['name'] + '.zip')
         user = self.getCurrentUser()
 
         def stream():
