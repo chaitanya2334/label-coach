@@ -100,8 +100,9 @@ function mapDispatchToProps(dispatch, ownProps) {
                 dispatch(fetchImages(folderId, 4, page - 1));
                 dispatch(setHasMoreImages(true));
 
+            } else {
+                dispatch(fetchImages(folderId, 8, page - 1))
             }
-            dispatch(fetchImages(folderId, 8, page - 1))
         }
     };
 }

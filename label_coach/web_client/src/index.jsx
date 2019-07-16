@@ -22,6 +22,7 @@ class Index extends React.Component {
         super(props);
         this.store = createStore(rootReducer,
                                  composeWithDevTools(applyMiddleware(thunk, promiseMiddleware(), reduxTimeout())));
+
     }
 
     render() {
