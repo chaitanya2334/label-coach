@@ -23,7 +23,6 @@ dependencies:
   - libpng=1.6.34=ha92aebf_1
   - libstdcxx-ng=7.2.0=hdf63c60_3
   - libtiff=4.0.9=he6b73bb_1
-  - libuuid=1.0.3=1
   - libxcb=1.13=h470a237_2
   - libxml2=2.9.8=h422b904_2
   - ncurses=5.9=10
