@@ -65,4 +65,8 @@ Vagrant.configure("2") do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision :shell, path: "vagrant_init.sh", run: "always"
   config.vm.network :forwarded_port, guest: 8080, host: 8080, host_ip: "127.0.0.1"
+  config.vm.provider "virtualbox" do |vb|
+      # workaround: if following line is not present, you get the bug
+      vb.customize [ 'modifyvm', :id, '--uartmode1', 'disconnected']
+  end
 end
