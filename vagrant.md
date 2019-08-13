@@ -22,8 +22,7 @@ $ cd /path/to/label-coach
 ### Init .box using vagrant
 
 ```
-$ vagrant box add --name label-coach-box /path/to/the/label-coach-vm.box
-$ vagrant init label-coach-vm
+$ vagrant box add --name label-coach /path/to/the/label-coach-vm.box
 $ vagrant up
 ```
 ### done!
