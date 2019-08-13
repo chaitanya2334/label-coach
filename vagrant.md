@@ -29,3 +29,13 @@ $ vagrant up
 
 Head to http://localhost:8080 to start using the tool.
 
+### Appendix
+
+To remove and replace existing box with a new box
+
+```
+$ vagrant destroy
+$ vagrant remove label-coach
+$ vagrant box add ---name label-coach /path/to/the/new-label-coach-vm.box
+$ vagrant up
+```
