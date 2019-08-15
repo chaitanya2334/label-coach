@@ -29,7 +29,25 @@ $ vagrant up
 
 Head to http://localhost:8080 to start using the tool.
 
-### Appendix
+## Appendix: Box
+
+### Create Box
+
+To package a box containing all local software and configurations present in the current vagrant setup.
+
+```
+$ vagrant package --output label-coach-vm.box
+```
+### Add New
+
+If you are adding the box for the first time
+
+```
+$ vagrant box add --name label-coach /path/to/the/label-coach-vm.box
+$ vagrant up
+```
+
+### Update 
 
 To remove and replace existing box with a new box
 
