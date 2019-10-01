@@ -2,22 +2,20 @@ import React from 'react';
 import '../../styles/ImageViewer.css';
 import {getCurrentToken} from "girder/auth";
 import OpenSeadragon from 'openseadragon'
-import './overlay/osdSvgOverlay';
+import './osdSvgOverlay';
 import connect from "react-redux/es/connect/connect";
 import {
-    addAnnotation, deleteAnnotation,
-    lockAnnotation,
-    setSaveStatus,
-    unlockAnnotation,
+    addAnnotation, createAnnotation, deleteAnnotation,
+    lockAnnotation, setDirtyStatus,
     updateAnnotation
-} from "../control/controlActions";
-import Polygon from "./overlay/polygon";
-import Line from "./overlay/line";
-import ToolBar from "../control/ToolBar";
-import SaveIndicator from "../control/SaveIndicator";
+} from "../../control/controlActions";
+import Polygon from "./polygon";
+import Line from "./line";
+import ToolBar from "../../control/ToolBar";
+import SaveIndicator from "../../control/SaveIndicator";
 import Divider from "@material-ui/core/Divider";
-import Brush from "./overlay/brush";
-import Eraser from "./overlay/eraser";
+import Brush from "./brush";
+import Eraser from "./eraser";
 import * as d3 from "d3";
 
 // helper function to load image using promises
@@ -84,14 +82,13 @@ class ImageViewerP extends React.Component {
                                             constrainDuringPan: false,
                                             defaultZoomLevel: 0,
                                             zoomPerClick: 1,
-                                            minZoomLevel: 0,
-                                            maxZoomLevel: 40,
                                             zoomInButton: 'zoom-in',
                                             zoomOutButton: 'zoom-out',
                                             homeButton: 'reset',
                                             fullPageButton: 'full-page',
                                             showNavigator: true,
                                             navigatorId: 'navigator',
+                                            maxImageCacheCount: 2000,
                                             //navigatorAutoFade: true,
                                         });
         this.onViewerReady();
@@ -379,6 +376,20 @@ class ImageViewerP extends React.Component {
         }
     }
 
+    static isEmptyOrSame(prevLabel, currLabel) {
+        if (!prevLabel && currLabel) {
+            return false;
+        }
+
+        return currLabel && prevLabel && currLabel.id === prevLabel.id;
+
+    }
+
+    static isAnnChanged(prevLabel, currLabel) {
+        return !ImageViewerP.isEmptyOrSame(prevLabel, currLabel) ||
+            (prevLabel.ann.polygons[prevLabel.ann.polygons.length - 1].points !==
+                currLabel.ann.polygons[currLabel.ann.polygons.length - 1].points);
+    }
 
     updateOverlay() {
 
@@ -393,21 +404,6 @@ class ImageViewerP extends React.Component {
         }
         if (this.props.activeLabel) {
             this.setActiveTool(this.props.activeTool, this.props.activeLabel);
-        }
-
-        for (let brush of this.props.brushes) {
-            if (brush.displayed) {
-                let brushObj = new Brush(this.svgOverlay,
-                                         this.viewer,
-                                         brush.label,
-                                         brush.selected,
-                                         brush.id,
-                                         brush.brush_radius,
-                                         this.zoom);
-
-                brushObj.addImagePoints(brush.points);
-                this.brushes.push(brushObj);
-            }
         }
 
         //create polygons from props
@@ -447,7 +443,7 @@ class ImageViewerP extends React.Component {
 
     }
 
-    getSnapshotBeforeUpdate(prevProps) {
+    getSnapshotBeforeUpdate(prevProps, prevState) {
         if (prevProps.dbId !== this.props.dbId) {
             if (this.props.mimeType === "application/octet-stream") {
                 let dziPath = "api/v1/image/dzi/" + this.props.dbId;
@@ -463,10 +459,13 @@ class ImageViewerP extends React.Component {
             this.updateOverlay = this.updateOverlay.bind(this);
             this.viewer.addOnceHandler('open', this.updateOverlay);
         }
-    }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        this.updateOverlay();
+        if ((prevProps.activeTool !== this.props.activeTool) ||
+            prevProps.toolRadius !== this.props.toolRadius ||
+            ImageViewerP.isAnnChanged(prevProps.activeLabel, this.props.activeLabel)
+        ) {
+            this.updateOverlay();
+        }
     }
 
 }
@@ -583,38 +582,22 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         addPolygon: (label_id, poly_id, points) => {
-            dispatch(addAnnotation("polygons", label_id, poly_id));
-            dispatch(updateAnnotation("polygons", label_id, poly_id, points));
-            dispatch(lockAnnotation("polygons", label_id, poly_id));
-            dispatch(setSaveStatus("dirty"));
+            dispatch(createAnnotation("polygons", label_id, poly_id, points));
         },
         updatePolygon: (label_id, poly_id, points) => {
             dispatch(updateAnnotation("polygons", label_id, poly_id, points));
         },
         lockPolygon: (label_id, poly_id) => {
             dispatch(lockAnnotation("polygons", label_id, poly_id));
-            dispatch(setSaveStatus("dirty"));
+            dispatch(setDirtyStatus());
         },
         updateLine: (label_id, line_id, points) => {
             dispatch(updateAnnotation("lines", label_id, line_id, points));
         },
         lockLine: (label_id, line_id) => {
             dispatch(lockAnnotation("lines", label_id, line_id));
-            dispatch(setSaveStatus("dirty"));
+            dispatch(setDirtyStatus());
         },
-        addNewStroke: (ann_type, label_id, brush_id, brush_radius, points) => {
-            dispatch(addAnnotation(ann_type, label_id, brush_id, {"brush_radius": brush_radius}));
-            dispatch(updateAnnotation(ann_type, label_id, brush_id, points, {"brush_radius": brush_radius}));
-            dispatch(lockAnnotation(ann_type, label_id, brush_id));
-            dispatch(setSaveStatus("dirty"));
-        },
-        deleteStrokes: (ann_type, label_brush_ids) => {
-            for (let pair of label_brush_ids) {
-                let {label_id, brush_id} = pair;
-                dispatch(deleteAnnotation(ann_type, label_id, brush_id));
-            }
-            dispatch(setSaveStatus("dirty"));
-        }
     };
 }
 
