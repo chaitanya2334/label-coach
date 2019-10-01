@@ -24,6 +24,7 @@ import {AnnotatorContainer} from "../control/Admin/AnnotatorContainer";
 import {isEmpty} from "../utils";
 import {fetchAdminData} from "../control/Admin/AdminActions";
 import {LoadingBar} from "react-redux-loading-bar";
+import SvgImageViewer from "../Imager/svg_overlay/SvgImageViewer";
 
 class LabelTaskerP extends React.Component {
     constructor(props) {
@@ -114,7 +115,7 @@ class LabelTaskerP extends React.Component {
                         </div>
                         <div className={"col-lg-8 hack-grow-8 align-self-top"}>
 
-                            <ImageViewer/>
+                            <SvgImageViewer/>
                         </div>
                         <div className={"col-lg-2 remove-right-padding"} style={{display: rightBar ? 'block' : 'none'}}>
                             {rightBar}

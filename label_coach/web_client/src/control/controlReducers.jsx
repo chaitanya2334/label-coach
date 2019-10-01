@@ -320,7 +320,7 @@ export function annotationReducer(ann, action) {
             case 'ADD_ANN':
                 let newAnn = {id: action.item_id};
                 newAnn.text = action.ann_type + newAnn.id;
-                newAnn.path = [];
+                newAnn.points = action.points;
                 newAnn.drawState = "create";
                 for (let key in action.args) {
                     newAnn[key] = action.args[key];
@@ -351,7 +351,7 @@ export function annotationReducer(ann, action) {
                 } else {
                     let newAnn = {id: action.item_id};
                     newAnn.text = action.ann_type + newAnn.id;
-                    newAnn.path = [];
+                    newAnn.points = [];
                     newAnn.drawState = "create";
                     for (let key in action.args) {
                         newAnn[key] = action.args[key];
@@ -377,7 +377,7 @@ export function annotationReducer(ann, action) {
                 if (draft.find(x => x.id === action.item_id).drawState === "edit" ||
                     draft.find(x => x.id === action.item_id).drawState === "create") {
 
-                    draft.find(x => x.id === action.item_id).path = action.path;
+                    draft.find(x => x.id === action.item_id).points = action.points;
                     for (let key in action.args) {
                         draft.find(x => x.id === action.item_id)[key] = action.args[key];
                     }

@@ -83,7 +83,7 @@ class EnhancedTableP extends React.Component {
     }
 
     onEdit(event, id) {
-        this.props.onEdit(id);
+        this.props.edit(id);
     }
 
     onDelete(event, ids, data) {
@@ -166,7 +166,8 @@ class EnhancedTableP extends React.Component {
                                         >
                                             <TableCell padding="checkbox">
                                                 <Checkbox checked={isSelected}
-                                                          onClick={event => this.handleClick(event, n.id, data, selected)}/>
+                                                          onClick={event => this.handleClick(event, n.id, data,
+                                                                                             selected)}/>
                                             </TableCell>
                                             <TableCell component="th" scope="row" padding="none">
                                                 {n.name}
