@@ -10,6 +10,7 @@ import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import ZoomOutMapIcon from "@material-ui/icons/ZoomOutMap";
 import HomeIcon from "@material-ui/icons/Home";
+import CachedIcon from "@material-ui/icons/Cached";
 import CreateIcon from "@material-ui/icons/Create";
 import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
@@ -23,7 +24,7 @@ import {
     selectRightBar,
     setThumbnailBarVisibility,
     setNavState,
-    setDirtyStatus
+    setDirtyStatus, resetViewer
 } from "./controlActions";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import BrushIcon from "../../../node_modules/@material-ui/icons/Brush";
@@ -46,6 +47,9 @@ class ToolBarP extends React.Component {
     }
 
     handleMovement(event, movement) {
+        if (movement.length !== 0 && movement[0] === "reset") {
+            this.props.resetViewer()
+        }
     }
 
     handleDrawTool(event, drawTool) {
@@ -97,7 +101,8 @@ class ToolBarP extends React.Component {
                         <ToggleButton value="zoom-map" id="full-page" size="small"><ZoomOutMapIcon/></ToggleButton>
                         <ToggleButton value="zoom-in" id="zoom-in" size="small"><ZoomInIcon/></ToggleButton>
                         <ToggleButton value="zoom-out" id="zoom-out" size="small"><ZoomOutIcon/></ToggleButton>
-                        <ToggleButton value="reset" id="reset" size="small"><HomeIcon/></ToggleButton>
+                        <ToggleButton value="home" id="home" size="small"><HomeIcon/></ToggleButton>
+                        <ToggleButton value="reset" id="reset" size="small"><CachedIcon/></ToggleButton>
                     </ToggleButtonGroup>
                     <Divider className={"vertical-divider"}/>
 
@@ -222,6 +227,9 @@ function mapDispatchToProps(dispatch) {
         },
         setNavState: (state) => {
             dispatch(setNavState(state));
+        },
+        resetViewer: () => {
+            dispatch(resetViewer());
         }
     };
 }

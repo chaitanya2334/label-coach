@@ -7,7 +7,7 @@ import connect from "react-redux/es/connect/connect";
 import {
     addAnnotation, createAnnotation, deleteAnnotation, imageIsReady,
     lockAnnotation, setDirtyStatus,
-    updateAnnotation
+    updateAnnotation, viewerResetDone
 } from "../../control/controlActions";
 import Polygon from "./polygon";
 import Line from "./line";
@@ -52,7 +52,12 @@ class ImageViewerP extends React.Component {
     }
 
     render() {
-
+        if (!this.props.viewer && this.viewer !== null){
+            this.viewer.imageLoader.clear();
+            this.viewer.forceRedraw();
+            console.log("redrawing");
+            this.props.viewerResetDone();
+        }
         return (
             <div className={"image-viewer"}>
                 <div className={"iv-header"} style={{display: this.props.showHeader ? "flex" : "none"}}>
@@ -85,7 +90,7 @@ class ImageViewerP extends React.Component {
                                             zoomPerClick: 1,
                                             zoomInButton: 'zoom-in',
                                             zoomOutButton: 'zoom-out',
-                                            homeButton: 'reset',
+                                            homeButton: 'home',
                                             fullPageButton: 'full-page',
                                             minPixelRatio: 0.3,
                                             showNavigator: true,
@@ -586,7 +591,8 @@ function mapStateToProps(state) {
         polygons: polygons,
         lines: lines,
         brushes: brushes,
-        navState: state.navState
+        navState: state.navState,
+        viewer: state.viewer
     };
 }
 
@@ -614,6 +620,9 @@ function mapDispatchToProps(dispatch) {
         },
         imageIsReady: () => {
             dispatch(imageIsReady());
+        },
+        viewerResetDone: () => {
+            dispatch(viewerResetDone());
         }
     };
 }

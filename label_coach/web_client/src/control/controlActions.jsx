@@ -240,6 +240,18 @@ export function resetImages() {
     }
 }
 
+export function resetViewer(){
+    return {
+        type: 'RESET_VIEWER'
+    }
+}
+
+export function viewerResetDone(){
+    return {
+        type: 'VIEWER_RESET_DONE'
+    }
+}
+
 export function setHasMoreImages(state) {
     return {
         type: 'SET_HAS_MORE_IMAGES',

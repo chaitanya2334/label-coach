@@ -6,7 +6,7 @@ import {
     saveIndicator,
     searchImages,
     searchLabels, showHeader,
-    thumbnailBarVisibility, tools,
+    thumbnailBarVisibility, tools, viewer,
 } from "./control/controlReducers";
 import {authentication} from "./login/loginReducer";
 import {assignments, hasMoreAssignments} from "./browser/browserReducers";
@@ -32,4 +32,5 @@ export default combineReducers({
                                    hasMoreImages,
                                    imageReady,
                                    loadingBar: loadingBarReducer,
+                                   viewer: viewer
                                })
