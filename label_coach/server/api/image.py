@@ -45,7 +45,7 @@ class ImageResource(Resource):
         assetstore = Assetstore().load(file['assetstoreId'])
         slides, associated_images, slide_properties, slide_mpp = \
             load_slide(slidefile=os.path.join(assetstore['root'], file['path']),
-                       tile_size=240)
+                       tile_size=126)
 
         return slides
 
