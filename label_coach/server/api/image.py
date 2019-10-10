@@ -1,7 +1,9 @@
 import os
 import re
 import timeit
+from collections import namedtuple
 from io import BytesIO
+from typing import NamedTuple
 
 import cherrypy
 from PIL import Image
@@ -21,6 +23,7 @@ from ..deepzoom import load_slide
 from ..utils.generic import trace, PILBytesIO
 from ..utils.file_management import writeBytes
 
+SlidesCache = namedtuple("SlidesCache", ["image_id", "slides"])
 
 class ImageResource(Resource):
 
@@ -34,19 +37,24 @@ class ImageResource(Resource):
         self.route('GET', ('thumbnail',), self.getThumbnail)
         self.route('GET', ('dzi', ':image_id',), self.dzi)
         self.route('GET', ('dzi', ':image_id', ':level', ':tfile'), self.tile)
+        self.slide_cache = SlidesCache(None, None)
 
     @staticmethod
     def __load_slides(file):
         printOk2(file)
         assetstore = Assetstore().load(file['assetstoreId'])
         slides, associated_images, slide_properties, slide_mpp = \
-            load_slide(os.path.join(assetstore['root'], file['path']))
+            load_slide(slidefile=os.path.join(assetstore['root'], file['path']),
+                       tile_size=240)
 
         return slides
 
     def find_label_id(self, folder, name):
         collection_model = Collection()
-        labels = Folder().fileList(doc=folder, user=self.getCurrentUser(), data=False, includeMetadata=True,
+        labels = Folder().fileList(doc=folder,
+                                   user=self.getCurrentUser(),
+                                   data=False,
+                                   includeMetadata=True,
                                    mimeFilter=['application/json'])
         for labelname, label in labels:
             labelname = os.path.splitext(labelname)[0]
@@ -112,6 +120,7 @@ class ImageResource(Resource):
         slides = self.__load_slides(file)
         resp = slides['slide'].get_dzi('jpeg')
         cherrypy.response.headers["Content-Type"] = "application/xml"
+        self.slide_cache = SlidesCache(image_id, slides)
         return resp
 
     def __get_file(self, item, fname):
@@ -139,9 +148,15 @@ class ImageResource(Resource):
     @trace
     def tile(self, image_id, level, tfile):
         image_id = re.search(r'(.*)_files', image_id).group(1)
-        item = Item().load(image_id, level=AccessType.READ, user=self.user)
-        file = self.__get_file(item, item['name'])
-        slides = self.__load_slides(file)
+        # retreive from cache if already found.
+        if image_id != self.slide_cache.image_id:
+            item = Item().load(image_id, level=AccessType.READ, user=self.user)
+            file = self.__get_file(item, item['name'])
+            slides = self.__load_slides(file)
+            self.slide_cache = SlidesCache(image_id, slides)
+        else:
+            slides = self.slide_cache.slides
+
         pos, _format = tfile.split('.')
         col, row = pos.split('_')
         _format = _format.lower()
@@ -151,7 +166,7 @@ class ImageResource(Resource):
 
         tile_image = slides['slide'].get_tile(int(level), (int(col), int(row)))
         buf = PILBytesIO()
-        tile_image.save(buf, _format, quality=100)
+        tile_image.save(buf, _format, quality=90)
         cherrypy.response.headers["Content-Type"] = 'image/%s' % _format
         resp = buf.getvalue()
         return resp
