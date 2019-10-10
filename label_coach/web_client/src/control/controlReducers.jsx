@@ -531,3 +531,16 @@ export function imageReady(imageReady = false, action){
         }
     });
 }
+
+export function viewer(viewer=false, action){
+    return produce(viewer, draft=>{
+        switch (action.type) {
+            case "RESET_VIEWER":
+                return false;
+            case "VIEWER_RESET_DONE":
+                return true;
+            default:
+                return draft;
+        }
+    })
+}
