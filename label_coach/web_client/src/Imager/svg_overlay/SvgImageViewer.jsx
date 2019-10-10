@@ -5,7 +5,7 @@ import OpenSeadragon from 'openseadragon'
 import './osdSvgOverlay';
 import connect from "react-redux/es/connect/connect";
 import {
-    addAnnotation, createAnnotation, deleteAnnotation,
+    addAnnotation, createAnnotation, deleteAnnotation, imageIsReady,
     lockAnnotation, setDirtyStatus,
     updateAnnotation
 } from "../../control/controlActions";
@@ -17,6 +17,7 @@ import Divider from "@material-ui/core/Divider";
 import Brush from "./brush";
 import Eraser from "./eraser";
 import * as d3 from "d3";
+import {hideLoading} from "react-redux-loading-bar";
 
 // helper function to load image using promises
 function loadImage(src) {
@@ -89,7 +90,7 @@ class ImageViewerP extends React.Component {
                                             minPixelRatio: 0.3,
                                             showNavigator: true,
                                             navigatorId: 'navigator',
-                                            maxImageCacheCount: 500,
+                                            maxImageCacheCount: 200,
                                             timeout: 10000,
                                             //navigatorAutoFade: true,
                                         });
@@ -99,6 +100,14 @@ class ImageViewerP extends React.Component {
     onViewerReady() {
 
         this.svgOverlay = this.viewer.svgOverlay();
+        this.viewer.addHandler('tile-loaded', () => {
+            this.props.hideLoading();
+            this.props.imageIsReady();
+        });
+
+        this.viewer.addHandler('tile-load-failed', (tile, tiledImage, time, message, tileRequest) => {
+            console.log(tile, tiledImage, time, message, tileRequest)
+        });
 
         let onClick = this.onClick.bind(this);
         let onZoom = this.onZoom.bind(this);
@@ -600,6 +609,12 @@ function mapDispatchToProps(dispatch) {
             dispatch(lockAnnotation("lines", label_id, line_id));
             dispatch(setDirtyStatus());
         },
+        hideLoading: () => {
+            dispatch(hideLoading());
+        },
+        imageIsReady: () => {
+            dispatch(imageIsReady());
+        }
     };
 }
 
