@@ -89,7 +89,8 @@ class ImageViewerP extends React.Component {
                                             minPixelRatio: 0.3,
                                             showNavigator: true,
                                             navigatorId: 'navigator',
-                                            maxImageCacheCount: 100,
+                                            maxImageCacheCount: 500,
+                                            timeout: 10000,
                                             //navigatorAutoFade: true,
                                         });
         this.onViewerReady();
