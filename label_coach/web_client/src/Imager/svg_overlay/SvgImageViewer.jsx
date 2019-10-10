@@ -86,9 +86,10 @@ class ImageViewerP extends React.Component {
                                             zoomOutButton: 'zoom-out',
                                             homeButton: 'reset',
                                             fullPageButton: 'full-page',
+                                            minPixelRatio: 0.3,
                                             showNavigator: true,
                                             navigatorId: 'navigator',
-                                            maxImageCacheCount: 2000,
+                                            maxImageCacheCount: 100,
                                             //navigatorAutoFade: true,
                                         });
         this.onViewerReady();
@@ -289,7 +290,7 @@ class ImageViewerP extends React.Component {
     onZoom(event) {
         this.zoom = event.zoom;
         for (let polygon of this.polygons) {
-            console.log(event.zoom);
+            //console.log(event.zoom);
             polygon.onZoom(event);
         }
         if (this.activePolygon) {
