@@ -51,10 +51,16 @@ class ImageViewerP extends React.Component {
         this.setPan(true);
     }
 
+    reset() {
+        this.viewer.imageLoader.clear();
+        this.viewer.world.resetItems();
+
+    }
+
     render() {
-        if (!this.props.viewer && this.viewer !== null){
-            this.viewer.imageLoader.clear();
-            this.viewer.forceRedraw();
+        if (!this.props.viewer && this.viewer !== null) {
+            this.reset();
+
             console.log("redrawing");
             this.props.viewerResetDone();
         }
@@ -97,6 +103,7 @@ class ImageViewerP extends React.Component {
                                             navigatorId: 'navigator',
                                             maxImageCacheCount: 200,
                                             timeout: 10000,
+                                            immediateRender: true,
                                             //navigatorAutoFade: true,
                                         });
         this.onViewerReady();
