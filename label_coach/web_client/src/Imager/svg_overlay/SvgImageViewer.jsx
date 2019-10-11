@@ -400,19 +400,34 @@ class ImageViewerP extends React.Component {
         }
     }
 
-    static isEmptyOrSame(prevLabel, currLabel) {
-        if (!prevLabel && currLabel) {
+
+    static isAnnChanged(prevLabel, currLabel) {
+        if (!prevLabel && !currLabel) {
             return false;
         }
 
-        return currLabel && prevLabel && currLabel.id === prevLabel.id;
+        if (!prevLabel || !currLabel) {
+            return true;
+        }
 
-    }
+        if (currLabel && prevLabel && currLabel.id !== prevLabel.id) {
+            return true;
+        }
 
-    static isAnnChanged(prevLabel, currLabel) {
-        return !ImageViewerP.isEmptyOrSame(prevLabel, currLabel) ||
-            (prevLabel.ann.polygons[prevLabel.ann.polygons.length - 1].points !==
-                currLabel.ann.polygons[currLabel.ann.polygons.length - 1].points);
+        let prevPolys = prevLabel.ann.polygons;
+        let currPolys = currLabel.ann.polygons;
+
+        if (prevPolys.length === currPolys.length === 0) {
+            return false
+        }
+
+        if (prevPolys.length !== currPolys.length) {
+            return true
+        }
+
+        return prevPolys[prevPolys.length - 1].points !== currPolys[currPolys.length - 1].points;
+
+
     }
 
     updateOverlay() {
