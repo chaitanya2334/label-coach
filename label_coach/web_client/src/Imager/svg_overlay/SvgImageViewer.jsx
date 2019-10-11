@@ -102,8 +102,9 @@ class ImageViewerP extends React.Component {
                                             showNavigator: true,
                                             navigatorId: 'navigator',
                                             maxImageCacheCount: 200,
-                                            timeout: 10000,
-                                            immediateRender: true,
+                                            timeout: 60000,
+                                            immediateRender: false,
+                                            imageLoaderLimit: 40,
                                             //navigatorAutoFade: true,
                                         });
         this.onViewerReady();
