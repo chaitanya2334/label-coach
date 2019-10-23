@@ -44,6 +44,7 @@ class ImageViewerP extends React.Component {
         this.lines = [];
         this.erasers = [];
         this.zoom = 1;
+        this.prevzoom = this.zoom;
         this.State = Object.freeze({"Edit": 1, "AddingPoly": 2, "Empty": 3});
         this.drawState = this.State.Empty;
         this.id = 'ocd-viewer';
@@ -180,6 +181,10 @@ class ImageViewerP extends React.Component {
             this.activePolygon.onEnter();
         }
 
+        if(this.activeLine){
+            this.activeLine.onEnter();
+        }
+
         if (this.activeBrush) {
             this.activeBrush.onEnter();
         }
@@ -192,6 +197,10 @@ class ImageViewerP extends React.Component {
 
         if (this.activePolygon) {
             this.activePolygon.onExit();
+        }
+
+        if(this.activeLine){
+            this.activeLine.onExit();
         }
 
         if (this.activeBrush) {
@@ -212,6 +221,10 @@ class ImageViewerP extends React.Component {
 
         if (this.activePolygon) {
             this.activePolygon.onMouseMove(viewportPoint);
+        }
+
+        if (this.activeLine) {
+            this.activeLine.onMouseMove(viewportPoint);
         }
 
         if (this.activeBrush) {
@@ -247,14 +260,8 @@ class ImageViewerP extends React.Component {
         // Convert from viewport coordinates to image coordinates.
         let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
 
-        if (this.activeLine && this.activeLine.drawState) {
-            switch (this.activeLine.drawState) {
-                case "create":
-                    this.activeLine.appendDot(viewportPoint);
-                    this.props.updateLine(this.activeLine.labelId, this.activeLine.lineId,
-                                          this.activeLine.getImagePoints());
-                    break;
-            }
+        if (this.activeLine) {
+                this.activeLine.onDrag(viewportPoint);
         }
 
         if (this.activeBrush) {
@@ -285,6 +292,9 @@ class ImageViewerP extends React.Component {
             this.props.deleteStrokes("brushes", brush_label_pairs);
             this.activeEraser.delete();
             this.activeEraser = null;
+        }
+        if (this.activeLine){
+            this.activeLine.onDragEnd();
         }
     }
 
@@ -385,7 +395,8 @@ class ImageViewerP extends React.Component {
                                            this.viewer,
                                            activeLabel,
                                            activeLabel.ann.lines.length,  // TODO pass the label datastructure directly
-                                           this.zoom);
+                                           this.zoom,
+                                           this.props.addLine);
                 break;
             case "poly":
                 let poly_id = activeLabel.ann.polygons.length;
@@ -401,33 +412,8 @@ class ImageViewerP extends React.Component {
     }
 
 
-    static isAnnChanged(prevLabel, currLabel) {
-        if (!prevLabel && !currLabel) {
-            return false;
-        }
-
-        if (!prevLabel || !currLabel) {
-            return true;
-        }
-
-        if (currLabel && prevLabel && currLabel.id !== prevLabel.id) {
-            return true;
-        }
-
-        let prevPolys = prevLabel.ann.polygons;
-        let currPolys = currLabel.ann.polygons;
-
-        if (prevPolys.length === currPolys.length === 0) {
-            return false
-        }
-
-        if (prevPolys.length !== currPolys.length) {
-            return true
-        }
-
-        return prevPolys[prevPolys.length - 1].points !== currPolys[currPolys.length - 1].points;
-
-
+    static isAnnChanged(prevLabels, currLabels) {
+        return JSON.stringify(prevLabels) !== JSON.stringify(currLabels)
     }
 
     updateOverlay() {
@@ -463,12 +449,13 @@ class ImageViewerP extends React.Component {
         }
 
         for (let line of this.props.lines) {
-            if (lineObj.displayed) {
+            if (line.displayed) {
                 let lineObj = new Line(this.svgOverlay,
                                        this.viewer,
-                                       line.label_id,
+                                       line.label,
                                        line.line_id,
-                                       this.zoom);
+                                       this.zoom,
+                                       this.props.addLine);
 
                 lineObj.addImagePoints(line.points);
                 this.lines.push(lineObj);
@@ -501,8 +488,10 @@ class ImageViewerP extends React.Component {
 
         if ((prevProps.activeTool !== this.props.activeTool) ||
             prevProps.toolRadius !== this.props.toolRadius ||
-            ImageViewerP.isAnnChanged(prevProps.activeLabel, this.props.activeLabel)
+            ImageViewerP.isAnnChanged(prevProps.labels, this.props.labels) ||
+            this.prevzoom !== this.zoom
         ) {
+            this.prevzoom = this.zoom;
             this.updateOverlay();
         }
     }
@@ -524,7 +513,7 @@ function mapLabelsToAnns(labels) {
         });
         let newLines = label.ann.lines.map((line) => {
             let newLine = Object.assign({}, line);
-            newLine.label_id = label.id;
+            newLine.label = label;
             newLine.line_id = line.id;
             return newLine;
         });
@@ -614,6 +603,7 @@ function mapStateToProps(state) {
         polygons: polygons,
         lines: lines,
         brushes: brushes,
+        labels: state.labels,
         navState: state.navState,
         viewer: state.viewer
     };
@@ -624,6 +614,7 @@ function mapDispatchToProps(dispatch) {
         addPolygon: (label_id, poly_id, points) => {
             dispatch(createAnnotation("polygons", label_id, poly_id, points));
         },
+        // depricated
         updatePolygon: (label_id, poly_id, points) => {
             dispatch(updateAnnotation("polygons", label_id, poly_id, points));
         },
@@ -631,6 +622,10 @@ function mapDispatchToProps(dispatch) {
             dispatch(lockAnnotation("polygons", label_id, poly_id));
             dispatch(setDirtyStatus());
         },
+        addLine: (label_id, line_id, points) => {
+            dispatch(createAnnotation("lines", label_id, line_id, points));
+        },
+        // depricated
         updateLine: (label_id, line_id, points) => {
             dispatch(updateAnnotation("lines", label_id, line_id, points));
         },
