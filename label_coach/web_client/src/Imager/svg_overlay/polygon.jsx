@@ -81,10 +81,12 @@ export default class Polygon extends Shape {
     }
 
     addImagePoints(points) {
-        for (let point of points) {
-            let imgPoint = new OpenSeadragon.Point(parseInt(point.x), parseInt(point.y));
-            let vpPoint = this.viewer.viewport.imageToViewportCoordinates(imgPoint);
-            this.appendDot(vpPoint);
+        if (points!== undefined) {
+            for (let point of points) {
+                let imgPoint = new OpenSeadragon.Point(parseInt(point.x), parseInt(point.y));
+                let vpPoint = this.viewer.viewport.imageToViewportCoordinates(imgPoint);
+                this.appendDot(vpPoint);
+            }
         }
     }
 

@@ -93,6 +93,15 @@ export function deselectAnnotation(label_id, ann_type, item_id) {
     }
 }
 
+export function createAnnotation(ann_type, label_id, item_id, points) {
+    return (dispatch) => {
+        dispatch(addAnnotation(ann_type, label_id, item_id));
+        dispatch(updateAnnotation(ann_type, label_id, item_id, points));
+        dispatch(lockAnnotation(ann_type, label_id, item_id));
+        dispatch(setDirtyStatus());
+    }
+}
+
 export function addAnnotation(ann_type, label_id, item_id, args = {}) {
     return {
         type: 'ADD_ANN',
@@ -138,13 +147,13 @@ export function unlockAnnotation(ann_type, label_id, item_id) {
     }
 }
 
-export function updateAnnotation(ann_type, label_id, item_id, path, args = {}) {
+export function updateAnnotation(ann_type, label_id, item_id, points, args = {}) {
     return {
         type: 'UPDATE_ANN',
         ann_type: ann_type,
         label_id: label_id,
         item_id: item_id,
-        path: path,
+        points: points,
         args: args,
     }
 }
@@ -228,6 +237,18 @@ export function pushImages(images) {
 export function resetImages() {
     return {
         type: 'RESET_IMAGES'
+    }
+}
+
+export function resetViewer(){
+    return {
+        type: 'RESET_VIEWER'
+    }
+}
+
+export function viewerResetDone(){
+    return {
+        type: 'VIEWER_RESET_DONE'
     }
 }
 
