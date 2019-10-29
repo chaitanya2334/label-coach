@@ -16,19 +16,21 @@ export default class Polygon extends Shape {
         this.d3obj = d3.select(this.overlay.getNode(0))
                        .append("polyline")
                        .attr('stroke', label.color)
-                       .attr('class', 'transparent')
+                       .attr('fill', label.color)
+	                   .attr("fill-opacity","0.0")
                        .attr('id', label.id + "_" + poly_id)
                        .attr('stroke-width', this.strokeWidth * (1 / this.zoom))
-                       .on('mouseover', (event) => {
-                           console.log("asdfwQr_{+R4EDQAzB ,NB HMV");
-                       });
+                    .on("mouseover", function(d) {
+                        //d3.select(this).attr("fill-opacity","0.0");
+                        this.inside = true;
+                    })
+                    .on("mouseout", function(d) {
+                        //d3.select(this).attr("fill-opacity","0.0");
+                        this.inside = false;
+                    });
 
-        this.d3obj.on('mouseover', (event) => {
-            this.inside = true;
-        });
-        this.d3obj.on('mouseout', (event) => {
-            this.inside = false;
-        });
+
+
         this.complete = false;
         this.drawState = selected ? "selected" : drawState;
         this.label = label;
