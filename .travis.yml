@@ -26,6 +26,7 @@ before_install:
   - wget -O conda.bash "https://repo.continuum.io/miniconda/Miniconda${PY}-latest-Linux-x86_64.sh"
   - bash conda.bash -b -f -p "$CONDA_DIR"
   - export PATH="$CONDA_DIR/bin:$PATH"
+  - pip install --upgrade pip
   - conda env update -f environment.yml
   - source activate label-coach
   - rm -rf ~/.nvm
