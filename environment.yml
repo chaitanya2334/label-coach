@@ -82,7 +82,7 @@ dependencies:
     - docker==3.4.1
     - docker-pycreds==0.3.0
     - docutils==0.14
-    - dogpile-cache==0.6.6
+    - dogpile-cache==0.6.7
     - execnet==1.5.0
     - filelock==3.0.4
     - flake8==3.5.0
