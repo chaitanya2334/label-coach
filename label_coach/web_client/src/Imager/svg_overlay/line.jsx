@@ -15,9 +15,16 @@ export default class Line extends Shape {
                        .append("path")
                        .attr('stroke', label.color)
                        .attr('id', this.labelId + "_" + this.lineId)
-                       .attr('class', 'transparent')
+                       .attr('fill', label.color)
+	                   .attr("fill-opacity","0.3")
                        .attr('id', this.lineId)
-                       .attr('stroke-width', this.strokeWidth * (1 / this.zoom));
+                       .attr('stroke-width', this.strokeWidth * (1 / this.zoom))
+                    .on("mouseover", function(d) {
+                        //d3.select(this).attr("fill-opacity","0.1");
+                    })
+                    .on("mouseout", function(d) {
+                        //d3.select(this).attr("fill-opacity","0.0");
+                    });
         this.dots = [];
         this.setDrawState("read-only");
         this.addLine = addLine;
