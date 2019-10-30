@@ -13,9 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Update conda for Python ${{ matrix.python-version }}
-      run: conda update -q conda --yes
-    - name: Install Dependences
+    - name: Install Dependences for Python ${{python-version}}
       run: conda create -n label-coach -q --yes python=${PYVER} -f environment.yml
       env:
         PYVER: ${{ matrix.python-version }}
