@@ -44,4 +44,4 @@ jobs:
         source activate label-coach
         pwd
         girder-install plugin -s $HOME/work/label-coach/label-coach/label_coach
-        girder-install web
+        girder-install web --plugins label_coach
