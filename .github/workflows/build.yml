@@ -14,7 +14,21 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Start MongoDB As Docker
-      uses: wbari/start-mongoDB@latest
+      run: |
+        apt-get update && \
+        apt-get install --no-install-recommends -y \
+            mongodb \
+            libgtk2.0-0 \
+            libnotify-dev \
+            libgconf-2-4 \
+            libnss3 \
+            libxss1 \
+            libasound2 \
+            libxtst6 \
+            xvfb && \
+            rm -rf /var/lib/apt/lists/*
+        mongod --quiet --smallfiles --fork --logpath /var/log/mongodb.log >/dev/null
+        
     - name: Install Dependences for Python ${{matrix.python-version}}
       run: |
         conda env create -n label-coach -q python=${PYVER} -f environment.yml
