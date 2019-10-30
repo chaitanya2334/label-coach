@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/chaitanya2334/label-coach.svg?branch=master)](https://travis-ci.org/chaitanya2334/label-coach)
 
-[![Actions Status](https://github.com/chaitanya2334/label-coach/workflows/main/badge.svg)](https://github.com/chaitanya2334/label-coach/actions)
+[![Actions Status](https://github.com/chaitanya2334/label-coach/workflows/build/badge.svg)](https://github.com/chaitanya2334/label-coach/actions)
 
 ![](images/label_coach.png)
 ## Installation Instructions
