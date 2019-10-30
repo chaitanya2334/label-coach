@@ -1,0 +1,46 @@
+name: Python package
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.5, 3.6, 3.7]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Update conda for Python ${{ matrix.python-version }}
+      run: conda update -q conda
+    - name: Install Dependences
+      run: conda create -n label-coach -q --yes python=${PYVER} -f environment.yml
+      env:
+        PYVER: ${{ matrix.python-version }}
+    - name: Install package 
+      run: |
+        export PATH="/usr/share/miniconda/bin:$PATH"
+        source activate label-coach
+    - name: Install node
+      uses: dcodeIO/setup-node-nvm@master
+      with:
+        node-version: lts/*
+    - name: npm install
+      run: |
+        export PATH="/usr/share/miniconda/bin:$PATH"
+        source activate label-coach
+        nvm install v8
+        nvm use v8
+        npm config set python `which python`
+        cd ./label_coach/
+        npm install -g npm
+        npm install
+    - name: Install girder plugin
+      run: |
+        export PATH="/usr/share/miniconda/bin:$PATH"
+        source activate label-coach
+        pwd
+        girder-install plugin -s $HOME/label-coach/label_coach
+        girder-install web
