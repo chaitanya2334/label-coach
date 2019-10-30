@@ -13,6 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - name: Start MongoDB As Docker
+      uses: wbari/start-mongoDB@latest
     - name: Install Dependences for Python ${{matrix.python-version}}
       run: |
         conda env create -n label-coach -q python=${PYVER} -f environment.yml
