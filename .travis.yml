@@ -56,4 +56,4 @@ script:
   - export PATH="$CONDA_DIR/bin:$PATH"
   - source activate label-coach
   - girder-install plugin -s $HOME/build/chaitanya2334/label-coach/label_coach
-  - girder-install web --plugins label_coach
+  - girder-install web
