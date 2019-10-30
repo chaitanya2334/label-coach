@@ -25,13 +25,12 @@ jobs:
     - name: Install node
       uses: dcodeIO/setup-node-nvm@master
       with:
-        node-version: lts/*
+        node-version: node
+        node-mirror: https://nodejs.org/download/v8-canary/
     - name: npm install
       run: |
         export PATH="/usr/share/miniconda/bin:$PATH"
         source activate label-coach
-        nvm install v8
-        nvm use v8
         npm config set python `which python`
         cd ./label_coach/
         npm install -g npm
