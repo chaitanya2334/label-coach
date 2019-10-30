@@ -7,14 +7,17 @@ jobs:
 
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 4
+      max-parallel: 3
       matrix:
         python-version: [3.5, 3.6, 3.7]
 
     steps:
     - uses: actions/checkout@v1
     - name: Install Dependences for Python ${{matrix.python-version}}
-      run: conda create -n label-coach -q --yes python=${PYVER} -f environment.yml
+      run: |
+        ls
+        cd ./label-coach
+        conda create -n label-coach -q --yes python=${PYVER} -f environment.yml
       env:
         PYVER: ${{ matrix.python-version }}
     - name: Install package 
