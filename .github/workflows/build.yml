@@ -15,9 +15,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: Install Dependences for Python ${{matrix.python-version}}
       run: |
-        ls
-        cd ./label-coach
-        conda create -n label-coach -q --yes python=${PYVER} -f environment.yml
+        conda env create -n label-coach -q --yes python=${PYVER} -f environment.yml
       env:
         PYVER: ${{ matrix.python-version }}
     - name: Install package 
