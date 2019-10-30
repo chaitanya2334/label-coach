@@ -40,5 +40,5 @@ jobs:
         export PATH="/usr/share/miniconda/bin:$PATH"
         source activate label-coach
         pwd
-        girder-install plugin -s $HOME/label-coach/label_coach
+        girder-install plugin -s $HOME/work/label-coach/label-coach/label_coach
         girder-install web
