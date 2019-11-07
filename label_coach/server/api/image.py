@@ -32,12 +32,18 @@ class ImageResource(Resource):
         self.resourceName = 'image'
         self.cp_config = {'tools.staticdir.on': True,
                           'tools.staticdir.index': 'index.html'}
+
+        # supported image files
+        self.supported_img_exts = [".jpg", ".jpeg", ".png", ".svs", ".tiff"]
+
         self.route('GET', (), handler=self.getImageList)
         self.route('GET', (':image_id',), self.getImage)
         self.route('GET', ('thumbnail',), self.getThumbnail)
         self.route('GET', ('dzi', ':image_id',), self.dzi)
         self.route('GET', ('dzi', ':image_id', ':level', ':tfile'), self.tile)
         self.slide_cache = SlidesCache(None, None)
+
+
 
     @staticmethod
     def __load_slides(file):
@@ -68,7 +74,7 @@ class ImageResource(Resource):
             return "image/jpeg"
         elif ext == ".png" or ext == ".PNG":
             return "image/png"
-        elif ext == ".svs":
+        elif ext in ['.svs', '.tiff']:
             return "application/octet-stream"
 
     def __filter(self, items, exts):
@@ -96,7 +102,7 @@ class ImageResource(Resource):
         self.user = self.getCurrentUser()
         folder = Folder().load(folderId, level=AccessType.READ, user=self.getCurrentUser())
         items = Folder().childItems(folder, limit=limit, offset=offset)
-        items = self.__filter(items, exts=[".jpg", ".jpeg", ".png", ".PNG", ".svs"])
+        items = self.__filter(items, exts=self.supported_img_exts)
         ret_files = []
         for item in items:
             # TODO: remove this function

@@ -44,7 +44,8 @@ class ImageViewerP extends React.Component {
                 <ToolBar/>
                 <Divider/>
                 <div className={"gap1em"}/>
-                <OSDCanvas dbId={this.props.dbId} mimeType={this.props.mimeType} title={this.props.title} hideLoading={this.props.hideLoading}
+                <OSDCanvas dbId={this.props.dbId} mimeType={this.props.mimeType} title={this.props.title}
+                           hideLoading={this.props.hideLoading}
                            imageIsReady={this.props.imageIsReady}/>
             </div>
         )
@@ -53,22 +54,6 @@ class ImageViewerP extends React.Component {
 }
 
 // ---------- Container ----------
-
-function getActiveImageInfo(images) {
-    let dbId = "";
-    let mimeType = "";
-    let title = "Untitled";
-
-    for (let image of images) {
-        if (image.active) {
-            title = image.title;
-            mimeType = image.mimeType;
-            dbId = image.dbId;
-            break;
-        }
-    }
-    return {dbId, mimeType, title}
-}
 
 function mapStateToProps(state) {
 
@@ -84,10 +69,10 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        hideLoading: ()=>{
+        hideLoading: () => {
             dispatch(hideLoading());
         },
-        imageIsReady: ()=>{
+        imageIsReady: () => {
             dispatch(imageIsReady());
         }
     };

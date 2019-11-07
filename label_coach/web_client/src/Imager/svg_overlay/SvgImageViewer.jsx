@@ -181,7 +181,7 @@ class ImageViewerP extends React.Component {
             this.activePolygon.onEnter();
         }
 
-        if(this.activeLine){
+        if (this.activeLine) {
             this.activeLine.onEnter();
         }
 
@@ -199,7 +199,7 @@ class ImageViewerP extends React.Component {
             this.activePolygon.onExit();
         }
 
-        if(this.activeLine){
+        if (this.activeLine) {
             this.activeLine.onExit();
         }
 
@@ -261,7 +261,7 @@ class ImageViewerP extends React.Component {
         let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
 
         if (this.activeLine) {
-                this.activeLine.onDrag(viewportPoint);
+            this.activeLine.onDrag(viewportPoint);
         }
 
         if (this.activeBrush) {
@@ -293,7 +293,7 @@ class ImageViewerP extends React.Component {
             this.activeEraser.delete();
             this.activeEraser = null;
         }
-        if (this.activeLine){
+        if (this.activeLine) {
             this.activeLine.onDragEnd();
         }
     }
