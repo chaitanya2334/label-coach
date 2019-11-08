@@ -97,11 +97,11 @@ function mapDispatchToProps(dispatch, ownProps) {
         findImages: (folderId, page) => {
             if (page === 1) {
                 dispatch(resetImages());
-                dispatch(fetchImages(folderId, 4, page - 1));
+                dispatch(fetchImages(folderId, 6, page - 1));
                 dispatch(setHasMoreImages(true));
 
             } else {
-                dispatch(fetchImages(folderId, 8, page - 1))
+                dispatch(fetchImages(folderId, 6, page - 1))
             }
         }
     };
