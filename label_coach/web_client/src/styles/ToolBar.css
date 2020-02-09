@@ -3,6 +3,12 @@
     flex-direction: row;
 }
 
+.tbg {
+    display: flex;
+    flex-direction: row;
+    flew-wrap: nowrap;
+}
+
 .full-toolbar{
     display: flex;
     flex-grow: 0;
@@ -24,6 +30,10 @@
 }
 .icon-medium{
     font-size: 25px;
+}
+
+.zoom-level{
+    font-size: 15px;
 }
 
 .btn-small{

@@ -33,7 +33,6 @@ import SaveIcon from '@material-ui/icons/Save';
 import {lockAllAnnotations, setOutline, setSaveStatus} from "./controlActions";
 import {DLMenu} from "./DLMenu";
 
-
 class ToolBarP extends React.Component {
     constructor(props) {
         super(props);
@@ -96,26 +95,25 @@ class ToolBarP extends React.Component {
         }
         return (
             <div className={"full-toolbar"}>
-                <div className="toolbar">
-                    <ToggleButtonGroup onChange={this.handleMovement}>
-                        <ToggleButton value="zoom-map" id="full-page" size="small"><ZoomOutMapIcon/></ToggleButton>
-                        <ToggleButton value="zoom-in" id="zoom-in" size="small"><ZoomInIcon/></ToggleButton>
+                <div className="toolbar" white-space="nowrap">
+                    <ToggleButtonGroup className="tbg" onChange={this.handleMovement}>
+                        <ToggleButton value="zoom-map" id="full-page"><ZoomOutMapIcon/></ToggleButton>
+                        <ToggleButton value="zoom-in" id="zoom-in" size="large"><ZoomInIcon/></ToggleButton>
                         <ToggleButton value="zoom-out" id="zoom-out" size="small"><ZoomOutIcon/></ToggleButton>
                         <ToggleButton value="home" id="home" size="small"><HomeIcon/></ToggleButton>
                         <ToggleButton value="reset" id="reset" size="small"><CachedIcon/></ToggleButton>
                     </ToggleButtonGroup>
                     <Divider className={"vertical-divider"}/>
-
-                    <ToggleButtonGroup exclusive value={this.props.drawTool} justified="true"
+                    <ToggleButtonGroup className="tbg" exclusive value={this.props.drawTool} justified="true"
                                        onChange={this.handleDrawTool}>
                         <ToggleButton disabled id="brush" value="brush" className="btn-small"
-                                      size="small"><BrushIcon/></ToggleButton>
+                                      size="small" style={{display: "none"}}><BrushIcon/></ToggleButton>
                         <ToggleButton disabled={this.props.disable} id="line" value="line" className="btn-small"
                                       size="small"><CreateIcon/></ToggleButton>
-                        <ToggleButton disabled={this.props.disable} id="poly" value="poly" className="btn-small"
-                                      size="large"><FontAwesomeIcon
+                        <ToggleButton id="poly" value="poly" className="btn-small"
+                                      size="small" style={{display: "none"}}><FontAwesomeIcon
                             className='icon-medium' icon={faDrawPolygon}/></ToggleButton>
-                        <ToggleButton disabled value="eraser" id="erazer" size="small">
+                        <ToggleButton value="eraser" id="erazer" size="small">
                             <SvgIcon>
                                 <path d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4.008 4.008 0 0
                                     1-5.66 0L2.81 17c-.78-.79-.78-2.05 0-2.84l10.6-10.6c.79-.78 2.05-.78 2.83
@@ -125,12 +123,12 @@ class ToolBarP extends React.Component {
                     </ToggleButtonGroup>
                     <Divider className={"vertical-divider"}/>
 
-                    <ToggleButton disabled={this.props.disable} value="save" id="save" size="small"
+                    <ToggleButton disabled={this.props.disable} value="save" id="save" size="large"
                                   onClick={this.props.save}><SaveIcon/></ToggleButton>
                     <DLMenu assign_id={this.props.currentAssignmentId} image_name={this.props.imageName}/>
                     <Divider className={"vertical-divider"}/>
 
-                    <ToggleButtonGroup value={this.props.overview} onChange={this.handleSidebars}>
+                    <ToggleButtonGroup className="tbg" value={this.props.overview} onChange={this.handleSidebars}>
                         <ToggleButton value="thumbnail" id="thumbnail" size="small"
                                       className="text-btn">Thumbnail</ToggleButton>
                         <ToggleButton value="review" id="review" size="small" className="text-btn">Review</ToggleButton>

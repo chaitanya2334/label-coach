@@ -55,7 +55,7 @@ class OSDCanvasP extends React.Component {
                                             visibilityRatio: 1,
                                             constrainDuringPan: false,
                                             defaultZoomLevel: 0,
-                                            zoomPerClick: 1,
+                                            zoomPerClick: 2,
                                             minZoomLevel: 0,
                                             maxZoomLevel: 40,
                                             zoomInButton: 'zoom-in',

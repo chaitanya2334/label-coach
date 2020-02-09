@@ -69,6 +69,7 @@ class ImageViewerP extends React.Component {
             <div className={"image-viewer"}>
                 <div className={"iv-header"} style={{display: this.props.showHeader ? "flex" : "none"}}>
                     <div className={"title"}>{this.props.title}</div>
+                    <div className={"zoom-level"}>Zoom level: {Math.round(this.zoom)}</div>
                     <SaveIndicator/>
                 </div>
                 <Divider/>
@@ -94,7 +95,7 @@ class ImageViewerP extends React.Component {
                                             visibilityRatio: 1,
                                             constrainDuringPan: false,
                                             defaultZoomLevel: 0,
-                                            zoomPerClick: 1,
+                                            zoomPerClick: 2,
                                             zoomInButton: 'zoom-in',
                                             zoomOutButton: 'zoom-out',
                                             homeButton: 'home',
@@ -285,11 +286,18 @@ class ImageViewerP extends React.Component {
         if (this.activeEraser) {
             this.activeEraser.onMouseDragEnd();
             // delete all brushes intersecting with active eraser
+            let line_label_pairs = [];
+            for (let line of this.activeEraser.getErasedLines(this.lines)) {
+                line_label_pairs.push({label_id: line.label.id, line_id: line.id});
+            }
             let brush_label_pairs = [];
             for (let brush of this.activeEraser.getErasedBrushes(this.brushes)) {
                 brush_label_pairs.push({label_id: brush.label.id, brush_id: brush.id});
             }
             this.props.deleteStrokes("brushes", brush_label_pairs);
+            this.props.deleteAnnotation("brushes", brush_label_pairs);
+            this.props.deleteStrokes("lines", line_label_pairs);
+            this.props.deleteAnnotation("lines", line_label_pairs);
             this.activeEraser.delete();
             this.activeEraser = null;
         }
@@ -323,7 +331,7 @@ class ImageViewerP extends React.Component {
     onZoom(event) {
         this.zoom = event.zoom;
         for (let polygon of this.polygons) {
-            //console.log(event.zoom);
+            console.log(event.zoom);
             polygon.onZoom(event);
         }
         if (this.activePolygon) {
@@ -641,6 +649,10 @@ function mapDispatchToProps(dispatch) {
         },
         viewerResetDone: () => {
             dispatch(viewerResetDone());
+        },
+        deleteAnnotation: () => {
+            dispatch(deleteAnnotation("lines", label_id, line_id, points));
+            dispatch(deleteAnnotation("brushes", label_id, brush_id, points));
         }
     };
 }
