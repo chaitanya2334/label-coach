@@ -32,8 +32,10 @@ export default class Stroke extends Shape {
 
     }
 
-    intersect(stroke) {
+    intersectLine(line) {
         let ret = [];
+        let linePoints = line.dots;
+        console.log("TEST intersectLine", linePoints.length);
         if (this.points.length > 1) {
             for (let i = 0; i < this.points.length - 1; i++) {
                 let a1 = this.points[i];
@@ -42,9 +44,9 @@ export default class Stroke extends Shape {
                     a1.debug(true);
                     a2.debug(true);
                 }
-                for (let j = 0; j < stroke.points.length - 1; j++) {
-                    let b1 = stroke.points[j];
-                    let b2 = stroke.points[j + 1];
+                for (let j = 0; j < linePoints.length - 2; j++) {
+                    let b1 = linePoints[j];
+                    let b2 = linePoints[j + 1];
                     if (this.debug) {
                         b1.debug(true);
                         b2.debug(true);
@@ -64,6 +66,8 @@ export default class Stroke extends Shape {
                 }
             }
         }
+        console.log("TEST intersectLine return");
+        console.log(ret.length);
         return ret;
     }
 

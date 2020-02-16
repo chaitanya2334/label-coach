@@ -285,19 +285,23 @@ class ImageViewerP extends React.Component {
         }
         if (this.activeEraser) {
             this.activeEraser.onMouseDragEnd();
-            // delete all brushes intersecting with active eraser
+            console.log("Test Eraser onDragEnd");
+            console.log("Test lines");
+            for (let line of this.lines) {
+                console.log("Test line", line.labelId, line.lineId);
+            }
             let line_label_pairs = [];
             for (let line of this.activeEraser.getErasedLines(this.lines)) {
-                line_label_pairs.push({label_id: line.label.id, line_id: line.id});
+                console.log("Test erased line:", line.labelId, line.lineId);
+                line_label_pairs.push({label_id: line.labelId, line_id: line.lineId});
+                line.delete();
             }
-            let brush_label_pairs = [];
-            for (let brush of this.activeEraser.getErasedBrushes(this.brushes)) {
-                brush_label_pairs.push({label_id: brush.label.id, brush_id: brush.id});
-            }
-            this.props.deleteStrokes("brushes", brush_label_pairs);
-            this.props.deleteAnnotation("brushes", brush_label_pairs);
-            this.props.deleteStrokes("lines", line_label_pairs);
-            this.props.deleteAnnotation("lines", line_label_pairs);
+            // delete all brushes intersecting with active eraser
+            //let brush_label_pairs = [];
+            //for (let brush of this.activeEraser.getErasedBrushes(this.brushes)) {
+                //brush_label_pairs.push({label_id: brush.label.id, brush_id: brush.id});
+            //}
+            //this.props.deleteStrokes("brushes", brush_label_pairs);
             this.activeEraser.delete();
             this.activeEraser = null;
         }

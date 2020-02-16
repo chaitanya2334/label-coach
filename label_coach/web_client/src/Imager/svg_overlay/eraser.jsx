@@ -7,7 +7,6 @@ export default class Eraser extends Stroke {
         super(overlay, viewer, label, false, id, size, zoom);
         this.erasedBrushes = [];
         this.erasedLines = [];
-
     }
 
     createPath() {
@@ -92,5 +91,16 @@ export default class Eraser extends Stroke {
           .selectAll('rect')
           .remove();
         this.mask.remove();
+    }
+
+    getErasedLines(activeLines){
+        for (let line of activeLines) {
+            if (line.labelId === this.label.id) {
+                if (this.intersectLine(line).length > 0) {
+                    this.erasedLines.push(line);
+                }
+            }
+        }
+        return this.erasedLines;
     }
 }
