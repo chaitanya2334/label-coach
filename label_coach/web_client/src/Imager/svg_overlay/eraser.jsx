@@ -67,19 +67,6 @@ export default class Eraser extends Stroke {
         return this.erasedBrushes;
     }
 
-   getErasedLines(activeLines){
-        // delete brush strokes if the eraser intesects
-        for (let line of activeLines) {
-            if (line.label.id === this.label.id) {
-                if (this.intersect(line).length > 0) {
-                    this.erasedLines.push(line);
-                }
-            }
-        }
-        return this.erasedLines;
-    }
-
-
     delete() {
         super.delete();
 
