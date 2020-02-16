@@ -7,6 +7,7 @@ export default class Eraser extends Stroke {
         super(overlay, viewer, label, false, id, size, zoom);
         this.erasedBrushes = [];
         this.erasedLines = [];
+
     }
 
     createPath() {
