@@ -295,6 +295,7 @@ class ImageViewerP extends React.Component {
                 console.log("Test erased line:", line.labelId, line.lineId);
                 line_label_pairs.push({label_id: line.labelId, line_id: line.lineId});
                 line.delete();
+                this.props.deleteLine(line.labelId, line.lineId, []);
             }
             // delete all brushes intersecting with active eraser
             //let brush_label_pairs = [];
@@ -641,6 +642,9 @@ function mapDispatchToProps(dispatch) {
         updateLine: (label_id, line_id, points) => {
             dispatch(updateAnnotation("lines", label_id, line_id, points));
         },
+        deleteLine: (label_id, line_id, points) => {
+            dispatch(deleteAnnotation("lines", label_id, line_id, points));
+        },
         lockLine: (label_id, line_id) => {
             dispatch(lockAnnotation("lines", label_id, line_id));
             dispatch(setDirtyStatus());
@@ -654,10 +658,7 @@ function mapDispatchToProps(dispatch) {
         viewerResetDone: () => {
             dispatch(viewerResetDone());
         },
-        deleteAnnotation: () => {
-            dispatch(deleteAnnotation("lines", label_id, line_id, points));
-            dispatch(deleteAnnotation("brushes", label_id, brush_id, points));
-        }
+
     };
 }
 
