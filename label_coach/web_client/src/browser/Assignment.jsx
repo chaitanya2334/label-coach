@@ -94,10 +94,6 @@ class AssignmentP extends React.Component {
                         </div>
                     </div>
                     <div className={"tn-stats"}>
-                        <img className={"tn-icon"} src={"https://www.shareicon.net/data/128x128/2015/10/03/111571_people_512x512.png"} width={20} height={20}/>
-                        {2}
-                    </div>
-                    <div className={"tn-stats"}>
                         <img className={"tn-icon"} src={"https://png.icons8.com/ios/50/000000/opened-folder.png"} width={20} height={20}/>
                         {7}
                     </div>

@@ -219,6 +219,8 @@ class ImageViewerP extends React.Component {
         let imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
         let zoom = this.viewer.viewport.getZoom(true);
         let imageZoom = this.viewer.viewport.viewportToImageZoom(zoom);
+        console.log("LENGTH");
+        console.log(this.viewer.viewport.length);
 
         if (this.activePolygon) {
             this.activePolygon.onMouseMove(viewportPoint);
