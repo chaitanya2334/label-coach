@@ -1,4 +1,4 @@
 .image-container{
     background: #c5c5c5;
-    flex: 1;
+    overflow-y: auto;
 }
