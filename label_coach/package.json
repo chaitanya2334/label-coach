@@ -44,7 +44,7 @@
     "bootstrap": "^4.3.1",
     "compression-webpack-plugin": "^1.1.12",
     "config": "^2.0.2",
-    "d3": "^5.9.2",
+    "d3": "^7.6.1",
     "fabric": "^2.7.0",
     "file-saver": "^2.0.2",
     "geojs": "^0.19.6",
